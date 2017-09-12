@@ -1,0 +1,410 @@
+# create_refDB.R
+# Create a reference protein database for Mbp1-like proteins
+#
+# Boris Steipe for BCH441
+#
+# For the species, see:
+# cf. http://steipe.biochemistry.utoronto.ca/abc/index.php/Reference_species_for_fungi
+#
+# For the schema, see dbInit() in .utilities.R
+#
+# ==============================================================================
+
+refDB <- dbInit()
+
+
+# === protein table ===
+
+refDB$protein <-
+    rbind(refDB$protein,
+          data.frame(
+              ID = dbAutoincrement(refDB$protein$ID, ns = "ref"),
+              name = "MBP1_ASPNI",
+              RefSeqID = "XP_660758",
+              UniProtID = "Q5B8H6",
+              taxonomy.ID = as.integer(162425),
+              sequence = dbSanitizeSequence("
+MAAVDFSNVYSATYSSVPVYEFKIGTDSVMRRRSDDWINATHILKVAGFDKPARTRILEREVQKGVHEKVQGGYGKYQGT
+WIPLQEGRQLAERNNILDKLLPIFDYVAGDRSPPPAPKHTSAASKPRAPKINKRVVKEDVFSAVNHHRSMGPPSFHHEHY
+DVNTGLDEDESIEQATLESSSMIADEDMISMSQNGPYSSRKRKRGINEVAAMSLSEQEHILYGDQLLDYFMTVGDAPEAT
+RIPPPQPPANFQVDRPIDDSGNTALHWACAMGDLEIVKDLLRRGADMKALSIHEETPLVRAVLFTNNYEKRTFPALLDLL
+LDTISFRDWFGATLFHHIAQTTKSKGKWKSSRYYCEVALEKLRTTFSPEEVDLLLSCQDSVGDTAVLVAARNGVFRLVDL
+LLSRCPRAGDLVNKRGETASSIMQRAHLAERDIPPPPSSITMGNDHIDGEVGAPTSLEPQSVTLHHESSPATAQLLSQIG
+AIMAEASRKLTSSYGAAKPSQKDSDDVANPEALYEQLEQDRQKIRRQYDALAAKEAAEESSDAQLGRYEQMRDNYESLLE
+QIQRARLKERLASTPVPTQTAVIGSSSPEQDRLLTTFQLSRALCSEQKIRRAAVKELAQQRADAGVSTKFDVHRKLVALA
+TGLKEEELDPMAAELAETLEFDRMNGKGVGPESPEADHKDSASLPFPGPVVSVDA"),
+              stringsAsFactors = FALSE))
+
+
+
+refDB$protein <-
+    rbind(refDB$protein,
+          data.frame(
+              ID = dbAutoincrement(refDB$protein$ID, ns = "ref"),
+              name = "MBP1_BIPOR",
+              RefSeqID = "XP_007682304",
+              UniProtID = "W6ZM86",
+              taxonomy.ID = as.integer(101162),
+              sequence = dbSanitizeSequence("
+MPPAPDGKIYSATYSNVPVYECNVNGHHVMRRRADDWINATHILKVADYDKPARTRILEREVQKGVHEKVQGGYGKYQGT
+WIPLEEGRGLAERNGVLDKMRAIFDYVPGDRSPPPAPKHATAASNRMKPPRQTAAAVAAAAVAAAAAAAAVANHNALMSN
+SRSQASEDPYENSQRSQIYREDTPDNETVISESMLGDADLMDMSQYSADGNRKRKRGMDQMSLLDQQHQIWADQLLDYFM
+LLDHEAAVSWPEPPPSINLDRPIDEKGHAAMHWAAAMGDVGVVKELIHRGARLDCLSNNLETPLMRAVMFTNNFDKETMP
+SMVKIFQQTVHRTDWFGSTVFHHIAATTSSSNKYVCARWYLDCIINKLSETWIPEEVTRLLNAADQNGDTAIMIAARNGA
+RKCVRSLLGRNVAVDIPNKKGETADDLIRELNQRRRMHGRTRQASSSPFAPAPEHRLNGHVPHFDGGPLMSVPVPSMAVR
+ESVQYRSQTASHLMTKVAPTLLEKCEELATAYEAELQEKEAEFFDAERVVKRRQAELEAVRKQVAELQSMSKGLHIDLND
+EEAERQQEDELRLLVEEAESLLEIEQKAELRRLCSSMPQQNSDSSPVDITEKMRLALLLHRAQLERRELVREVVGNLSVA
+GMSEKQGTYKKLIAKALGEREEDVESMLPEILQELEEAETQERAEGLDGSPV"),
+              stringsAsFactors = FALSE))
+
+
+
+refDB$protein <-
+    rbind(refDB$protein,
+          data.frame(
+              ID = dbAutoincrement(refDB$protein$ID, ns = "ref"),
+              name = "MBP1_NEUCR",
+              RefSeqID = "XP_955821",
+              UniProtID = "Q7RW59",
+              taxonomy.ID = as.integer(5141),
+              sequence = dbSanitizeSequence("
+MVKENVGGNPEPGIYSATYSGIPVWEYQFGVDLKEHVMRRRHDDWVNATHILKAAGFDKPARTRILEREVQKDTHEKIQG
+GYGRYQGTWIPLEQAEALARRNNIYERLKPIFEFQPGNESPPPAPRHASKPKAPKVKPAVPTWGSKSAKNANPPQPGTFL
+PPGRKGLPAQAPDYNDADTHMHDDDTPDNLTVASASYMAEDDRYDHSHFSTGHRKRKRDELIEDMTEQQHAVYGDELLDY
+FLLSRNEQPAVRPDPPPNFKPDWPIDNERHTCLHWASAMGDVDVMRQLKKFGASLDAQNVRGETPFMRAVNFTNCFEKQT
+FPQVMKELFSTIDCRDLSGCTVIHHAAVMKIGRVNSQSCSRYYLDIILNRLQETHHPEFVQQLLDAQDNDGNTAVHLAAM
+RDARKCIRALLGRGASTDIPNKQGIRAEELIKELNASISKSRSNLPQRSSSPFAPDTQRHDAFHEAISESMVTSRKNSQP
+NYSSDAANTVQNRITPLVLQKLKDLTATYDSEFKEKDDAEKEARRILNKTQSELKALTASIDDYNSRLDTDDVAAKTAAE
+MATARHKVLAFVTHQNRISVQEAVKQELAALDRANAVTNGTSTKSKSSSPSKKPKLSPIPDQKDKPPKDENETESEAEHP
+DPPAAQAHQQQPGPSSQDTEVEDQDREEEEDDYTHRLSLAAELRSILQEQRSAENDYVEARGMLGTGERIDKYKHLLMSC
+LPPDEQENLEENLEEMIKLMEQEDESVTDLPAGAVGGGGGGNAADGSGGGGQPSNGRRESVLPALRGGNGDGEMSRRGSR
+TAAAAAAQVDGEREINGRAGAERTERIQEIAAV"),
+              stringsAsFactors = FALSE))
+
+
+
+refDB$protein <-
+    rbind(refDB$protein,
+          data.frame(
+              ID = dbAutoincrement(refDB$protein$ID, ns = "ref"),
+              name = "MBP1_SACCE",
+              RefSeqID = "NP_010227",
+              UniProtID = "P39678",
+              taxonomy.ID = as.integer(4932),
+              sequence = dbSanitizeSequence("
+MSNQIYSARYSGVDVYEFIHSTGSIMKRKKDDWVNATHILKAANFAKAKRTRILEKEVLKETHEKVQGGF
+GKYQGTWVPLNIAKQLAEKFSVYDQLKPLFDFTQTDGSASPPPAPKHHHASKVDRKKAIRSASTSAIMET
+KRNNKKAEENQFQSSKILGNPTAAPRKRGRPVGSTRGSRRKLGVNLQRSQSDMGFPRPAIPNSSISTTQL
+PSIRSTMGPQSPTLGILEEERHDSRQQQPQQNNSAQFKEIDLEDGLSSDVEPSQQLQQVFNQNTGFVPQQ
+QSSLIQTQQTESMATSVSSSPSLPTSPGDFADSNPFEERFPGGGTSPIISMIPRYPVTSRPQTSDINDKV
+NKYLSKLVDYFISNEMKSNKSLPQVLLHPPPHSAPYIDAPIDPELHTAFHWACSMGNLPIAEALYEAGTS
+IRSTNSQGQTPLMRSSLFHNSYTRRTFPRIFQLLHETVFDIDSQSQTVIHHIVKRKSTTPSAVYYLDVVL
+SKIKDFSPQYRIELLLNTQDKNGDTALHIASKNGDVVFFNTLVKMGALTTISNKEGLTANEIMNQQYEQM
+MIQNGTNQHVNSSNTDLNIHVNTNNIETKNDVNSMVIMSPVSPSDYITYPSQIATNISRNIPNVVNSMKQ
+MASIYNDLHEQHDNEIKSLQKTLKSISKTKIQVSLKTLEVLKESSKDENGEAQTNDDFEILSRLQEQNTK
+KLRKRLIRYKRLIKQKLEYRQTVLLNKLIEDETQATTNNTVEKDNNTLERLELAQELTMLQLQRKNKLSS
+LVKKFEDNAKIHKYRRIIREGTEMNIEEVDSSLDVILQTLIANNNKNKGAEQIITISNANSHA"),
+              stringsAsFactors = FALSE))
+
+
+refDB$protein <-
+    rbind(refDB$protein,
+          data.frame(
+              ID = dbAutoincrement(refDB$protein$ID, ns = "ref"),
+              name = "MBP1_SCHPO", # actually the Res2 protein
+              RefSeqID = "NP_593032",
+              UniProtID = "P41412",
+              taxonomy.ID = as.integer(4896),
+              sequence = dbSanitizeSequence("
+MAPRSSAVHVAVYSGVEVYECFIKGVSVMRRRRDSWLNATQILKVADFDKPQRTRVLERQVQIGAHEKVQGGYGKYQGTW
+VPFQRGVDLATKYKVDGIMSPILSLDIDEGKAIAPKKKQTKQKKPSVRGRRGRKPSSLSSSTLHSVNEKQPNSSISPTIE
+SSMNKVNLPGAEEQVSATPLPASPNALLSPNDNTIKPVEELGMLEAPLDKYEESLLDFFLHPEEGRIPSFLYSPPPDFQV
+NSVIDDDGHTSLHWACSMGHIEMIKLLLRANADIGVCNRLSQTPLMRSVIFTNNYDCQTFGQVLELLQSTIYAVDTNGQS
+IFHHIVQSTSTPSKVAAAKYYLDCILEKLISIQPFENVVRLVNLQDSNGDTSLLIAARNGAMDCVNSLLSYNANPSIPNR
+QRRTASEYLLEADKKPHSLLQSNSNASHSAFSFSGISPAIISPSCSSHAFVKAIPSISSKFSQLAEEYESQLREKEEDLI
+RANRLKQDTLNEISRTYQELTFLQKNNPTYSQSMENLIREAQETYQQLSKRLLIWLEARQIFDLERSLKPHTSLSISFPS
+DFLKKEDGLSLNNDFKKPACNNVTNSDEYEQLINKLTSLQASRKKDTLYIRKLYEELGIDDTVNSYRRLIAMSCGINPED
+LSLEILDAVEEALTREK"),
+              stringsAsFactors = FALSE))
+
+
+
+refDB$protein <-
+    rbind(refDB$protein,
+          data.frame(
+              ID = dbAutoincrement(refDB$protein$ID, ns = "ref"),
+              name = "MBP1_COPCI",
+              RefSeqID = "XP_001837394",
+              UniProtID = "A8NYC6",
+              taxonomy.ID = as.integer(5346),
+              sequence = dbSanitizeSequence("
+MPEAQIFKATYSGIPVYEMMCKGVAVMRRRSDSWLNATQILKVAGFDKPQRTRVLEREVQKGEHEKVQGGYGKYQGTWIP
+LERGMQLAKQYNCEHLLRPIIEFTPAAKSPPLAPKHLVATAGNRPVRKPLTTDLSAAVINTRSTRKQVADGVGEESDHDT
+HSLRGSEDGSMTPSPSEASSSSRTPSPIHSPGTYHSNGLDGPSSGGRNRYRQSNDRYDEDDDASRHNGMGDPRSYGDQIL
+EYFISDTNQIPPILITPPPDFDPNMAIDDDGHTSLHWACAMGRIRIVKLLLSAGADIFKVNKAGQTALMRSVMFANNYDV
+RKFPELYELLHRSTLNIDNSNRTVFHHVVDVAMSKGKTHAARYYMETILTRLADYPKELADVINFQDEDGETALTMAARC
+RSKRLVKLLIDHGADPKINNHDGKNAEDYILEDERFRSSPAPSSRVAAMSYRNAQVAYPPPGAPSTYSFAPANHDRPPLH
+YSAAAQKASTRCVNDMASMLDSLAASFDQELRDKERDMAQAQALLTNIQAEILESQRTVLQLRQQAEGLSQAKQRLADLE
+NALQDKMGRRYRLGFEKWIKDEETREKVIRDAANGDLVLTPATTSYTVDEDGDSDSGSNGDKNKGKRKAQVQQEEVSDLV
+ELYSNIPTDPEELRKQCEALREEVSQSRKRRKAMFDELVTFQAEAGTSGRMSDYRRLIAAGCGGLEPLEIDSVLGMLLET
+LEAEDPSSTSATWSGSKGQQTG"),
+              stringsAsFactors = FALSE))
+
+
+
+refDB$protein <-
+    rbind(refDB$protein,
+          data.frame(
+              ID = dbAutoincrement(refDB$protein$ID, ns = "ref"),
+              name = "MBP1_CRYNE",
+              RefSeqID = "XP_569090",
+              UniProtID = "Q5KMQ9",
+              taxonomy.ID = as.integer(5207),
+              sequence = dbSanitizeSequence("
+MGKKVIASGGDNGPNTIYKATYSGVPVYEMVCRDVAVMRRRSDAYLNATQILKVAGFDKPQRTRVLEREVQKGEHEKVQG
+GYGKYQGTWIPIERGLALAKQYGVEDILRPIIDYVPTSVSPPPAPKHSVAPPSKARRDKEKETGRTKATPSRTGPTSAAA
+LQAQAQLNRAKMHDSTPDADASFRSFEERVSLTPEDDSSSDTPSPVASVMTDQDMEVDKMGMHMSMPNVTLSQNMEELGA
+GSRKRSAAMMMEDEDQFGQLRSIRGNSAVHTPHGTPRHLGIGMPPEPIGPEQYTDIILNYFVSETSQIPSILVSPPHDFD
+PNAPIDDDGHTALHWACAMGRVRVVKLLLTAGASIFAGNNAEQTPLMRSVMFSNNYDMRKFPELYELLHRSTLNIDKQNR
+TVFHHIANLALTKGKTHAAKYYMETILARLADYPQELADVINFQDEEGETALTIAARARSRRLVKALLDHGANPKIKNRD
+SRSAEDYILEDERFRSSPVPAPNGGIGKASTSAAAEKPLFAPQLYFSEAARLCGGQALTDITSHMQSLARSFDAELQGKE
+RDILQAKALLTNIHTEVTENGRSITAITNQAAPLEEKRRELEALQASLKTRVKDALKKGYIGWLEGELVREQRWENGELE
+GNEEEKAAVQALRDVPTGGQEVVQAEEEKLRWEIEEKRKRRAMFVEKFVRAQTEAGTSEQIAKYRKLVSAGLGGVSTNEV
+DELMNQLLEGLEEENDNQVYNTTAGESGPSSWVQ"),
+              stringsAsFactors = FALSE))
+
+
+
+refDB$protein <-
+    rbind(refDB$protein,
+          data.frame(
+              ID = dbAutoincrement(refDB$protein$ID, ns = "ref"),
+              name = "MBP1_PUCGR",
+              RefSeqID = "XP_003327086",
+              UniProtID = "E3KED4",
+              taxonomy.ID = as.integer(5297),
+              sequence = dbSanitizeSequence("
+MAYGGSIQPLRPPSRESATLHLHQPDLTVTSPPLSLTHCPPCVYSHFTHTPTSLIVIQVSLHSLLDQETYHLLPSRSPPT
+VSVRMGTTTIYKATYSGVPVLEMPCEGIAVMRRRSDSWLNATQILKVAGFDKPQRTRVLEREIQKGTHEKIQGGYGKYQG
+TWVPLDRGIDLAKQYGVDHLLSALFNFQPSSNESPPLAPKHVTALSTRVKVSKVSAASAARAARAVVPSLPSTSGLGGRN
+TNNSWSNFDSDNEPGLPPAASSRESNGNWATQSKLARSSNLARARANINNSHPEDLPVPAPDQLQASPLPSMQTADPEND
+NSLTPSELSLPSRTPSPIEDLPLTVNTASSQSTRNKGKSRDLPDDEDLSRGQKRKYDTSLVEDTSYSDGADDQYINGNPS
+NAASAKYAKLILDYFVSESSQIPNFLNDPPSDFDPNVVIDDDGHTALHWACAMGRIKIIKLLLTCGADIFRANNAGQTAL
+MRAVMFTNNHDLRTFPELFESFSGSVINIDRTDRTVFHYVIDIALTKGKVPAARYYLETILSQLSEYPKELIDILNFQDE
+DGETALTLAARCRSKKLVKILLDHGANPKTANRDGKSAEDYILEDDKFRALSPTPCSSGPIRQLDQNSPGGTSNRSDFVD
+LVDPVPIDSNLIPQRSPNASPPHYSETGQRVTKQLLPEVTSMIELLATTFDTELQDKERDLDHAVGLLSNIEKEYLEGQR
+KILNYERMLSDFGEKKLALGDLEKELNDKLGKRYRFGWEKYVRDEEERARRITEQRSKYLQELSIEDRKLLDSSNLRFAD
+PSKQEVLMKLQADERENSDLLNLIRTNSTDVESECDLLRESVQKLSEERERLFKEFINLSSENTGGENEEDDGANHTSAN
+TSRLNNYRKLISLGCGGIGLDEVDEVIESLNEGIDVNELNDNGFLTEQDEELGNHQNYHNIHTQGR"),
+              stringsAsFactors = FALSE))
+
+
+
+refDB$protein <-
+    rbind(refDB$protein,
+          data.frame(
+              ID = dbAutoincrement(refDB$protein$ID, ns = "ref"),
+              name = "MBP1_USTMA",
+              RefSeqID = "XP_011392621",
+              UniProtID = "A0A0D1DP35",
+              taxonomy.ID = as.integer(5270),
+              sequence = dbSanitizeSequence("
+MSGDKTIFKATYSGVPVYECIINNVAVMRRRSDDWLNATQILKVVGLDKPQRTRVLEREIQKGIHEKVQGGYGKYQGTWI
+PLDVAIELAERYNIQGLLQPITSYVPSAADSPPPAPKHTISTSNRSKKIIPADPGALGRSRRATSIETESEVIGAAPNNV
+SEGSMSPSPSDISSSSRTPSPLPADRAHPLHANHALAGYNGRDANNHARYADIILDYFVTENTTVPSLLINPPPDFNPDM
+SIDDDEHTALHWACAMGRIRVVKLLLSAGADIFRVNSNQQTALMRATMFSNNYDLRKFPELFELLHRSILNIDRNDRTVF
+HHVVDLALSRGKPHAARYYMETMINRLADYGDQLADILNFQDDEGETPLTMAARARSKRLVRLLLEHGADPKIRNKEGKN
+AEDYIIEDERFRSSPSRTGPAGIELGADGLPVLPTSSLHTSEAGQRTAGRAVTLMSNLLHSLADSYDSEINTAEKKLTQA
+HGLLKQIQTEIEDSAKVAEALHHEAQGVDEERKRVDSLQLALKHAINKRARDDLERRWSEGKQAIKRARLQAGLEPGALS
+TSNATNAPATGDQKSKDDAKSLIEALPAGTNVKTAIAELRKQLSQVQANKTELVDKFVARAREQGTGRTMAAYRRLIAAG
+CGGIAPDEVDAVVGVLCELLQESHTGARAGAGGERDDRARDVAMMLKGAGAAALAANAGAP"),
+              stringsAsFactors = FALSE))
+
+
+
+refDB$protein <-
+    rbind(refDB$protein,
+          data.frame(
+              ID = dbAutoincrement(refDB$protein$ID, ns = "ref"),
+              name = "MBP1_WALME",
+              RefSeqID = "XP_006957051",
+              UniProtID = "I4YGC0",
+              taxonomy.ID = as.integer(1708541),
+              sequence = dbSanitizeSequence("
+MSAPPIYKACYSGVPVYEFNCKNVAVMKRRSDSWMNATQILKVANFDKPQRTRILEREVQKGTHEKVQGGYGKYQGTWIP
+MERSVELARQYRIELLLDPIINYLPGPQSPPLAPKHATNVGSRARKSTAPAAQTLPSTSKVFHPLSSTKHPAKLAAATNA
+KAEISDGEDASIPSSPSFKSNSSRTPSPIRINARKRKLEDEATIPSSAIDGSISYEDIILDYFISESTQIPALLIHPPSD
+FNPNMSIDDEGHTAMHWACAMGKVRVVKLLLSAGADIFRVNHSEQTALMRSVMFSNNYDIRKFPQLYELLHRSTLNLDKH
+DRTVLHHIVDLALTKSKTHAARYYMECVLSKLANYPDELADVINFQDDEGESALTLAARARSKRLVKLLLEHGADSKLPN
+KDGKTAEDYILEDERFRQSPLLNSNHLRLHPPDTSIYAPPAHLFNSETSQNIANTSMSSVANLLESLAQSYDKEITQKER
+DYQQAQVILRNIKTDIVEAKSNIEKMTIDSSEFEHLKHKLRELEMKLEEHSNDVYNKGWEEYSRNVDDPAIDAPSDNVQE
+ECASLRNKIKDLQEKRISSMQELIKRQKEVGTGKKMSEYRKLISVGCGIPTTEIDAVLEMLLESLESENANKKAALASGI
+SGALSSTSSAPSQATTSAPTGVATPGAPVPASSEKAGLLPPAPVMQ"),
+              stringsAsFactors = FALSE))
+
+# === taxonomy table ===
+
+refDB$taxonomy <-
+    rbind(refDB$taxonomy,
+          data.frame(
+              ID = as.integer(c(162425,
+                                101162,
+                                5141,
+                                4932,
+                                4896,
+                                5346,
+                                5207,
+                                5297,
+                                5270,
+                                1708541)),
+              species = c("Aspergillus nidulans",
+                          "Bipolaris oryzae",
+                          "Neurospora crassa",
+                          "Saccharomyces cerevisiae",
+                          "Schizosaccharomyces pombe",
+                          "Coprinopsis cinerea",
+                          "Cryptococcus neoformans",
+                          "Puccinia Graminis",
+                          "Ustilago maydis",
+                          "Wallemia mellicola"),
+              stringsAsFactors = FALSE))
+
+
+# === feature table ===
+
+refDB$feature <-
+    rbind(refDB$feature,
+          data.frame(
+              ID = c("ref_ftr_1",
+                     "ref_ftr_2",
+                     "ref_ftr_3",
+                     "ref_ftr_4",
+                     "ref_ftr_5",
+                     "ref_ftr_6",
+                     "ref_ftr_7",
+                     "ref_ftr_8"),
+              name = c("APSES fold",
+                       "KilA-N",
+                       "AT hook",
+                       "low complexity",
+                       "Ankyrin",
+                       "Swi6 fold",
+                       "coiled coil",
+                       "McInerny 2011"),
+              type.ID = rep("ref_typ_1", 8),
+              description = c("DNA binding domain by similarity to structure",
+                              "DNA binding domain by Pfam annotation",
+                              "DNA interaction motif by SMART annotation",
+                              "SEG annotation by SMART",
+                              "Ankyrin domain by SMART annotation",
+                              "Swi6 fold by similarity to structure",
+                              "Coiled coil by SMART annotation",
+                              "Yeast cell cycle review"),
+              sourceDB = c("PDB",
+                           "Pfam",
+                           "SMART",
+                           "SMART",
+                           "SMART",
+                           "PDB",
+                           "SMART",
+                           "PubMed"),
+              accession = c("1BM8_A_1_99",
+                            "PF04383",
+                            NA,
+                            NA,
+                            "SM00248",
+                            "1SW6_B",
+                            NA,
+                            NA),
+              stringsAsFactors = FALSE))
+
+# === protein annotation table ===
+
+# there are many! This, we don't code explicitly, but read from a textfile
+# I have prepared.
+
+tmp <- read.table("referenceDomainAnnotations.txt",
+          header = TRUE,
+          sep = "\t",
+          comment.char = "#",
+          strip.white = TRUE,
+          stringsAsFactors = FALSE)
+
+# remove the notes column - that is in the text file, only for our reference,
+# not part of the data model
+tmp <- tmp[ , -(ncol(tmp))]
+
+# add table IDs
+for (i in 1:nrow(tmp)) {
+    tmp[i, "ID"] <- dbAutoincrement(tmp$ID, ns = "ref", code = "fan")
+}
+
+# add table to DB
+refDB$proteinAnnotation <-
+    rbind(refDB$proteinAnnotation,
+          tmp)
+
+
+# === system table ===
+
+refDB$system <-
+    rbind(refDB$system,
+          data.frame(
+              ID = "ref_sys_1",
+              name = "G1/S SACCE",
+              notes = paste("Regulates transition from G1 to S phase",
+                            "in the yeast cell cycle."),
+              stringsAsFactors = FALSE))
+
+
+# === component table ===
+
+refDB$component <-
+    rbind(refDB$component,
+          data.frame(
+              ID = "ref_cmp_1",
+              protein.ID = "ref_pro_4",  # MBP1_SACCE
+              system.ID  = "ref_sys_1",  # G1/S SACCE
+              status = "include",
+              notes = paste("Part of MBF complex."),
+              stringsAsFactors = FALSE))
+
+
+# === system annotation table ===
+
+refDB$systemAnnotation <-
+    rbind(refDB$systemAnnotation,
+          data.frame(
+              ID = "ref_san_1",
+              system.ID  = "ref_sys_1",  # G1/S SACCE
+              feature.ID = "ref_ftr_8",  # PubMed
+              stringsAsFactors = FALSE))
+
+
+# === component annotation table ===
+
+refDB$componentAnnotation <-
+    rbind(refDB$componentAnnotation,
+          data.frame(
+              ID = "ref_can_1",
+              component.ID  = "ref_cmp_1",  # Mbp1 in G1/S SACCE
+              feature.ID = "ref_ftr_8",     # PubMed
+              stringsAsFactors = FALSE))
+
+
+# === type  table ===
+
+refDB$type <-
+    rbind(refDB$type,
+          data.frame(
+                ID = "ref_typ_0",
+                name = "UNDEF",
+                description = "Undefined type",
+                stringsAsFactors = FALSE))
+
+
+# === save
+
+save(refDB, file = "data/refDB.RData")
+
+# [END]

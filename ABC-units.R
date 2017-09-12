@@ -12,29 +12,49 @@
 # TODO:
 #
 #
-# == HOW TO WORK WITH THIS FILE ================================================
+# == HOW TO WORK WITH LEARNING UNIT FILES ======================================
 #
-#  Go through this script line by line to read and understand the
-#  code. Execute code by typing <cmd><enter>. When nothing is
-#  selected, that will execute the current line and move the cursor to
-#  the next line. You can also select more than one line, e.g. to
-#  execute a block of code, or less than one line, e.g. to execute
-#  only the core of a nested expression.
+# Expect that the learning unit files will be continuously updated.
 #
-#  Edit code, as required, experiment with options, or just play.
-#  Especially play.
+
+# If you wish to edit any of the code, for example to add your own comments and
+# examples, save any edited version under a different name. Otherwise you will
+# have problems with git when you update the project to a new version.
+
+# DO NOT SIMPLY  source()  THESE FILES!
+
+# If there are portions you don't understand, use R's help system, Google for an
+# answer, or ask your instructor. Don't continue if you don't understand what's
+#  going on. That's not how it works ...
 #
-#  DO NOT simply source() this whole file!
+# While this file itself should not be edited by you this is YOUR project
+# directory, and files that you create (notes etc.) will not be harmed when you
+# pull updated version of the master, or other new files, from github.
 #
-#  If there are portions you don't understand, use R's help system,
-#  Google for an answer, or ask me. Don't continue if you don't
-#  understand what's going on. That's not how it works ...
+# If you pull from github and get the following type of error ...
+#     ---------------
+#     error: Your local changes to the following files would be
+#     overwritten by merge
+#     ...
+#     Please commit your changes or stash them before you can merge.
+#     ---------------
+# ... then, you need to bring the offending file into its original state.
+# Open the Commit window, select the file, and click on the Revert button.
 #
-#  Once you have typed and executed the function init(), you will find a file
-#  called myScript.R in the project directory.
+# Of course, you can save a local copy under a different name before you revert,
+# in case you want to keep your changes.
 #
-#  Open it, you can place all of your code-experiments and notes into that
-#  file. This will be your "Lab Journal" for this session.
+#
+# ==============================================================================
+
+# Once you have typed and executed the function init(), you will find a file
+# called myScript.R in the project directory.
+#
+# Open it, you can place all of your code-experiments and notes into that
+# file. This will complement your "Course Journal". If you keep all contents in
+# this one file, you can find everything by using the <cmd>-F find function. To
+# cross-reference code in your journal, create section headings.
+#
 #
 # ==============================================================================
 
