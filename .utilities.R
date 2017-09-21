@@ -2,10 +2,11 @@
 #
 # Miscellaneous R code to suppport the project
 #
-# Version: 1.0
-# Date:    2016 12
+# Version: 1.1
+# Date:    2017 09
 # Author:  Boris Steipe
 #
+# V 1.1    2017 updates for ABC-units
 # V 1.0    First code
 #
 # ToDo:
@@ -39,7 +40,10 @@ objectInfo <- function(x) {
     # Done
 }
 
-# ====== Utilities
+# ====== Constants =============================================================
+
+
+# ====== SUPPORT FUNCTIONS =====================================================
 
 biCode <- function(s) {
   # make a 5 character code from a binomial name by concatening
@@ -78,6 +82,33 @@ pBar <- function(i, l, nCh = 50) {
   else { # done
     cat("\n")
   }
+}
+
+
+waitTimer <- function(t, nIntervals = 50) {
+  # pause and wait for t seconds and display a progress bar as
+  # you are waiting
+  t <- as.numeric(t)
+
+  if (t < 0.1) {return(invisible())}
+
+  increment <- t / nIntervals
+
+  bar <- "----:----|"  # One module for the progress bar:
+  bar <- rep(bar, ceiling(nIntervals / 10))  # repeat,
+  bar <- unlist(strsplit(bar, "")) # split into single characters,
+  bar <- bar[1:nIntervals]  # truncate,
+  bar <- paste(bar, collapse="") # and collapse.
+
+  cat(sprintf("\nWaiting: |%s\n         |", bar))
+  for (i in 1:(nIntervals - 1)) {
+    Sys.sleep(increment)
+    cat("=")
+  }
+  Sys.sleep(increment)
+  cat("|\n\n")
+
+  return(invisible())
 }
 
 # ====== DATA ==================================================================
