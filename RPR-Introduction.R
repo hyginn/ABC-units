@@ -34,50 +34,9 @@
 #     from 0). Not a loop - a single expression. The first number you get must
 #     be 1. The last number you get must be 1024.
 # - Save the file.
-#
-#
-# ==============================================================================
 
-" Introduction:
-  ...
-"
-
-
-# ==============================================================================
-#        PART ONE: REVIEW
-# ==============================================================================
-
-
-
-
-# == SECTION ===================================================================
-
-
-# == Subsection
-
-# Continue ...
-
-
-
-
-
-
-
-
-# ==============================================================================
-#        APPENDIX: OUTLOOK
-# ==============================================================================
-"There are many more functions for ... that this tutorial did not cover. You should know about the following. Look up the function and write a short bit of example code that uses it:"
-
-?subset
-?sweep
-?with     # ... and within()
-
-"Then you should know about the following packages. Open the vignette and browse through it. You should know be able to come up with least one use-case where the package functions would be useful:
-
-   https://cran.r-project.org/web/packages/magrittr/
-"
-
+# (This task is meant simply to make sure that writing R expressions, saving
+# them in scripts, and opening and executing script files works for you. )
 
 
 

@@ -2,7 +2,7 @@
 #
 # Purpose: A Bioinformatics Course: R code for learning units
 #
-# Version: 0.
+# Version: 0.1
 #
 # Date:    2017  08  18
 # Author:  Boris Steipe (boris.steipe@utoronto.ca)
@@ -55,49 +55,10 @@
 # this one file, you can find everything by using the <cmd>-F find function. To
 # cross-reference code in your journal, create section headings.
 #
-#
 # ==============================================================================
 
-" Introduction:
-  ...
-"
-
-
-# ==============================================================================
-#        PART ONE: REVIEW
-# ==============================================================================
-
-
-
-
-# == SECTION ===================================================================
-
-
-# == Subsection
-
-# Continue ...
-
-
-
-
-
-
-
-
-# ==============================================================================
-#        APPENDIX: OUTLOOK
-# ==============================================================================
-"There are many more functions for ... that this tutorial did not cover. You should know about the following. Look up the function and write a short bit of example code that uses it:"
-
-?subset
-?sweep
-?with     # ... and within()
-
-"Then you should know about the following packages. Open the vignette and browse through it. You should know be able to come up with least one use-case where the package functions would be useful:
-
-   https://cran.r-project.org/web/packages/magrittr/
-"
-
+# The individual learning units' files can be opened by simply clicking on them
+# in the File pane.
 
 
 
