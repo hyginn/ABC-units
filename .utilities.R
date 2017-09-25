@@ -2,10 +2,11 @@
 #
 # Miscellaneous R code to suppport the project
 #
-# Version: 1.1
+# Version: 1.2
 # Date:    2017 09
 # Author:  Boris Steipe
 #
+# V 1.2    update database utilities to support 2017 version of JSON sources
 # V 1.1    2017 updates for ABC-units
 # V 1.0    First code
 #
@@ -13,6 +14,13 @@
 # Notes:
 #
 # ==============================================================================
+
+# ====== SCRIPTS =============================================================
+
+source("./scripts/ABC-dbUtilities.R")
+
+
+# ====== SUPPORT FUNCTIONS =====================================================
 
 objectInfo <- function(x) {
     # Function to combine various information items about R objects
@@ -40,10 +48,6 @@ objectInfo <- function(x) {
     # Done
 }
 
-# ====== Constants =============================================================
-
-
-# ====== SUPPORT FUNCTIONS =====================================================
 
 biCode <- function(s) {
   # make a 5 character code from a binomial name by concatening
@@ -110,6 +114,7 @@ waitTimer <- function(t, nIntervals = 50) {
 
   return(invisible())
 }
+
 
 # ====== DATA ==================================================================
 
