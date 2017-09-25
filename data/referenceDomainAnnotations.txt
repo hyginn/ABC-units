@@ -1,0 +1,115 @@
+ID	protein.ID	feature.ID	start	end	note
+# MBP1_SACCE
+NA	ref_pro_4	ref_ftr_1	4	102	APSES fold
+NA	ref_pro_4	ref_ftr_2	22	105	KilA-N
+NA	ref_pro_4	ref_ftr_4	108	122	low complexity
+NA	ref_pro_4	ref_ftr_4	236	241	low complexity
+NA	ref_pro_4	ref_ftr_4	279	307	low complexity
+NA	ref_pro_4	ref_ftr_4	700	717	low complexity
+NA	ref_pro_4	ref_ftr_4	700	717	low complexity
+NA	ref_pro_4	ref_ftr_5	394	423	Ankyrin
+NA	ref_pro_4	ref_ftr_5	427	463	Ankyrin
+NA	ref_pro_4	ref_ftr_5	512	541	Ankyrin
+NA	ref_pro_4	ref_ftr_6	381	547	Swi6 fold
+NA	ref_pro_4	ref_ftr_7	633	655	coiled coil
+# MBP1_ASPNI
+NA	ref_pro_1	ref_ftr_1	9	106	APSES fold
+NA	ref_pro_1	ref_ftr_2	26	109	KilA-N
+NA	ref_pro_1	ref_ftr_4	529	534	low complexity
+NA	ref_pro_1	ref_ftr_5	260	289	Ankyrin
+NA	ref_pro_1	ref_ftr_5	381	413	Ankyrin
+NA	ref_pro_1	ref_ftr_6	193	402	Swi6 fold
+NA	ref_pro_1	ref_ftr_7	509	572	coiled coil
+# MBP1_BIPOR
+NA	ref_pro_2	ref_ftr_1	8	106	APSES fold
+NA	ref_pro_2	ref_ftr_2	26	109	KilA-N
+NA	ref_pro_2	ref_ftr_4	134	152	low complexity
+NA	ref_pro_2	ref_ftr_4	267	278	low complexity
+NA	ref_pro_2	ref_ftr_4	670	685	low complexity
+NA	ref_pro_2	ref_ftr_5	266	295	Ankyrin
+NA	ref_pro_2	ref_ftr_5	387	416	Ankyrin
+NA	ref_pro_2	ref_ftr_6	253	421	Swi6 fold
+NA	ref_pro_2	ref_ftr_7	659	681	coiled coil
+NA	ref_pro_2	ref_ftr_7	500	590	coiled coil
+# MBP1_NEUCR
+NA	ref_pro_3	ref_ftr_1	14	114	APSES fold
+NA	ref_pro_3	ref_ftr_2	34	117	KilA-N
+NA	ref_pro_3	ref_ftr_4	130	141	low complexity
+NA	ref_pro_3	ref_ftr_4	253	266	low complexity
+NA	ref_pro_3	ref_ftr_4	514	525	low complexity
+NA	ref_pro_3	ref_ftr_4	554	564	low complexity
+NA	ref_pro_3	ref_ftr_4	601	618	low complexity
+NA	ref_pro_3	ref_ftr_4	620	629	low complexity
+NA	ref_pro_3	ref_ftr_4	636	652	low complexity
+NA	ref_pro_3	ref_ftr_4	658	672	low complexity
+NA	ref_pro_3	ref_ftr_4	725	735	low complexity
+NA	ref_pro_3	ref_ftr_4	752	771	low complexity
+NA	ref_pro_3	ref_ftr_5	268	297	Ankyrin
+NA	ref_pro_3	ref_ftr_5	390	419	Ankyrin
+NA	ref_pro_3	ref_ftr_6	270	426	Swi6 fold
+NA	ref_pro_3	ref_ftr_7	500	550	coiled coil
+# MBP1_SCHPO
+NA	ref_pro_5	ref_ftr_1	8	104	APSES fold
+NA	ref_pro_5	ref_ftr_2	25	113	KilA-N
+NA	ref_pro_5	ref_ftr_4	111	125	low complexity
+NA	ref_pro_5	ref_ftr_4	136	145	low complexity
+NA	ref_pro_5	ref_ftr_4	176	191	low complexity
+NA	ref_pro_5	ref_ftr_4	422	447	low complexity
+NA	ref_pro_5	ref_ftr_5	247	276	Ankyrin
+NA	ref_pro_5	ref_ftr_5	368	397	Ankyrin
+NA	ref_pro_5	ref_ftr_6	234	400	Swi6 fold
+NA	ref_pro_5	ref_ftr_7	457	538	coiled coil
+# MBP1_COPCI
+NA	ref_pro_6	ref_ftr_1	5	103	APSES fold
+NA	ref_pro_6	ref_ftr_2	23	106	KilA-N
+NA	ref_pro_6	ref_ftr_4	170	191	low complexity
+NA	ref_pro_6	ref_ftr_4	435	450	low complexity
+NA	ref_pro_6	ref_ftr_4	611	626	low complexity
+NA	ref_pro_6	ref_ftr_5	270	299	Ankyrin
+NA	ref_pro_6	ref_ftr_5	389	418	Ankyrin
+NA	ref_pro_6	ref_ftr_5	474	509	Ankyrin
+NA	ref_pro_6	ref_ftr_6	257	429	Swi6 fold
+NA	ref_pro_6	ref_ftr_7	500	570	coiled coil
+NA	ref_pro_6	ref_ftr_7	651	678	coiled coil
+# MBP1_CRYNE
+NA	ref_pro_7	ref_ftr_1	113	211	APSES fold
+NA	ref_pro_7	ref_ftr_2	131	215	KilA-N
+NA	ref_pro_7	ref_ftr_4	66	85	low complexity
+NA	ref_pro_7	ref_ftr_4	413	423	low complexity
+NA	ref_pro_7	ref_ftr_4	633	644	low complexity
+NA	ref_pro_7	ref_ftr_4	697	709	low complexity
+NA	ref_pro_7	ref_ftr_5	477	506	Ankyrin
+NA	ref_pro_7	ref_ftr_5	618	647	Ankyrin
+NA	ref_pro_7	ref_ftr_6	452	663	Swi6 fold
+# MBP1_PUCGR
+NA	ref_pro_8	ref_ftr_1	90	187	APSES fold
+NA	ref_pro_8	ref_ftr_2	107	190	KilA-N
+NA	ref_pro_8	ref_ftr_4	208	227	low complexity
+NA	ref_pro_8	ref_ftr_4	273	291	low complexity
+NA	ref_pro_8	ref_ftr_5	442	271	Ankyrin
+NA	ref_pro_8	ref_ftr_5	475	509	Ankyrin
+NA	ref_pro_8	ref_ftr_5	561	590	Ankyrin
+NA	ref_pro_8	ref_ftr_6	429	601	Swi6 fold
+NA	ref_pro_8	ref_ftr_7	827	863	coiled coil
+# MBP1_USTMA
+NA	ref_pro_9	ref_ftr_1	7	104	APSES fold
+NA	ref_pro_9	ref_ftr_2	24	107	KilA-N
+NA	ref_pro_9	ref_ftr_4	106	116	low complexity
+NA	ref_pro_9	ref_ftr_4	161	183	low complexity
+NA	ref_pro_9	ref_ftr_4	657	672	low complexity
+NA	ref_pro_9	ref_ftr_4	776	796	low complexity
+NA	ref_pro_9	ref_ftr_5	245	274	Ankyrin
+NA	ref_pro_9	ref_ftr_5	355	384	Ankyrin
+NA	ref_pro_9	ref_ftr_6	232	395	Swi6 fold
+NA	ref_pro_9	ref_ftr_7	581	609	coiled coil
+# MBP1_WALME
+NA	ref_pro_10	ref_ftr_1	6	103	APSES fold
+NA	ref_pro_10	ref_ftr_2	23	106	KilA-N
+NA	ref_pro_10	ref_ftr_4	149	162	low complexity
+NA	ref_pro_10	ref_ftr_4	171	188	low complexity
+NA	ref_pro_10	ref_ftr_4	618	628	low complexity
+NA	ref_pro_10	ref_ftr_4	634	660	low complexity
+NA	ref_pro_10	ref_ftr_5	250	279	Ankyrin
+NA	ref_pro_10	ref_ftr_5	369	398	Ankyrin
+NA	ref_pro_10	ref_ftr_6	237	409	Swi6 fold
+NA	ref_pro_10	ref_ftr_7	461	585	coiled coil

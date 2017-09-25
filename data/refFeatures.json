@@ -1,0 +1,47 @@
+[
+  { "name" : "APSES fold",
+    "description " : "DNA binding domain by similarity to structure",
+    "sourceDB" : "PDB",
+    "accession" : "1BM8_A_1_99"},
+
+  { "name" : "KilA-N",
+    "description " : "DNA binding domain by Pfam annotation",
+    "sourceDB" : "Pfam",
+    "accession" : "PF04383"},
+
+  { "name" : "AT hook",
+    "description " : "DNA interaction motif by SMART annotation",
+    "sourceDB" : "SMART",
+    "accession" : null},
+
+  { "name" : "low complexity",
+    "description " : "SEG annotation by SMART",
+    "sourceDB" : "SMART",
+    "accession" : null},
+
+  { "name" : "Ankyrin fold",
+    "description " : "Ankyrin domain by SMART annotation",
+    "sourceDB" : "SMART",
+    "accession" : "SM00248"},
+
+  { "name" : "Swi6 fold",
+    "description " : "Swi6 fold by similarity to structure",
+    "sourceDB" : "PDB",
+    "accession" : "1SW6_B"},
+
+  { "name" : "coiled coil",
+    "description " : "Coiled coil by SMART annotation",
+    "sourceDB" : "SMART",
+    "accession" : null},
+
+  { "name" : "McInerny 2011",
+    "description " : "Yeast cell cycle review",
+    "sourceDB" : "PubMed",
+    "accession" : "21310294"}
+]
+
+
+
+
+
+
