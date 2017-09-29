@@ -19,8 +19,10 @@ if (! require("jsonlite", quietly = TRUE)) {
 
 
 dbSanitizeSequence <- function(s, unambiguous = TRUE) {
-  # Flatten any structure that s has, remove all non-letters, convert to
-  # uppercase.
+  # Remove FASTA header lines, if any,
+  # flatten any structure that s has,
+  # remove all non-letters,
+  # convert to uppercase.
   #
   # Parameters:
   #   s  chr  A DNA or protein sequence plus other characters
@@ -32,7 +34,11 @@ dbSanitizeSequence <- function(s, unambiguous = TRUE) {
   #         to set unambiguous = FALSE to process RNA sequences with Uracil.
   # Value: chr   a valid, uppercase, amino acid sequence
   #
-  s <- paste(unlist(s), collapse="")
+
+  s <- as.character(unlist(s))    # convert complex object to plain chr vector
+  s <- unlist(strsplit(s, "\n"))  # split up at linebreaks, if any
+  s <- s[! grepl("^>", s)]        # drop all lines beginning">" (FASTA header)
+  s <- paste(s, collapse="")      # combine into single string
   s <- toupper(gsub("[^a-zA-Z]", "", s))
   if (unambiguous) {
     amb <- "([bjouxzBJOUXZ])"  # parentheses capture the match
