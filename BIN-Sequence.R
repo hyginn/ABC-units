@@ -3,13 +3,13 @@
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the BIN-Sequence unit.
 #
-# Version:  0.1
+# Version:  1.0
 #
-# Date:     2017  08  28
+# Date:     2017  09  28
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
-#           0.1    First code copied from 2016 material.
+#           1.0    First live version 2017.
 #
 # TODO:
 #
