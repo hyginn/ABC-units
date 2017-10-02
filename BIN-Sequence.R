@@ -3,12 +3,13 @@
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the BIN-Sequence unit.
 #
-# Version:  1.0
+# Version:  1.1
 #
 # Date:     2017  09  28
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.1    Add chartr()
 #           1.0    First live version 2017.
 #
 # TODO:
@@ -26,22 +27,26 @@
 #TOC>
 #TOC>   Section  Title                          Line
 #TOC> ----------------------------------------------
-#TOC>   1        Prepare                          47
-#TOC>   2        Storing Sequence                 61
-#TOC>   3        String properties                90
-#TOC>   4        Substrings                       97
-#TOC>   5        Creating strings: sprintf()     103
-#TOC>   6        Changing strings                134
-#TOC>   6.1      stringi and stringr             162
-#TOC>   6.2      dbSanitizeSequence()            172
-#TOC>   7        Permuting and sampling          184
-#TOC>   7.1      Permutations                    191
-#TOC>   7.2      Sampling                        234
-#TOC>   7.2.1    Equiprobable characters         236
-#TOC>   7.2.2    Defined probability vector      271
-#TOC>   8        Tasks                           299
+#TOC>   1        Prepare                          52
+#TOC>   2        Storing Sequence                 66
+#TOC>   3        String properties                95
+#TOC>   4        Substrings                      102
+#TOC>   5        Creating strings: sprintf()     108
+#TOC>   6        Changing strings                139
+#TOC>   6.1      stringi and stringr             191
+#TOC>   6.2      dbSanitizeSequence()            201
+#TOC>   7        Permuting and sampling          213
+#TOC>   7.1      Permutations                    220
+#TOC>   7.2      Sampling                        263
+#TOC>   7.2.1    Equiprobable characters         265
+#TOC>   7.2.2    Defined probability vector      300
+#TOC>   8        Tasks                           328
 #TOC>
 #TOC> ==========================================================================
+#
+#
+#
+#
 
 
 # =    1  Prepare  =============================================================
@@ -103,7 +108,7 @@ substr(s, 2, 4)
 # =    5  Creating strings: sprintf()  =========================================
 
 
-# Sprintf is a _very smart, very powerful function and has cognates in all
+# Sprintf is a very smart, very powerful function and has cognates in all
 # other programming languages. It has a small learning curve, but it's
 # totally worth it:
 # the function takes a format string, and a list of other arguments. It returns
@@ -137,14 +142,38 @@ for (i in 99:95) {
 tolower(s)
 toupper(tolower(s))
 
+
 #reverse
 reverse(s)
+
+
+# chartr(old, new, x) maps all characters in x that appear in "old" to the
+# correpsonding character in "new."
+
+chartr("aeio", "uuuu", "We hold these truths to be self-evident ...")
+
+# One could implement toupper() and tolower() with this - remember that R has
+# character vectors of uppercase and lowercase letters as language constants.
+chartr(paste0(letters, collapse = ""),
+       paste0(LETTERS, collapse = ""),
+       "Twinkle, twinkle little star, how I wonder what you are.")
+
+# One amusing way to use the function  is for a reversible substitution
+# cypher.
+set.seed(112358)
+myCypher <- paste0(sample(letters), collapse = "")
+lett <- paste0(letters, collapse = "")
+(x <- chartr(lett, myCypher, "... seven for a secret, never to be told."))
+chartr(myCypher, lett, x)
+# (Nb. substitution cyphers are easy to crack!)
+
 
 # substituing characters
 (s <- gsub("IV", "i-v", s))  # gsub can change length, first argument is
                              # a "regular expression"!
 
 # I use it often to delete characters I don't want ...
+# ... select something, and substitute the empty string for it.
 (s <- gsub("-", "", s))
 
 # For example: clean up a sequence
