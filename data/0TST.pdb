@@ -1,0 +1,10 @@
+HEADER   TEST                                                 0TST      0TST   1
+REMARK     A CATALOGUE OF ATOM AND HETATM RECORDS                       0TST   2
+ATOM      1  N   GLY     1      -6.253  75.745  53.559  1.00 36.34      0TST   3
+ATOM      2  CA  GLY     1      -5.789  75.223  52.264  1.00 44.94      0TST   4
+ATOM      3  C   GLY     1      -5.592  73.702  52.294  1.00 32.28      0TST   5
+ATOM      4  O   GLY     1      -5.140  73.148  53.304  1.00 19.32      0TST   6
+TER       5      GLY     1                                              0TST   7
+HETATM    6  O   HOH     1      -4.169  60.050  40.145  1.00  3.00      0TST   8
+HETATM    7 CA   CA      1      -1.258 -71.579  50.253  1.00  3.00      0TST   9
+END                                                                     0TST  10
