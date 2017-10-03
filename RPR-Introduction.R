@@ -30,7 +30,7 @@
 #     reading right now. Don't bother giving the myScript.R file version numbers
 #     though.
 # - Create a section header with a date.
-# - Enter an R-expression that will produce the first 21 powers of 2 (starting
+# - Enter an R-expression that will produce the first 10 powers of 2 (starting
 #     from 0). Not a loop - a single expression. The first number you get must
 #     be 1. The last number you get must be 1024.
 # - Save the file.
