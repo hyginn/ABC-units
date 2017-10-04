@@ -52,8 +52,8 @@ toString(s)      # using the Biostrings function toString()
 sel <- myDB$protein$name == "MBP1_SACCE"
 aaMBP1_SACCE <- AAString(myDB$protein$sequence[sel])
 
-sel <- myDB$protein$name == paste("MBP1_", biCode(YFO), sep = "")
-aaMBP1_YFO <-   AAString(myDB$protein$sequence[sel])
+sel <- myDB$protein$name == paste("MBP1_", biCode(MYSPE), sep = "")
+aaMBP1_MYSPE <-   AAString(myDB$protein$sequence[sel])
 
 ?pairwiseAlignment
 
@@ -61,7 +61,7 @@ aaMBP1_YFO <-   AAString(myDB$protein$sequence[sel])
 # Global optimal alignment with end-gap penalties is default. (like EMBOSS needle)
 ali1 <-  pairwiseAlignment(
   aaMBP1_SACCE,
-  aaMBP1_YFO,
+  aaMBP1_MYSPE,
   substitutionMatrix = "BLOSUM62",
   gapOpening = 10,
   gapExtension = 0.5)
@@ -110,7 +110,7 @@ percentID(ali1)
 # Compare with local optimal alignment (like EMBOSS Water)
 ali2 <-  pairwiseAlignment(
   aaMBP1_SACCE,
-  aaMBP1_YFO,
+  aaMBP1_MYSPE,
   type = "local",
   substitutionMatrix = "BLOSUM62",
   gapOpening = 50,
@@ -135,7 +135,7 @@ percentID(ali2)
 #        PART FOUR: APSES Domain annotation by alignment
 # ==============================================================================
 
-# In this section we define the YFO APSES sequence by performing a global,
+# In this section we define the MYSPE APSES sequence by performing a global,
 # optimal sequence alignment of the yeast domain with the full length protein
 # sequence of the protein that was the most similar to the yeast APSES domain.
 #
@@ -190,11 +190,11 @@ aaMB1_SACCE_APSES <- AAString(dbGetFeatureSequence(myDB,
                                                    "MBP1_SACCE",
                                                    "APSES fold"))
 
-# To align, we need the YFO sequence. Here is it's definition again, just
+# To align, we need the MYSPE sequence. Here is it's definition again, just
 # in case ...
 
-sel <- myDB$protein$name == paste("MBP1_", biCode(YFO), sep = "")
-aaMBP1_YFO <- AAString(myDB$protein$sequence[sel])
+sel <- myDB$protein$name == paste("MBP1_", biCode(MYSPE), sep = "")
+aaMBP1_MYSPE <- AAString(myDB$protein$sequence[sel])
 
 # Now let's align these two sequences of very different length without end-gap
 # penalties using the "overlap" type. "overlap" turns the
@@ -203,7 +203,7 @@ aaMBP1_YFO <- AAString(myDB$protein$sequence[sel])
 
 aliApses <-  pairwiseAlignment(
   aaMB1_SACCE_APSES,
-  aaMBP1_YFO,
+  aaMBP1_MYSPE,
   type = "overlap",
   substitutionMatrix = "BLOSUM62",
   gapOpening = 10,
@@ -237,7 +237,7 @@ aliApses@subject@range@start + aliApses@subject@range@width - 1
 # right away and store it in myDB.  Copy the code-template below to your
 # myCode.R file, edit it to replace the placeholder items with your data:
 #
-#  - The <PROTEIN ID> is to be replaced with the ID of MBP1_YFO
+#  - The <PROTEIN ID> is to be replaced with the ID of MBP1_MYSPE
 #  - The <FEATURE ID> is to be replaced with the ID of "APSES fold"
 #  - <START> and <END> are to be replaced with the coordinates you got above
 #
@@ -277,7 +277,7 @@ myDB$proteinAnnotation[nrow(myDB$proteinAnnotation), ]
 # If this is correct, save it
 save(myDB, file = "myDB.02.RData")  # Note that it gets a new version number!
 
-# Done with this part. Copy the sequence of the APSES domain of MBP1_<YFO> - you
+# Done with this part. Copy the sequence of the APSES domain of MBP1_MYSPE - you
 # need it for the reverse BLAST search, and return to the course Wiki.
 
 

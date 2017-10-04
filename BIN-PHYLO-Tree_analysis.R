@@ -156,7 +156,7 @@ layout(matrix(1), widths=1.0, heights=1.0)
 # ... or we can plot the tree so it corresponds as well as possible to a
 # predefined tip ordering. Here we use the ordering that NCBI Global Tree
 # returns for the reference species - we have used it above to make the vector
-# apsMbp1Names. You inserted your YFO name into that vector - but you should
+# apsMbp1Names. You inserted your MYSPE name into that vector - but you should
 # move it to its correct position in the cladogram.
 
 # (Nb. we need to reverse the ordering for the plot. This is why we use the

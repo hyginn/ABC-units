@@ -23,9 +23,9 @@
 #  going on. That's not how it works ...
 #
 # ==============================================================================
- 
+
 #TOC> ==========================================================================
-#TOC> 
+#TOC>
 #TOC>   Section  Title                                        Line
 #TOC> ------------------------------------------------------------
 #TOC>   1        A Relational Datamodel in R: review            55
@@ -48,9 +48,9 @@
 #TOC>   3.3      Create an R script to create the database     522
 #TOC>   3.3.1    Check and validate                            542
 #TOC>   3.4      Task: submit for credit (part 2/2)            583
-#TOC> 
+#TOC>
 #TOC> ==========================================================================
- 
+
 
 # =    1  A Relational Datamodel in R: review  =================================
 
@@ -203,7 +203,7 @@ str(philDB)
 # go back, re-read, play with it, and ask for help. This is essential.
 
 
-# ===  1.1.1  completing the database                  
+# ===  1.1.1  completing the database
 
 
 # Next I'll add one more person, and create the other two tables:
@@ -362,7 +362,7 @@ dbSanitizeSequence(x)
 
 # ==   2.3  Create a protein table for our data model  =========================
 
-# ===  2.3.1  Initialize the database                  
+# ===  2.3.1  Initialize the database
 
 
 # The function dbInit contains all the code to return a list of empty
@@ -374,7 +374,7 @@ myDB <- dbInit()
 str(myDB)
 
 
-# ===  2.3.2  Add data                                 
+# ===  2.3.2  Add data
 
 
 # fromJSON() returns a dataframe that we can readily process to add data
@@ -421,7 +421,7 @@ source("./scripts/ABC-createRefDB.R")
 str(myDB)
 
 
-# ===  2.4.1  Examples of navigating the database      
+# ===  2.4.1  Examples of navigating the database
 
 
 # You can look at the contents of the tables in the usual way we access
@@ -468,8 +468,8 @@ myDB$taxonomy$species[sel]
 # =    3  Add your own data  ===================================================
 
 
-# You have chosen an organism as "YFO", and you final task will be to find the
-# protein in YFO that is most similar to yeast Mbp1 and enter its information
+# You have chosen an organism as "MYSPE", and you final task will be to find the
+# protein in MYSPE that is most similar to yeast Mbp1 and enter its information
 # into the database.
 
 
@@ -483,7 +483,7 @@ myDB$taxonomy$species[sel]
 #   Protein BLAST.
 # - Enter NP_010227 into the "Query Sequence" field.
 # - Choose "Reference proteins (refseq_protein)" as the "Database".
-# - Paste the YFO species name into the "Organism" field.
+# - Paste the MYSPE species name into the "Organism" field.
 #
 # - Click "BLAST".
 
@@ -493,28 +493,28 @@ myDB$taxonomy$species[sel]
 
 # Otherwise, look for the top-hit in the "Alignments" section. In some cases
 # there will be more than one hit with nearly similar E-values. If this is the
-# case for YFO, choose the one with the higher degree of similarity (more
+# case for MYSPE, choose the one with the higher degree of similarity (more
 # identities) with the N-terminus of the query - i.e. the Query sequence of
 # the first ~ 100 amino acids.
 
 # -  Follow the link to the protein data page, linked from "Sequence ID".
 # -  From there, in a separate tab, open the link to the taxonomy database page
-#      for YFO which is linked from the "ORGANISM" record.
+#      for MYSPE which is linked from the "ORGANISM" record.
 
 
 # ==   3.2  Put the information into JSON files  ===============================
 
 
 # - Next make a copy of the file "./data/MBP1_SACCE.json" in your project
-#     directory and give it a new name that corresponds to YFO - e.g. if
-#     YFO is called "Crptycoccus neoformans", your file should be called
+#     directory and give it a new name that corresponds to MYSPE - e.g. if
+#     MYSPE is called "Crptycoccus neoformans", your file should be called
 #     "MBP1_CRYNE.json"; in that case "MBP1_CRYNE" would also be the
 #     "name" of your protein. Open the file in the RStudio editor and replace
 #     all of the MBP1_SACCE data with the corresponding data of your protein.
 #
-# - Do a similar thing for the YFO taxonomy entry. Copy
-#     "./data/refTaxonomy.json" and make a new file named "YFOtaxonomy.json".
-#     Create a valid JSON file with only one single entry - that of YFO.
+# - Do a similar thing for the MYSPE taxonomy entry. Copy
+#     "./data/refTaxonomy.json" and make a new file named "MYSPEtaxonomy.json".
+#     Create a valid JSON file with only one single entry - that of MYSPE.
 #
 # - Validate your two files online at https://jsonlint.com/
 
@@ -529,7 +529,7 @@ myDB$taxonomy$species[sel]
 # - than add the two commands that add your protein and taxonomy data,
 #     they should look like:
 #     myDB <- dbAddProtein(    myDB, fromJSON("MBP1_<code>.json"))
-#     myDB <- dbAddTaxonomy(   myDB, fromJSON("YFOtaxonomy.json"))
+#     myDB <- dbAddTaxonomy(   myDB, fromJSON("MYSPEtaxonomy.json"))
 #
 # - save the file and source() it:
 #     source("makeProteinDB.R")
@@ -539,12 +539,12 @@ myDB$taxonomy$species[sel]
 # in any of the JSON files. Later you will add more information ...
 
 
-# ===  3.3.1  Check and validate                       
+# ===  3.3.1  Check and validate
 
 
-# Is your protein named according to the pattern "MBP1_<YFO>"? It should be.
+# Is your protein named according to the pattern "MBP1_MYSPE"? It should be.
 # And does the taxonomy table contain the systematic name? It should be the same
-# that you get when you type YFO into the console.
+# that you get when you type MYSPE into the console.
 
 # Let's compute sequence lengths on the fly (with the function nchar() ), and
 # open this with the table viewer function View()
@@ -562,18 +562,18 @@ View(cbind(myDB$protein[ , c("ID", "name", "RefSeqID")],
 myDB$protein$sequence[nrow(myDB$protein)]
 
 # If not, don't continue! Fix the problem first.
-# Let me repeat: If this does not give you the right sequence of the YFO
+# Let me repeat: If this does not give you the right sequence of the MYSPE
 #                Mbp1 homologue, DO NOT CONTINUE. Fix the problem.
 
-# Is that the right taxonomy ID and binomial name for YFO?
-sel <- myDB$taxonomy$species == YFO
+# Is that the right taxonomy ID and binomial name for MYSPE?
+sel <- myDB$taxonomy$species == MYSPE
 myDB$taxonomy[sel, ]
 
 # If not, or if the result was "<0 rows> ... " then DO NOT CONTINUE.
 # Fix the problem first.
 
-# Does this give you the right refseq ID for MBP1_<YFO>?
-sel <- myDB$protein$name == paste0("MBP1_", biCode(YFO))
+# Does this give you the right refseq ID for MBP1_MYSPE?
+sel <- myDB$protein$name == paste0("MBP1_", biCode(MYSPE))
 myDB$protein$RefSeqID[sel]
 
 # If not, or if the result was "<0 rows> ... " then DO NOT CONTINUE.
@@ -589,8 +589,8 @@ myDB$protein$RefSeqID[sel]
 #     page on the Student Wiki
 # - Execute the two commands below and show the result on your submission page
 
-biCode(myDB$taxonomy$species) %in% biCode(YFO)
-myDB$protein$taxonomyID %in% myDB$taxonomy$ID[(myDB$taxonomy$species == YFO)]
+biCode(myDB$taxonomy$species) %in% biCode(MYSPE)
+myDB$protein$taxonomyID %in% myDB$taxonomy$ID[(myDB$taxonomy$species == MYSPE)]
 
 # That is all.
 

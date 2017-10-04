@@ -43,7 +43,7 @@ save(myDB, file = "myDB.04.RData") # save the new version
 # from your myCode.R script. Here is again the table of feature IDs:
 myDB$feature[ , c("ID", "name", "description")]
 
-# Add every SMART annotated feaure for MBP1_YFO to the database. If you make
+# Add every SMART annotated feaure for MBP1_MYSPE to the database. If you make
 # mistakes, just reload the latest version (probably "myDB.04.RData"), then run
 # your corrected annotation script again. Execute ...
 myDB$proteinAnnotation

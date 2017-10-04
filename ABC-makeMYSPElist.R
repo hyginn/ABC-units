@@ -1,9 +1,9 @@
-# ABC_makeYFOlist.R
+# ABC_makeMYSPElist.R
 #
 # Purpose:  Create a list of genome sequenced fungi with protein annotations and
 #               Mbp1 homologues.
 #
-# Version: 1.1
+# Version: 1.1.1
 #
 # Date:    2016 09 - 2017 09
 # Author:  Boris Steipe (boris.steipe@utoronto.ca)
@@ -29,9 +29,9 @@
 # those parts. If you only want to study the general workflow, just load()
 # the respective intermediate results.
 #
- 
+
 #TOC> ==========================================================================
-#TOC> 
+#TOC>
 #TOC>   Section  Title                               Line
 #TOC> ---------------------------------------------------
 #TOC>   1        The strategy                          54
@@ -44,17 +44,17 @@
 #TOC>   3.2      Identify species in "hits"           202
 #TOC>   4        Intersect GOLD and BLAST species     247
 #TOC>   5        Cleanup and finish                   265
-#TOC> 
+#TOC>
 #TOC> ==========================================================================
- 
+
 
 #TOC>
 #TOC>
 
 # =    1  The strategy  ========================================================
 
-# This script will create a list of "YFO" species and save it in an R object
-# YFOspecies that is stored in the data subdirectory of this project from where
+# This script will create a list of "MYSPE" species and save it in an R object
+# MYSPEspecies that is stored in the data subdirectory of this project from where
 # it can be loaded. The strategy is as follows: we download a list of all
 # genome projects and then select species for which protein annotations are
 # available - i.e. these are all genome-sequenced species that have been
@@ -251,7 +251,7 @@ length(BLASTspecies)
 # etc. See here:
 ?union
 
-YFOspecies <- intersect(GOLDspecies, BLASTspecies)
+MYSPEspecies <- intersect(GOLDspecies, BLASTspecies)
 
 # Again: interpret this:
 #  - what is the number of GOLDspecies?
@@ -272,9 +272,9 @@ YFOspecies <- intersect(GOLDspecies, BLASTspecies)
 
 REFspecies
 
-YFOspecies <- sort(setdiff(YFOspecies, REFspecies))
+MYSPEspecies <- sort(setdiff(MYSPEspecies, REFspecies))
 
-# save(YFOspecies, file = "data/YFOspecies.RData")
+# save(MYSPEspecies, file = "data/MYSPEspecies.RData")
 
 
 

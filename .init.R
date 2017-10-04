@@ -24,6 +24,15 @@ if (! file.exists(".myProfile.R")) {
   rm(e, n, conn)
 }
 
+# Patch YFO -> MYSPE if necessary:
+tmp <- readLines(".myProfile.R")
+if (length(grep("^YFO", tmp)) > 0) {
+  idx <- grep("^YFO", tmp)
+  tmp[idx] <- gsub("^YFO", "MYSPE", tmp[idx])
+  writeLines(tmp, ".myProfile.R")
+}
+rm(tmp)
+
 source(".myProfile.R")
 
 source(".utilities.R")

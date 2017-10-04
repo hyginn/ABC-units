@@ -41,7 +41,7 @@ list.files(pattern = "myDB.*")
 load("myDB.05.RData")
 
 # The database contains the ten Mbp1 orthologues from the reference species
-# and the Mbp1 RBM for YFO.
+# and the Mbp1 RBM for MYSPE.
 #
 # We will construct a phylogenetic tree from the proteins' APSES domains.
 # You have annotated their ranges as a feature.

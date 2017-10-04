@@ -46,31 +46,31 @@ data(BLOSUM62)
 sel <- myDB$protein$name == "MBP1_SACCE"
 MBP1_SACCE <- s2c(myDB$protein$sequence[sel])
 
-sel <- myDB$protein$name == paste("MBP1_", biCode(YFO), sep = "")
-MBP1_YFO <- s2c(myDB$protein$sequence[sel])
+sel <- myDB$protein$name == paste("MBP1_", biCode(MYSPE), sep = "")
+MBP1_MYSPE <- s2c(myDB$protein$sequence[sel])
 
 # Check that we have two character vectors of the expected length.
 str(MBP1_SACCE)
-str(MBP1_YFO)
+str(MBP1_MYSPE)
 
 # How do we get the pairscore values? Consider: a single pair of amino acids can
-# be obtained from sequence SACCE and YFO eg. from position 13 and 21 ...
+# be obtained from sequence SACCE and MYSPE eg. from position 13 and 21 ...
 MBP1_SACCE[13]
-MBP1_YFO[21]
+MBP1_MYSPE[21]
 
 # ... using these as subsetting expressions, we can pull the pairscore
 # from the MDM
-BLOSUM62[MBP1_SACCE[13], MBP1_YFO[21]]
+BLOSUM62[MBP1_SACCE[13], MBP1_MYSPE[21]]
 
 # First we build an empty matrix that will hold all pairscores ...
-dotMat <- matrix(numeric(length(MBP1_SACCE) * length(MBP1_YFO)),
-                 nrow = length(MBP1_SACCE), ncol = length(MBP1_YFO))
+dotMat <- matrix(numeric(length(MBP1_SACCE) * length(MBP1_MYSPE)),
+                 nrow = length(MBP1_SACCE), ncol = length(MBP1_MYSPE))
 
 # ... then we loop over the sequences and store the scores in the matrix.
 #
 for (i in 1:length(MBP1_SACCE)) {
-  for (j in 1:length(MBP1_YFO)) {
-    dotMat[i, j] <- BLOSUM62[MBP1_SACCE[i], MBP1_YFO[j]]
+  for (j in 1:length(MBP1_MYSPE)) {
+    dotMat[i, j] <- BLOSUM62[MBP1_SACCE[i], MBP1_MYSPE[j]]
   }
 }
 
@@ -80,7 +80,7 @@ for (i in 1:length(MBP1_SACCE)) {
 dotMat[1:10, 1:10]
 
 # Rows in this matrix correspond to an amino acid from MBP1_SACCE, columns in
-# the matrix correspond to an amino acid from MBP1_YFO.
+# the matrix correspond to an amino acid from MBP1_MYSPE.
 
 # To plot this, we use the image() function. Here, with default parameters.
 
@@ -110,13 +110,13 @@ image(x = 1:200, y = 1:200,  dotMat[1:200, 1:200], ylim=c(200,1))
 
 # ... and labels! Axis labels would be nice ...
 image(x = 1:200, y = 1:200,  dotMat[1:200, 1:200], ylim=c(200,1),
-      xlab = "MBP1_YFO", ylab = "MBP1_SACCE" )
+      xlab = "MBP1_MYSPE", ylab = "MBP1_SACCE" )
 
 # ... and why don't we have axis-numbers on all four sides? Go, make that right
 # too ...
 len <- 200
 image(x = 1:len, y = 1:len,  dotMat[1:len, 1:len], ylim=c(len,1),
-      xlab = "MBP1_YFO", ylab = "MBP1_SACCE", axes = FALSE)
+      xlab = "MBP1_MYSPE", ylab = "MBP1_SACCE", axes = FALSE)
 box()
 axis(1, at = c(1, seq(10, len, by=10)))
 axis(2, at = c(1, seq(10, len, by=10)))
@@ -129,8 +129,8 @@ axis(4, at = c(1, seq(10, len, by=10)))
 # utilities file and called it dotPlot2(). Why not dotPlot() ... that's because
 # there already is a dotplot function in the seqinr package:
 
-dotPlot(MBP1_SACCE, MBP1_YFO)                                 # seqinr
-dotPlot2(MBP1_SACCE, MBP1_YFO, xlab = "SACCE", ylab = "YFO")  # Our's
+dotPlot(MBP1_SACCE, MBP1_MYSPE)                                 # seqinr
+dotPlot2(MBP1_SACCE, MBP1_MYSPE, xlab = "SACCE", ylab = "MYSPE")  # Our's
 
 # Which one do you prefer? You can probably see the block patterns that arise
 # from segments of repetitive, low complexity sequence. But you probably have to
@@ -153,7 +153,7 @@ myFilter[5, ] <- c( 0, 0, 0, 0, 1)
 
 # I have added the option to read such filters (or others that you could define on your own) as a parameter of the function.
 
-dotPlot2(MBP1_SACCE, MBP1_YFO, xlab = "SACCE", ylab = "YFO", f = myFilter)
+dotPlot2(MBP1_SACCE, MBP1_MYSPE, xlab = "SACCE", ylab = "MYSPE", f = myFilter)
 
 # I think the result shows quite nicely how the two sequences are globally
 # related and where the regions of sequence similarity are. Play with this a bit

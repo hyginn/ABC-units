@@ -39,7 +39,7 @@ help(package = seqinr) # shows the available functions
 ?computePI
 
 # This takes as input a vector of upper-case AA codes
-# Let's retrieve the YFO sequence from our datamodel
+# Let's retrieve the MYSPE sequence from our datamodel
 # (assuming it is the last one that was added):
 
 db$protein[nrow(db$protein), "sequence"]
