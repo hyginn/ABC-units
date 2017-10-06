@@ -9,9 +9,21 @@
 # ====== PACKAGES ==============================================================
 
 
-if (! require("jsonlite", quietly = TRUE)) {
+if (! require(jsonlite, quietly = TRUE)) {
   install.packages("jsonlite")
   library(jsonlite)
+}
+
+
+if (!require(httr, quietly = TRUE)) {
+  install.packages("httr")
+  library(httr)
+}
+
+
+if (!require(xml2, quietly = TRUE)) {
+  install.packages("xml2")
+  library(xml2)
 }
 
 
@@ -203,5 +215,119 @@ dbAddAnnotation <- function(db, jsonDF) {
   return(db)
 }
 
+
+dbFetchUniProtSeq <- function(ID) {
+  # Fetch a protein sequence from UniProt.
+  # Parameters:
+  #     ID   char   a UniProt ID (accession number)
+  # Value:
+  #     char        the sequence
+  # If the operation is not successful, a 0-length string is returned
+
+  URL <- sprintf("http://www.uniprot.org/uniprot/%s.fasta", ID)
+
+  response <- GET(URL)
+
+  mySeq <- character()
+  if (status_code(response) == 200) {
+    x <- as.character(response)
+    x <- strsplit(x, "\n")
+    mySeq <- dbSanitizeSequence(x)
+  }
+
+  return(mySeq)
+}
+
+
+dbFetchPrositeFeatures <- function(ID) {
+  # Fetch feature annotations from ScanProsite.
+  # Parameters:
+  #     ID   char   a UniProt ID (accession number)
+  # Value:
+  #     data frame     uID    char  UniProt ID
+  #                    start  num   start of motif
+  #                    end    num   end of motif
+  #                    psID   char  PROSITE motif ID
+  #                    psName char  PROSITE motif name
+  # If the operation is not successful, a 0-length data frame is returned.
+
+  URL <- "http://prosite.expasy.org/cgi-bin/prosite/PSScan.cgi"
+
+  response <- POST(URL,
+                   body = list(meta = "opt1",
+                               meta1_protein = "opt1",
+                               seq = ID,
+                               skip = "on",
+                               output = "tabular"))
+
+  myFeatures <- data.frame()
+  if (status_code(response) == 200) {
+
+    lines <- unlist(strsplit(content(response, "text"), "\\n"))
+
+    patt <- sprintf("\\|%s\\|", UniProtID)
+    lines <- lines[grep(patt, lines)]
+
+    for (line in lines) {
+      tokens <- unlist(strsplit(line, "\\t|\\|"))
+      myFeatures <- rbind(myFeatures,
+                          data.frame(uID   =  tokens[2],
+                                     start =  as.numeric(tokens[4]),
+                                     end   =  as.numeric(tokens[5]),
+                                     psID  =  tokens[6],
+                                     psName = tokens[7],
+                                     stringsAsFactors = FALSE))
+    }
+  }
+  return(myFeatures)
+}
+
+
+node2text <- function(doc, tag) {
+  # an extractor function for the contents of elements
+  # between given tags in an XML response.
+  # Contents of all matching elements is returned in
+  # a vector of strings.
+  path <- paste0("//", tag)
+  nodes <- xml_find_all(doc, path)
+  return(xml_text(nodes))
+}
+
+
+dbFetchNCBItaxData <- function(ID) {
+  # Fetch feature taxID and Organism from the NCBI.
+  # Parameters:
+  #     ID   char   a RefSeq ID (accession number)
+  # Value:
+  #     data frame     taxID      num    NCBI taxID
+  #                    organism   char   organism for this taxID
+  # If the operation is not successful, a 0-length data frame is returned.
+
+  eUtilsBase <- "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/"
+  URL <- paste(eUtilsBase,
+               "esearch.fcgi?",
+               "db=protein",
+               "&term=", ID,
+               sep="")
+  myXML <- read_xml(URL)
+  GID <- node2text(myXML, "Id")
+
+  URL <- paste0(eUtilsBase,
+                "esummary.fcgi?",
+                "db=protein",
+                "&id=",
+                GID,
+                "&version=2.0")
+  myXML <- read_xml(URL)
+
+  x <- as.integer(node2text(myXML, "TaxId"))
+  y <- node2text(myXML, "Organism")
+
+  tID <- data.frame()
+  if (length(x) > 0 && length(y) > 0) {
+    tID <- data.frame(taxID = x, organism = y)
+  }
+  return(tID)
+}
 
 # [END]
