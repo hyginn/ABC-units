@@ -50,19 +50,21 @@ objectInfo <- function(x) {
 
 
 biCode <- function(s) {
-  # make a 5 character code from a binomial name by concatening
-  # the first three letter of the first word and the first
+  # make a 5 character "biCode" from a binomial name by concatening
+  # the uppercased first three letter of the first word and the first
   # two letters of the second word.
-  #
-  # There are many ways to do this, here we assemble the two parts
-  # in a loop, this way the function is vectorized and can
-  # work on a large vector of names.
-  b <- character()
-  for (i in 1:length(s)) {
+  # s: character vector of binomial species names
+  # value: character vector of biCodes, same length as s
+
+  b <- character(length(s))
+  s <- gsub("[^a-zA-Z ]", "", s) # remove all non-alphabetic characters
+                                 # except space
+  s <- toupper(s)
+
+  for (i in seq_along(s)) {
     b[i] <- sprintf("%s%s",
-                    toupper(unlist(substr(s[i], 1, 3))),
-                    toupper(unlist(substr(strsplit(s[i], "\\s+")[[1]][2],
-                                          1, 2))))
+                    unlist(substr(s[i], 1, 3)),
+                    unlist(substr(strsplit(s[i], "\\s+")[[1]][2], 1, 2)))
   }
   return(b)
 }
