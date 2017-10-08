@@ -330,4 +330,42 @@ dbFetchNCBItaxData <- function(ID) {
   return(tID)
 }
 
+
+
+UniProtIDmap <- function (s, mapFrom = "P_REFSEQ_AC", mapTo = "ACC") {
+  # Use UniProt ID mapping service to map one or more IDs
+  # Parameters:
+  #    s        char  A string of white-space separated IDs
+  #    mapFrom  char  the database in which the IDs in s are valid.
+  #                     Default is RefSeq protein
+  #    mapTo    char  the database in which the target IDs are valid.
+  #                     Default is UniProtKB
+  # Value
+  #    A data frame of mapped IDs, with column names From and To, or an
+  #    empty data frame if the mapping was unsuccessful. No rows are returned
+  #    for IDs that are not mapped.
+
+  URL <- "http://www.uniprot.org/mapping/"
+  response <- POST(URL,
+                   body = list(from = mapFrom,
+                               to = mapTo,
+                               format = "tab",
+                               query = s))
+
+  if (status_code(response) == 200) { # 200: oK
+    myMap <- read.delim(file = textConnection(content(response)),
+                        sep = "\t",
+                        stringsAsFactors = FALSE)
+  } else {
+    myMap <- data.frame()
+    warning(paste("No uniProt ID mapping returned:",
+                  "server sent status",
+                  status_code(response)))
+  }
+
+  return(myMap)
+}
+
+
+
 # [END]
