@@ -21,9 +21,9 @@
 # going on. That's not how it works ...
 #
 # ==============================================================================
- 
+
 #TOC> ==========================================================================
-#TOC> 
+#TOC>
 #TOC>   Section  Title                                                   Line
 #TOC> -----------------------------------------------------------------------
 #TOC>   1        Introduction                                              50
@@ -40,9 +40,9 @@
 #TOC>   4.2.1    An example from tossing dice                             446
 #TOC>   4.2.2    An example from lognormal distributions                  568
 #TOC>   4.3      Kolmogorov-Smirnov test for continuous distributions     609
-#TOC> 
+#TOC>
 #TOC> ==========================================================================
- 
+
 
 
 
@@ -58,26 +58,26 @@
 
 # Let's get a few facts about probability distributions out of the way:
 
-# The "support" of a probability distribution is the range of values that have a
-# non-zero probability. The "domain" of a probability distribution is the range
-# of probabilities that the distribution can take over its support. Think of
-# this as the ranges on the x- and y-axis respectively. Thus the distribution
+# The "support" of a probability distribution is the range of outcomes that have
+# a non-zero probability. The "domain" of a probability distribution is the
+# range of probabilities that the distribution can take over its support. Think
+# of this as the ranges on the x- and y-axis respectively. Thus the distribution
 # can be written as p = f(x).
 
 # The integral over a probability distribution is always 1. This means: the
 # distribution reflects the situation that an event does occur, any event, but
-# there is not no event.
+# there is not "no event".
 
-# R's inbuilt probability distributions always come in four flavours:
-# d...  for "density": this is the probability density function (p. d. f),
+# R's inbuilt probability functions always come in four flavours:
+# d...  for "density": this is the probability density function (p.d.f.),
 #         the value of f(x) at x.
 # p...  for "probability": this is the cumulative distribution function
-#         (c. d. f.). It is 0 at the left edge of the support, and 1 at
+#         (c.d.f.). It is 0 at the left edge of the support, and 1 at
 #         the right edge.
-# q... for "quantile": The quantile function return the x value at which p...
+# q... for "quantile": The quantile function returns the x value at which p...
 #         takes a requested value.
 # r... for "random": produces random numbers that are distributed according
-#         to the p. d. f.
+#         to the p.d.f.
 
 # To illustrate with the "Normal Distribution" (Gaussian distribution):
 
@@ -443,7 +443,7 @@ chisq.test(countsL1, countsG1.9, simulate.p.value = TRUE, B = 10000)
 # be applied to discrete distributions. But we need to talk a bit about
 # converting counts to p.m.f.'s.
 
-# ===  4.2.1  An example from tossing dice                        
+# ===  4.2.1  An example from tossing dice
 
 #  The p.m.f of an honest die is (1:1/6, 2:1/6, 3:1/6, 4:1/6, 5:1/6, 6:1/6). But
 #  there is an issue when we convert sampled counts to frequencies, and estimate
@@ -565,7 +565,7 @@ abline(v = KLdiv(rep(1/6, 6), pmfPC(counts, 1:6)), col="firebrick")
 # somewhat but not drastically atypical.
 
 
-# ===  4.2.2  An example from lognormal distributions             
+# ===  4.2.2  An example from lognormal distributions
 
 # We had compared a set of lognormal and gamma distributions above, now we
 # can use KL-divergence to quantify their similarity:
