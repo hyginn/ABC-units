@@ -3,14 +3,14 @@
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the FND-Genetic_code unit.
 #
-# Version:  1.0
+# Version:  1.0.1
 #
-# Date:     2017  09  28
+# Date:     2017  10  12
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.0.1  Comment on "incomplete final line" warning in FASTA
 #           1.0    First live version
-#
 #
 # TODO:
 #
@@ -22,20 +22,22 @@
 # going on. That's not how it works ...
 #
 # ==============================================================================
-
+ 
 #TOC> ==========================================================================
-#TOC>
+#TOC> 
 #TOC>   Section  Title                                      Line
 #TOC> ----------------------------------------------------------
-#TOC>   1        Storing the genetic code                     41
-#TOC>   1.1      Genetic code in Biostrings                   59
-#TOC>   2        Working with the genetic code                86
-#TOC>   2.1      Translate a sequence.                       115
-#TOC>   3        An alternative representation: 3D array     176
-#TOC>   3.1      Print a Genetic code table                  209
-#TOC>   4        Tasks                                       235
-#TOC>
+#TOC>   1        Storing the genetic code                     43
+#TOC>   1.1      Genetic code in Biostrings                   61
+#TOC>   2        Working with the genetic code                88
+#TOC>   2.1      Translate a sequence.                       117
+#TOC>   3        An alternative representation: 3D array     199
+#TOC>   3.1      Print a Genetic code table                  232
+#TOC>   4        Tasks                                       258
+#TOC> 
 #TOC> ==========================================================================
+ 
+
 
 
 # =    1  Storing the genetic code  ============================================
@@ -121,6 +123,19 @@ c(names(GENETIC_CODE)[GENETIC_CODE == "M"],
 # read it
 mbp1 <- readLines("./data/S288C_YDL056W_MBP1_coding.fsa")
 
+# You will notice that this generates a Warning message:
+#      Warning message:
+#        In readLines("./data/S288C_YDL056W_MBP1_coding.fsa") :
+#        incomplete final line found on './data/S288C_YDL056W_MBP1_coding.fsa'
+
+# The reason for this is that the last character of the file is the letter "A"
+# and not a "\n" line break. This file is exactly how it was sent from the
+# server; I think good, defensive programming practice would have been to
+# include some kind of an end-marker in the file, like a final "\n". This helps
+# us recognize an incomplete transmission. Let's parse the actual sequence from
+# the file, and then check for completeness.
+
+
 head(mbp1)
 
 # drop the first line (header)
@@ -130,16 +145,18 @@ head(mbp1)
 # concatenate it all to a single string
 mbp1 <- paste(mbp1, sep = "", collapse = "")
 
-# how long ist it?
+# how long is it?
 nchar(mbp1)
 
 # how many codons?
 nchar(mbp1)/3
 
-# That looks correct for the 833 aa sequence plus 1 stop codon.
+# That looks correct for the 833 aa sequence plus 1 stop codon. This gives us a
+# first verification that the file we read is complete, the nucleotides of a
+# complete ORF should be divisible by 3.
 
 # Extract the codons. There are many ways to split a long string into chunks
-# of three characters. Here we use Biostrings  codons()  function. codons()
+# of three characters. Here we use the Biostrings  codons()  function. codons()
 # requires an object of type DNAstring - a special kind of string with
 # attributes that are useful for Biostrings. Thus we convert the sequence first
 # with DNAstring(), then split it up, then convert it into a plain
@@ -155,11 +172,17 @@ for (i in seq_along(mbp1Codons)) {
   mbp1AA[i] <- GENETIC_CODE[mbp1Codons[i]]
 }
 
+head(mbp1Codons)
 head(mbp1AA)
+
+tail(mbp1Codons)
 tail(mbp1AA) # Note the stop!
 
-# We can work with this vector, for example if we want to tabulate the amino
-# acid frequencies:
+# The TAA "ochre" stop codon is our second verification that the nucleotide
+# sequence is complete: a stop codon can't appear internally in an ORF.
+
+# We can work with the mbp1AA vector, for example to tabulate the
+# amino acid frequencies:
 table(mbp1AA)
 sort(table(mbp1AA), decreasing = TRUE)
 
