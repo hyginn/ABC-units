@@ -33,7 +33,7 @@ if (!require(xml2, quietly = TRUE)) {
 dbSanitizeSequence <- function(s, unambiguous = TRUE) {
   # Remove FASTA header lines, if any,
   # flatten any structure that s has,
-  # remove all non-letters,
+  # remove all non-letters except "-" (gap) and "*" (stop),
   # convert to uppercase.
   #
   # Parameters:
@@ -51,7 +51,7 @@ dbSanitizeSequence <- function(s, unambiguous = TRUE) {
   s <- unlist(strsplit(s, "\n"))  # split up at linebreaks, if any
   s <- s[! grepl("^>", s)]        # drop all lines beginning">" (FASTA header)
   s <- paste(s, collapse="")      # combine into single string
-  s <- toupper(gsub("[^a-zA-Z]", "", s))
+  s <- toupper(gsub("[^a-zA-Z*-]", "", s))
   if (unambiguous) {
     amb <- "([bjouxzBJOUXZ])"  # parentheses capture the match
     ambChar <- unlist(regmatches(s, regexec(amb, s)))[1]
