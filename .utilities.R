@@ -50,22 +50,34 @@ objectInfo <- function(x) {
 
 
 biCode <- function(s) {
-  # make a 5 character "biCode" from a binomial name by concatening
+  # Make a 5 character "biCode" from a binomial name by concatening
   # the uppercased first three letter of the first word and the first
-  # two letters of the second word.
-  # s: character vector of binomial species names
-  # value: character vector of biCodes, same length as s
+  # two letters of the second word. If there is only one word, we take the
+  # first five characters from that. Outputs are padded with "." if necessary.
+  # NAs in input are preserved.
+  # Parameters:
+  #    s   chr  vector of binomial species names
+  # Value: chr  vector of biCodes, same length as s, NAs are preserved
 
   b <- character(length(s))
-  s <- gsub("[^a-zA-Z ]", "", s) # remove all non-alphabetic characters
-                                 # except space
+  s <- gsub("[^a-zA-Z ]", "", as.character(s)) # remove all non-alphabetic
+                                               # characters except space
   s <- toupper(s)
 
   for (i in seq_along(s)) {
-    b[i] <- sprintf("%s%s",
-                    unlist(substr(s[i], 1, 3)),
-                    unlist(substr(strsplit(s[i], "\\s+")[[1]][2], 1, 2)))
+    x <- unlist(strsplit(s[i], "\\s+"))
+    if (length(x) == 0) { # empty string
+      x <- c("", "")
+    } else if (length(x) == 1) { # only one string
+      x <- c(substr(x, 1, 3), substr(x, 4, 5)) # 3 + 2 with whatever is there
+    }
+    x <- paste0(x[1:2], "...")  # pad strings
+
+    b[i] <- paste0(substr(x[1], 1, 3), substr(x[2], 1, 2))
   }
+
+  b[is.na(s)] <- NA  # recover NAs from input
+
   return(b)
 }
 
