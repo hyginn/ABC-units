@@ -3,34 +3,61 @@
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the RPR-SX-PDB unit.
 #
-# Version:  0.1
+# Version:  1.0
 #
-# Date:     2017  08  28
+# Date:     2017  10  19
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.0    First live version, completely refactores 2016 code
+#                     with remarkable speed gains. Added section on x, y, z
+#                     (density) plots.
 #           0.1    First code copied from 2016 material.
-
 #
 # TODO:
 #
 #
 # == DO NOT SIMPLY  source()  THIS FILE! =======================================
-
+#
 # If there are portions you don't understand, use R's help system, Google for an
 # answer, or ask your instructor. Don't continue if you don't understand what's
 # going on. That's not how it works ...
-
+#
 # ==============================================================================
+ 
+#TOC> ==========================================================================
+#TOC> 
+#TOC>   Section  Title                                Line
+#TOC> ----------------------------------------------------
+#TOC>   1        Introduction to the bio3D package      59
+#TOC>   2        A Ramachandran plot                   148
+#TOC>   3        Density plots                         224
+#TOC>   3.1      Density-based colours                 238
+#TOC>   3.2      Plotting with smoothScatter()         257
+#TOC>   3.3      Plotting hexbins                      272
+#TOC>   3.4      Plotting density contours             291
+#TOC>   3.4.1    ... as overlay on a colored grid      321
+#TOC>   3.4.2    ... as filled countour                338
+#TOC>   3.4.3    ... as a perspective plot             369
+#TOC>   4        cis-peptide bonds                     387
+#TOC>   5        H-bond lengths                        402
+#TOC> 
+#TOC> ==========================================================================
+ 
 
-# = 1 ___Section___
+
 
 # In this example of protein structure interpretation, we ...
 #   - load the library "bio3D" which supports work with
 #     protein structure files,
 #   - explore some elementary functions of the library
+#   - explore plotting of density values with scatterplots
 #   - assemble a script to see whether H-bond lengths systematically differ
 #     between alpha-helical and beta-sheet structures.
+
+
+# =    1  Introduction to the bio3D package  ===================================
+
 
 if(!require(bio3d)) {
   install.packages("bio3d", dependencies=TRUE)
@@ -46,21 +73,25 @@ vignette("bio3d_vignettes")
 # bio3d can load molecules directly from the PDB servers, you don't _have_ to
 # store them locally, but you could.
 #
-# But before you _load_ a file, have a look what such a file contains. I have packaged the 1BM8 file into the project:
-file.show("./assets/1BM8.pdb")
+# But before you _load_ a file, have a look what such a file contains. I have
+# packaged the 1BM8 file into the project:
+file.show("./data/1BM8.pdb")
 
 # Have a look at the header section, the atom records, the coordinate records
-# etc. Answer the following questions:
+# etc.
 #
-# What is the resolution of the structure?
-# Is the first residue in the SEQRES section also the first residue
-#     with an ATOM record?
-# How many water molecules does the structure contain?
-# Can you explain REMARK 525 regarding HOH 459 and HOH 473?
-# Are all atoms of the N-terminal residue present?
-# Are all atoms of the C-terminal residue present?
+# Task: Answer the following questions:
+#
+#          What is the resolution of the structure?
+#          Is the first residue in the SEQRES section also the first residue
+#              with an ATOM record?
+#          How many water molecules does the structure contain?
+#          Can you explain REMARK 525 regarding HOH 459 and HOH 473?
+#          Are all atoms of the N-terminal residue present?
+#          Are all atoms of the C-terminal residue present?
 
-apses <- read.pdb("1bm8")  # load a molecule directly from PDB
+apses <- read.pdb("1bm8")  # load a molecule directly from the PDB via the
+                           # Internet. (This is not your local version.)
 
 # check what we have:
 apses
@@ -70,7 +101,12 @@ str(apses)
 
 # bio3d's pdb objects are simple lists. Great! You know lists!
 
-# You see that there is a table called atom in which the elements are vectors of the same length - namely the number of atoms in the structure file. And there is a matrix of (x, y, z) triplets called xyz. And there is a vector that holds sequence, and two tables called helix and sheet that look a lot like our feature annotation tables - in fact many of the principles to store this strutcure data are similar to how we constructed our protein database. Let's pull out a few values to confirm how selection and subsetting works here:
+# You see that there is a list element called $atom which is a data frame in
+# which the columns arevectors of the same length - namely the number of atoms
+# in the structure file. And there is a matrix of (x, y, z) triplets called xyz.
+# And there is a vector that holds sequence, and two tables called helix and
+# sheet. Let's pull out a few values to confirm how selection and subsetting
+# works here:
 
 # selection by atom ...
 i <- 5
@@ -79,11 +115,11 @@ apses$atom[i, c("x", "y", "z")]   # here we are selecting with column names!
 apses$xyz[c(i*3-2, i*3-1, i*3)]   # here we are selcting with row numbers
 
 # all atoms of a residue ...
-i <- "48"	#string!
+i <- 48
 apses$atom[apses$atom[,"resno"] == i, ]
 
 # sequence of the first ten residues
-apses$seqres[1:10]  # the As here identify the chain
+apses$seqres[1:10]  # the "A"s here identify chain "A"
 
 # Can we convert this to one letter code?
 aa321(apses$seqres[1:10])
@@ -109,14 +145,19 @@ plot.bio3d(apses$atom$b[apses$calpha], sse=apses, typ="l", ylab="B-factor")
 
 # Good for now. Let's do some real work.
 
-# ==============================================================================
-#        PART TWO: A Ramachandran plot
-# ==============================================================================
+# =    2  A Ramachandran plot  =================================================
 
-# Calculate a Ramachandran plot for the structure
+# Calculate a Ramachandran plot for the structure. The torsion.pdb() function
+# calculates all dihedral angles for backbone and sidechain bonds, NA where
+# the bond does not exist in an amino acid.
 tor <- torsion.pdb(apses)
-plot(tor$phi, tor$psi)
-
+plot(tor$phi, tor$psi,
+     xlim = c(-180, 180), ylim = c(-180, 180),
+     main = "Ramachandran plot for 1BM8",
+     xlab = expression(phi),
+     ylab = expression(psi))
+abline(h = 0, lwd = 0.5, col = "#00000044")
+abline(v = 0, lwd = 0.5, col = "#00000044")
 # As you can see, there are a number of points in the upper-right
 # quadrant of the plot. This combination of phi-psi angles defines
 # the conformation of a left-handed alpha helix and is generally
@@ -124,17 +165,22 @@ plot(tor$phi, tor$psi)
 # color the points for glycine residues differently. First, we
 # get a vector of glycine residue indices in the structure:
 
-sSeq <- pdbseq(apses)
+mySeq <- pdbseq(apses)
 
 # Explore the result object and extract the indices of GLY resiues.
-sSeq == "G"
-which(sSeq == "G")
-as.numeric(which(sSeq == "G"))
-iGly <- as.numeric(which(sSeq == "G"))
+              mySeq == "G"
+        which(mySeq == "G")
+iGly <- which(mySeq == "G")
 
 # Now plot all non-gly residues.
 # Remember: negative indices exclude items from a vector
-plot(tor$phi[-iGly], tor$psi[-iGly], xlim=c(-180,180), ylim=c(-180,180))
+plot(tor$phi[-iGly], tor$psi[-iGly],
+     xlim=c(-180,180), ylim=c(-180,180),
+     main = "Ramachandran plot for 1BM8",
+     xlab = expression(phi),
+     ylab = expression(psi))
+abline(h = 0, lwd = 0.5, col = "#00000044")
+abline(v = 0, lwd = 0.5, col = "#00000044")
 
 # Now plot GLY only, but with green dots:
 points(tor$phi[iGly], tor$psi[iGly], pch=21, cex=0.9, bg="#00CC00")
@@ -143,15 +189,22 @@ points(tor$phi[iGly], tor$psi[iGly], pch=21, cex=0.9, bg="#00CC00")
 # not glycine. But what residues are these? Is there an
 # error in our script? Let's get their coordinate records:
 
+# subset CA records
+CA <- apses$atom[apses$calpha, c("eleno", "elety", "resid", "chain", "resno")]
+
+# get index of outliers
 iOutliers <- which(tor$phi > 30 & tor$phi < 90 &
                      tor$psi > 0 & tor$psi < 90)
-CA <- apses$atom[apses$calpha, c("eleno", "elety", "resid", "chain", "resno")]
-dat <- cbind(CA[iOutliers, ], phi = tor$phi[iOutliers], psi = tor$psi[iOutliers])
-dat
 
-# remove the glycine from our table ...
-dat <- dat[dat$resid != "GLY", ]
-dat
+# cbind records together
+(dat <- cbind(CA[iOutliers, ],
+              phi = tor$phi[iOutliers],
+              psi = tor$psi[iOutliers]))
+
+
+# remove the glycine ...
+(dat <- dat[dat$resid != "GLY", ])
+
 
 # let's add the residue numbers to the plot with the text function:
 for (i in 1:nrow(dat)) {
@@ -164,333 +217,382 @@ for (i in 1:nrow(dat)) {
        cex = 0.7)
 }
 
-# You can check the residues in Chimera. Is there anything unusual?
+# You can check the residues in Chimera. Is there anything unusual about these
+# residues?
+
+
+# =    3  Density plots  =======================================================
+
+# Such x, y scatter-plots of data that is sampled from a distribution can tell
+# us a lot about what shapes the distribution. The distribution is governed by
+# the free energy of the phi-psi landscape in folded proteins, since folded
+# proteins generally minimize the free energy of their conformations. We observe
+# empirically, from comparing frequency statistics and mutation experiments,
+# that this generall follows a Boltzmann distribution, where the free energy
+# changes we observe in experments that change one conformation into another are
+# proportional to the log-ratio of the number of times we observe each
+# observation in the protein structure database (after correcting for
+# observation bias). The proper way to visualize such 2D landscapes is with
+# contour plots.
+
+# ==   3.1  Density-based colours  =============================================
+
+# A first approximation to  scatterplots that visualize the density of the
+# underlying distribution is coloring via the densCols() function.
+?densCols
+iNA <- c(which(is.na(tor$phi)), which(is.na(tor$psi)))
+phi <- tor$phi[-iNA]
+psi <- tor$psi[-iNA]
+plot (phi, psi,
+      xlim = c(-180, 180), ylim = c(-180, 180),
+      col=densCols(phi,psi),
+      pch=20, cex=2,
+      main = "Ramachandran plot for 1BM8",
+      xlab = expression(phi),
+      ylab = expression(psi))
+abline(h = 0, lwd = 0.5, col = "#00000044")
+abline(v = 0, lwd = 0.5, col = "#00000044")
+
+
+# ==   3.2  Plotting with smoothScatter()  =====================================
+
+# A better way, that spreads out the underlying density is smoothScatter()
+smoothScatter(phi,psi)
+smoothScatter(phi, psi,
+              xlim = c(-180, 180), ylim = c(-180, 180),
+              col = "#0033BB33",
+              pch = 3, cex = 0.6,
+              main = "Ramachandran plot for 1BM8",
+              xlab = expression(phi),
+              ylab = expression(psi))
+abline(h = 0, lwd = 0.5, col = "#00000044")
+abline(v = 0, lwd = 0.5, col = "#00000044")
+
+
+# ==   3.3  Plotting hexbins  ==================================================
+
+# If we wish to approximate values in a histogram-like fashion, we can use
+# hexbin()
+if (!require(hexbin)) {
+  install.packages("hexbin")
+  library(hexbin)
+}
+
+myColorRamp <- colorRampPalette(c("#EEEEEE",
+                                  "#3399CC",
+                                  "#2266DD"))
+plot(hexbin(phi, psi, xbins = 10),
+     colramp = myColorRamp,
+     main = "phi-psi Density Bins for 1BM8",
+     xlab = expression(phi),
+     ylab = expression(psi))
+
+
+# ==   3.4  Plotting density contours  =========================================
+
+
+# The best way to handle such data is provided by the function contour():
+?contour
+
+# Contour plots are not produced along the haphazardly sampled values of a data
+# set, but on a regular grid. This means, we need to convert observed values
+# into estimated densities. Density estimation is an important topic for
+# exploratory data analysis, base R has the density() function for 1D
+# distributions. But for 2D data like or phi-psi plots, we need a function from
+# the MASS package: kde2d()
+
+if (!require(MASS)) {
+  install.packages("MASS")
+  library(MASS)
+}
+
+?kde2d
+dPhiPsi <-kde2d(phi, psi,
+               n = 60,
+               lims = c(-180, 180, -180, 180))
+
+str(dPhiPsi)
+# This is a list, with gridpoints in x and y, and the estimated densities in z.
+
+# Generic plot with default parameters
+contour(dPhiPsi)
+
+
+# ===  3.4.1  ... as overlay on a colored grid 
+
+image(dPhiPsi,
+      col = myColorRamp(100),
+      main = "Ramachandran plot for 1BM8",
+      xlab = expression(phi),
+      ylab = expression(psi))
+contour(dPhiPsi, col = "royalblue",
+        add = TRUE,
+        method = "edge",
+        nlevels = 10,
+        lty = 2)
+points(phi, psi, col = "#00338866", pch = 3, cex = 0.7)
+abline(h = 0, lwd = 0.5, col = "#00000044")
+abline(v = 0, lwd = 0.5, col = "#00000044")
+
+
+# ===  3.4.2  ... as filled countour           
+
+filled.contour(dPhiPsi,
+               xlim = c(-180, 180), ylim = c(-180, 180),
+               nlevels = 10,
+               color.palette = myColorRamp,
+               main = "Ramachandran plot for 1BM8",
+               xlab = expression(phi),
+               ylab = expression(psi))
+
+# Note: we can pass additional plotting and overlay commands to the counter plot
+# in a block of expressions passed via the plot.axes parameter:
+
+filled.contour(dPhiPsi,
+               xlim = c(-180, 180), ylim = c(-180, 180),
+               nlevels = 10,
+               color.palette = myColorRamp,
+               main = "Ramachandran plot for 1BM8",
+               xlab = expression(phi),
+               ylab = expression(psi),
+               plot.axes = {
+                  contour(dPhiPsi, col = "#00000044",
+                          add = TRUE,
+                          method = "edge",
+                          nlevels = 10,
+                          lty = 2)
+                    points(phi, psi, col = "#00338866", pch = 3, cex = 0.7)
+                    abline(h = 0, lwd = 0.5, col = "#00000044")
+                    abline(v = 0, lwd = 0.5, col = "#00000044")
+                  })
+
+# ===  3.4.3  ... as a perspective plot        
+
+persp(dPhiPsi,
+      xlab = "phi",
+      ylab = "psi",
+      zlab = "Density")
+
+
+persp(dPhiPsi,
+      theta = 40,
+      phi = 10,
+      col = "#99AACC",
+      xlab = "phi",
+      ylab = "psi",
+      zlab = "Density")
+
+
+
+# =    4  cis-peptide bonds  ===================================================
 
 # Are there any cis-peptide bonds in the structure?
 tor$omega
 #... gives us a quick answer. But wait - what values do we
-# expect? And why are the values so different?
+# expect? And why are the values so different, ranging from -180° to 180°?
 # Consider this plot: what am I doing here and why?
-x <- tor$omega[tor$omega > 0]
-x <- c(x, 360 + tor$omega[tor$omega < 0])
-hist(x, xlim=c(90,270))
+om <- c(360 + tor$omega[tor$omega < 0],
+        tor$omega[tor$omega >= 0])
+hist(om, xlim=c(0,360))
 abline(v=180, col="red")
 
+# Note: a cis-peptide bond will have an omega torsion angle of around 0°
 
 
-# ==============================================================================
-#        PART THREE: H-bond lengths
-# ==============================================================================
+# =    5  H-bond lengths  ======================================================
 
 # Let's do something a little less trivial and compare
 # backbone H-bond lengths between helices and strands.
-#
-# Secondary structure is defined in the list components ...$helix
-# and ...$strand.
+
+# Secondary structure is defined in the bio3d object's ...$helix and ...$strand
+# list elements.
+str(apses)
 
 # We need to
-# - collect all residue indices for alpha helices resp.
+# - collect all N atoms in alpha helices resp.
+#      beta strands;
+# - collect all O atoms in alpha helices resp.
 #      beta strands;
 # - fetch the atom coordinates;
-# - calculate all N, O distances using dist.xyz();
+# - calculate all N, O distances;
 # - filter them for distances that indicate H-bonds; and,
 # - plot the results.
 
-# Secondary structure can either be obtained from
-# definitions contained in many PDB files, or by running
-# the DSSP algorithm IF(!) you have it installed on your
-# machine. The 1BM8 file contains definitions
+# Secondary structure can either be obtained from definitions contained in most
+# PDB files, or by running the DSSP algorithm IF(!) you have it installed on
+# your machine. See the dssp() function of bio3d for instructions how to obtain
+# and install DSSP and STRIDE. This is highly recommended for "real" work with
+# structure coordinate files. The 1BM8 file contains secondary structure
+# definitions:
 
 apses$helix
 apses$sheet
 
 
-# (1): collect the residue numbers
-# between the segment boundaries.
+# A function to collect atom indices for particular type of secondary structure
 
-H <- numeric() # This will contain the helix residue numbers
-for (i in 1:length(apses$helix)) {
-  H <- c(H, apses$helix$start[i]:apses$helix$end[i])
-}
+ssSelect <- function(PDB, myChain = "A", ssType, myElety) {
+  # Function to retrieve specified atom types from specified secondary
+  # structure types in a PDB object.
+  # Parameters:
+  #    PDB              A bio3D PDB object
+  #    myChain     chr  The chain to use. Default: chain "A".
+  #    ssType      chr  A vector of keywords "helix" and/or "sheet"
+  #    myElety     chr  A vector of $eletype atom types to return
+  # Value:         num  Indices of the matching atom rows in PDB$atom
 
-# Doing the same for the sheet residue numbers requires
-# very similar code. Rather than retype the code, it is
-# better to write a function that can do both.
-
-getSecondary <- function(sec) {
-  iRes <- c()
-  for (i in 1:length(sec$start)) {
-    iRes <- c(iRes, sec$start[i]:sec$end[i])
+  # Build a vector of $resno numbers
+  starts <- numeric()
+  ends   <- numeric()
+  if ("helix" %in% ssType) {
+    sel <- PDB$helix$chain %in% myChain
+    starts <- c(starts, PDB$helix$start[sel])
+    ends   <- c(ends,   PDB$helix$end[sel])
   }
-  return(iRes)
-}
-
-
-
-
-# Compare ...
-H
-getSecondary(apses$helix)
-
-# ... and use for strands
-
-E <- getSecondary(apses$sheet)
-
-
-# Now here's a problem: these numbers refer to the
-# residue numbers as defined in the atom records. They
-# can't be used directly to address e.g. the first, second
-# third residue etc. since the first residue has the
-# residue number 4...
-apses$atom[1,]
-
-# Therefore we need to
-# 1: convert the numbers to strings;
-# 2: subset the atom table for rows contain these strings.
-#
-# Essentially, we don't treat the "residue numbers" as numbers,
-# but as labels. That's fine, as long as they are unique.
-
-# (2): fetch coordinates of N and O atoms
-# for residues in alpha- and beta- conformation.
-
-# For one residue, the procedure goes as follows:
-
-res <- H[17] # pick an arbitrary alpha-helix residue to illustrate
-res
-res <- as.character(res)
-res
-
-# all atom rows for this residue
-apses$atom[apses$atom[,"resno"] == res, ]
-
-# add condition: row with "N" atom only
-apses$atom[apses$atom[,"resno"] == res &
-             apses$atom[,"elety"] == "N", ]
-
-# add column selection: "x", "y", "z"
-apses$atom[apses$atom[,"resno"] == res &
-             apses$atom[,"elety"] == "N",
-           c("x", "y", "z")]
-
-# convert to numbers
-as.numeric (
-  apses$atom[apses$atom[,"resno"] == res &
-               apses$atom[,"elety"] == "N",
-             c("x", "y", "z")]
-)
-
-# Now we need to add this into a matrix as we iterate over the desired residues.
-# We need to execute the procedure four times for alpha and beta Ns and Os
-# respectively. Rather than duplicate the code four times over, we write a
-# function. Never duplicate code, because if you need to make changes it is too
-# easy to forget making the change consistently in all copies.
-
-
-getAtom <- function(PDB, r, AT) {
-  # Function to iterate over residue number strings and
-  # return a matrix of x, y, z triplets for each atom
-  # of a requested type.
-  mat <- c() 	#initialize as empty matrix
-  for (i in 1:length(r)) {
-    res <- as.character(r[i])
-    v <- as.numeric (
-      PDB$atom[PDB$atom[,"resno"] == res &
-                 PDB$atom[,"elety"] == AT,
-               c("x", "y", "z")]
-    )
-    mat <- rbind(mat, v)
+  if ("sheet" %in% ssType) {
+    sel <- PDB$sheet$chain %in% myChain
+    starts <- c(starts, PDB$sheet$start[sel])
+    ends   <- c(ends,   PDB$sheet$end[sel])
   }
-  return(mat)
-}
-
-# Now run the functions with the parameters we need...
-H.xyz.N <- getAtom(apses, H, "N")  # backbone N atoms in helix
-H.xyz.O <- getAtom(apses, H, "O")  # backbone O atoms in helix
-E.xyz.N <- getAtom(apses, E, "N")  # backbone N atoms in strand
-E.xyz.O <- getAtom(apses, E, "O")  # backbone O atoms in strand
-
-
-# (3): calculate distances between N and O atoms to find H-bonds.
-
-# We spent most of our effort so far just preparing our raw data for analysis.
-# Now we can actually start measuring. bio3d provides the function dist.xyz() -
-# but lets agree it builds character to code this ourselves.
-
-# Consider the distance of the first (N,O) pair.
-H.xyz.N[1,]
-H.xyz.O[1,]
-
-a <- H.xyz.N[1,]
-b <- H.xyz.O[1,]
-
-dist.xyz(a, b)
-
-# or ...
-sqrt( (a[1]-b[1])^2 + (a[2]-b[2])^2 + (a[3]-b[3])^2 )
-# ... i.e. pythagoras theorem in 3D.
-
-
-# Calculating all pairwise distances from a matrix of
-# xyz coordinates sounds like a useful function.
-
-PairDist.xyz <- function(xyzA, xyzB) {
-  PD <- c()
-  for (i in 1:nrow(xyzA)) {
-    for (j in 1:nrow(xyzB)) {
-      PD <- c(PD, dist.xyz(xyzA[i,], xyzB[j,]))
-    }
+  myResno <- numeric()
+  for (i in seq_along(starts)) {
+    myResno <- c(myResno, starts[i]:ends[i])
   }
-  return(PD)
+
+  # get id's from PDB
+
+  x <- atom.select(PDB,
+                   string = "protein",
+                   type = "ATOM",
+                   chain = myChain,
+                   resno = myResno,
+                   elety = myElety)
+
+  return(x$atom)
 }
 
-# And see what we get:
-D <- PairDist.xyz(H.xyz.N, H.xyz.O)
-hist(D)
+# Example:
+ssSelect(apses, ssType = "sheet", myElety = "N")
+ssSelect(apses, ssType = "sheet", myElety = "O")
 
-# let's zoom in on the shorter distances, in which we expect
+# That looks correct: O atoms should be stored three index position after N: the
+# sequence of atoms in a PDB file is usually N, CA, C, O ... followed by the
+# side chain coordinates.
+
+# Now to extract the coordinates and calculate distances. Our function needs to
+# take the PDB object and two vectors of atom indices as argument, and return a
+# vector of pair-distances (actually  dist.xyz() returns a matrix).
+
+pairDist <- function(PDB, a, b) {
+  # Calculate pairwise distances between atoms indicated by a and b
+  # Parameters:
+  #    PDB       A bio3D PDB object
+  #    a    int  A vector of atom indexes
+  #    b    int  A vector of atom indexes
+  # Value:  num  matrix of Euclidian distances between the atoms given in a, b.
+  #                There are as many rows as atoms in a, as many columns as
+  #                atoms in b.
+
+  dMat <- numeric()
+  if (length(a) > 0 && length(b) > 0) {
+
+  A <- PDB$atom[a, c("x", "y", "z")]
+  B <- PDB$atom[b, c("x", "y", "z")]
+  dMat <- dist.xyz(A, B)
+
+  }
+  return(dMat)
+}
+
+# Let's see if this looks correct. Let's look at all the pairwise distances
+# between N and O atoms in both types of secondary structure:
+
+iN <- ssSelect(apses, ssType = c("helix", "sheet"), myElety = "N")
+iO <- ssSelect(apses, ssType = c("helix", "sheet"), myElety = "O")
+x <- pairDist(apses, iN, iO)
+hist(x,
+     breaks = 80,
+     col = "lavenderblush",
+     main = "",
+     xlab = "N-O distances (Å)")
+
+# Since we are collecting distance from all secondary structure elements, we
+# are just seing a big peak of (meaningless) long-distance separations. We
+# need to zoom in on the shorter distances, in which we expect
 # hydrogen bonds:
-hist(D[D < 4.0], breaks=seq(2.0, 4.0, 0.1), xlim=c(2.0,4.0))
+hist(x[x < 4.2],                # restrict to N-O distance less than 4.2 Å long
+     breaks=seq(2.0, 4.2, 0.1),
+     xlim=c(2.0,4.2),
+     col = "lavenderblush",
+     main = "",
+     xlab = "N-O distances (Å)")
 
 # There is a large peak at about 2.2Å, and another
 # large peak above 3.5Å. But these are not typical hydrogen
 # bond distances! Rather these are (N,O) pairs in peptide
-# bonds, and within residues. That's not good, it will
-# cause all sorts of problems with statistics later.
-# We should exclude all distances between N of a residue
+# bonds, and within residues. That's not good, because these will contaminate
+# our statistics.
+# We need to exclude all distances between N of a residue
 # and O of a preceeding residue, and all (N,O) pairs in the
-# same residue. But for this, we need to store atom type
-# and residue information with the coordinates. Our code
-# will get a bit bulkier. It's often hard to find a good
-# balance between terse generic code, and code that
-# handles special cases.
+# same residue. We need a function to filter distances by residue numbers. And while we are filtering, we might as well throw away the non-H bond distances too.
 
-# We could do two things:
-# - add a column with residue information to the coordinates
-# - add a column with atom type information
-# ... but actually we also would need chain information, and
-# then we really have almost everything that is contained in the record
-# in the first place.
+filterHB <- function(PDB, iN, iO, dMat, cutoff = 3.9) {
+  # Filters distances between O(i-1) and N(i), and between N(i) and O(i)
+  # in a distance matrix where there is one row per N-atom and one
+  # column per O atom.
+  # Parameters:
+  #    PDB            a bio3D PDB object
+  #    iN       int   a vector of N atom indexes
+  #    iO       int   a vector of O atom indexes
+  #    dMat     num   a distance matrix created by pairDist()
+  #    cutoff   num   only return distances that are shorter than "cutoff
+  # Value:  a distance matrix in which values that do not match the
+  #            filter criteria have bee set to NA.
 
-# This suggests a different strategy: let's rewrite our function
-# getAtom() to return indices, not coordinates, and use the indices
-# to extract coordinates, and THEN we can add all sorts of
-# additional constraints.
+  if (length(iN) > 0 && length(iO) > 0) {
 
-# Here we set up the function with a default chain argument
+    resN <- PDB$atom$resno[iN]
+    resO <- PDB$atom$resno[iO]
 
-getAtomIndex <- function(PDB, V_res, elety, chain="A") {
-  # Function to access a bio3d pdb object, iterate over
-  # a vector of residues and return a vector of indices
-  # to matching atom elements. Nb. bio3d handles insert
-  # and alt fields incorrectly: their values should not
-  # be NA but " ",  i.e. a single blank. Therefore this
-  # function does not test for "alt" and "insert".
-
-  v <- c() 	#initialize as empty vector
-  for (i in 1:length(V_res)) {
-    res <- as.character(V_res[i])
-    x <- which(PDB$atom[,"resno"] == res &
-                 PDB$atom[,"chain"] == chain &
-                 PDB$atom[,"elety"] == elety)
-    v <- c(v, x)
-  }
-  return(v)
-}
-
-# test this ...
-getAtomIndex(apses, H, "N")
-getAtomIndex(apses, H, "O")
-
-# That looks correct: O atoms should be stored three
-# rows further down: the sequence of atoms in a PDB
-# file is usually N, CA, C, O ... followed by the side
-# chain coordinates.
-
-# Now to extract the coordinates and calculate distances.
-# Our function needs to take the PDB object and
-# two vectors of atom indices as argument, and return
-# a vector of pair-distances.
-
-PairDist <- function(PDB, a, b) {
-  PD <- c()
-  for (i in 1:length(a)) {
-    p <- as.numeric(PDB$atom[a[i], c("x", "y", "z")])
-    for (j in 1:length(b)) {
-      q <- as.numeric(PDB$atom[b[j], c("x", "y", "z")])
-      PD <- c(PD, dist.xyz(p, q))
-    }
-  }
-  return(PD)
-}
-
-# Let's see if this looks correct:
-
-H.N <- getAtomIndex(apses, H, "N")
-H.O <- getAtomIndex(apses, H, "O")
-X <- PairDist(apses, H.N, H.O)
-hist(X[X < 4.0], breaks=seq(2.0, 4.0, 0.1), xlim=c(2.0,4.0))
-
-# Now we are back where we started out from, but with
-# a different logic of the function that we can easily
-# modify to exclude (N_i, O_i-1) distances (peptide bond),
-# and (N_i, O_i) distances (within residue).
-
-HB <- function(PDB, a, b) {
-  HBcutoff <- 4.0
-  PD <- c()
-  for (i in 1:length(a)) {
-    p <- as.numeric(PDB$atom[a[i], c("x", "y", "z")])
-    res_i <- as.numeric(PDB$atom[a[i], "resno"])
-    for (j in 1:length(b)) {
-      q <- as.numeric(PDB$atom[b[j], c("x", "y", "z")])
-      res_j <- as.numeric(PDB$atom[a[j], "resno"])
-      if (res_i != res_j+1 &
-          res_i != res_j     ) {
-        d <- dist.xyz(p, q)
-        if (d < HBcutoff) {
-          PD <- c(PD, d)
+    for (i in seq_along(resN)) {        # for all N atoms
+      for (j in seq_along(resO)) {      # for all O atoms
+        if (dMat[i, j] > cutoff ||      # if: distance > cutoff, or ...
+            (resN[i] - 1) == resO[j] || #     distance is N(i)---O(i-1), or ...
+            resN[i] == resO[j]) {       #     distance is N(i)---O(i), then:
+          dMat[i, j] <- NA              # set this distance to NA.
         }
       }
     }
   }
-  return(PD)
+  return(dMat)
 }
 
-# test this:
-X <- HB(apses, H.N, H.O)
-hist(X)
+# Inspect the result:
+hist(filterHB(apses, iN, iO, x),
+     breaks=seq(2.0, 4.2, 0.1),
+     xlim=c(2.0,4.2),
+     col = "paleturquoise",
+     main = "",
+     xlab = "N-O distances (Å)")
 
-# ... and this looks much more like the distribution we are
-# seeking.
-
-# Why did we go along this detour for coding the
-# function? The point is that there are usually
-# several ways to use or define datastructures and
-# functions. Which one is the best way may not be
-# obvious until you understand the problem better.
-# At first, we wrote a very generic function that
-# extracts atom coordinates to be able to compute
-# with them. This is simple and elegant. But we
-# recognized limitations in that we could not
-# make more sophisticated selections that we needed
-# to reflect our biological idea of hydrogen
-# bonds. Thus we changed our datastructure
-# and functions to accomodate our new requirements
-# better. You have to be flexible and able to look
-# at a task from different angles to succeed.
 
 # Finally we can calculate alpha- and beta- structure
 # bonds and compare them. In this section we'll explore
 # different options for histogram plots.
 
-H.N <- getAtomIndex(apses, H, "N")
-H.O <- getAtomIndex(apses, H, "O")
-dH <- HB(apses, H.N, H.O)
+# H-bonds in helices ...
+iN <- ssSelect(apses, ssType = c("helix"), myElety = "N")
+iO <- ssSelect(apses, ssType = c("helix"), myElety = "O")
+dH <- filterHB(apses, iN, iO, pairDist(apses, iN, iO))
+dH <- dH[!is.na(dH)]
 
-E.N <- getAtomIndex(apses, E, "N")
-E.O <- getAtomIndex(apses, E, "O")
-dE <- HB(apses, E.N, E.O)
+# H-bonds in sheets. (We commonly use the letter "E" to symbolize a beta
+# strand or sheet, because "E" visually evokes an extended strand with
+# protruding sidechains.)
+iN <- ssSelect(apses, ssType = c("sheet"), myElety = "N")
+iO <- ssSelect(apses, ssType = c("sheet"), myElety = "O")
+dE <- filterHB(apses, iN, iO, pairDist(apses, iN, iO))
+dE <- dE[!is.na(dE)]
 
 # The plain histogram functions without parameters
 # give us white stacks.
@@ -527,50 +629,42 @@ hist(dE, col="#00AA70")
 hist(dH, col="#DD0055")
 hist(dE, col="#00AA70", add=TRUE)
 
-# ... oops, we dind't reset the graphics parameters.
-# You can either close the window, a new window
-# will open with default parameters, or ...
+# ... oops, we dind't reset the graphics parameters. You can either close the
+# window, a new window will open with default parameters, or ...
 par(opar)      # ... reset the graphics parameters
 
 hist(dH, col="#DD0055")
 hist(dE, col="#00AA70", add=TRUE)
 
-# We see that the leftmost column of the sheet bonds
-# overlaps the helix bonds. Not good. But we
-# can make the colors transparent! We just need to
-# add a fourth set of two hexadecimal-numbers to
-# the #RRGGBB triplet. Lets use 2/3 transparent,
-# in hexadecimal, 1/3 of 256 is x55 - i.e. an
-# RGB triplet specied as #RRGGBB55 is only 33%
-# opaque:
+# We see that the leftmost column of the sheet bonds hides the helix bonds in
+# that column. Not good. But we can make the colors transparent! We just need to
+# add a fourth set of two hexadecimal-numbers to the #RRGGBB triplet. Lets use
+# 2/3 transparent, in hexadecimal, 1/3 of 256 is x55 - i.e. an RGB triplet
+# specied as #RRGGBB55 is only 33% opaque:
 
 hist(dH, col="#DD005555")
 hist(dE, col="#00AA7055", add=TRUE)
 
-# To finalize the plots, let's do two more things:
-# Explicitly define the breaks, to make sure they
-# match up - otherwise they would not need to...
-# see for example:
+# To finalize the plots, let's do two more things: Explicitly define the breaks,
+# to make sure they match up - otherwise they would not need to... like in this
+# example:
 
 hist(dH, col="#DD005555")
 hist(dE[dE < 3], col="#00AA7055", add=TRUE)
 
-# Breaks are a parameter in hist() that can
-# either be a scalar, to define how many columns
-# you want, or a vector, that defines the actual
-# breakpoints.
+# Breaks are a parameter in hist() that can either be a scalar, to define how
+# many columns you want, or a vector, that defines the actual breakpoints.
 brk=seq(2.4, 4.0, 0.1)
 
 hist(dH, col="#DD005555", breaks=brk)
 hist(dE, col="#00AA7055", breaks=brk, add=TRUE)
 
-# The last thing to do is to think about rescaling the plot.
-# You notice that the y-axis is scaled in absolute frequency.
-# That gives us some impression of the relative frequency,
-# but it is of course skewed by observing relatively more
-# or less of one type of secondary structure in a protein.
-# As part of the hist() function we can rescale the values so
-# that the sum over all is one: set the prameter freq=FALSE.
+# The last thing to do is to think about rescaling the plot. You notice that the
+# y-axis is scaled in absolute frequency (i.e. counts). That gives us some
+# impression of the relative frequency, but it is of course skewed by observing
+# relatively more or less of one type of secondary structure in a protein. As
+# part of the hist() function we can rescale the values so that the sum over all
+# is one: set the prameter freq=FALSE.
 
 hist(dH, col="#DD005555", breaks=brk, freq=FALSE)
 hist(dE, col="#00AA7055", breaks=brk, freq=FALSE, add=TRUE)
@@ -596,25 +690,27 @@ legend("topright",
          sprintf("beta  (N = %3d)", sum(hE$counts))),
        fill = c("#DD005550", "#00AA7060"), bty = 'n',
        border = NA)
-# ===========================================================
+
+
 # With all the functions we have defined,
 # it is easy to try this with a larger protein.
-# 3ugj for example is VERY large. The calculation will take a few
-# minutes:
+# 3ugj for example is VERY large.
 
 pdb <- read.pdb("3ugj")
 
-H <- getSecondary(pdb$helix)
-E <- getSecondary(pdb$sheet)
+# helices...
+iN <- ssSelect(pdb, ssType = c("helix"), myElety = "N")
+iO <- ssSelect(pdb, ssType = c("helix"), myElety = "O")
+dH <- filterHB(pdb, iN, iO, pairDist(pdb, iN, iO))
+dH <- dH[!is.na(dH)]
 
-H.N <- getAtomIndex(pdb, H, "N")
-H.O <- getAtomIndex(pdb, H, "O")
-dH <- HB(pdb, H.N, H.O)
+# sheets
+iN <- ssSelect(pdb, ssType = c("sheet"), myElety = "N")
+iO <- ssSelect(pdb, ssType = c("sheet"), myElety = "O")
+dE <- filterHB(pdb, iN, iO, pairDist(pdb, iN, iO))
+dE <- dE[!is.na(dE)]
 
-E.N <- getAtomIndex(pdb, E, "N")
-E.O <- getAtomIndex(pdb, E, "O")
-dE <- HB(pdb, E.N, E.O)
-
+# histograms ...
 brk=seq(2.4, 4.0, 0.1)
 
 hH <- hist(dH,
@@ -638,47 +734,44 @@ legend('topright',
        border = NA,
        inset = 0.1)
 
-# It looks more and more that the distribution is
-# indeed different. Our sample is large, but derives
-# from a single protein.
-# To do database scale statistics, we should look
-# at many more proteins. To give you a sense of how,
-# let's do this for just ten proteins, taken from
-# the architecture level of the CATH database for
-# mixed alpha-beta proteins (see:
-# http://www.cathdb.info/browse/browse_hierarchy_tree):
+# It looks more and more that the distribution is indeed different. Our sample
+# is large, but derives from a single protein. To do database scale statistics,
+# we should look at many more proteins. To give you a sense of how, let's do
+# this for just ten proteins, randomly selected from non-homologous,
+# high-resolution, single domain structures. I have provided a utility function
+# for such a selection (details beyond the scope of this project).
 
-PDBarchitectures <- c("3A4R", "A")
-names(PDBarchitectures) <- c("ID", "chain")
-PDBarchitectures <- rbind(PDBarchitectures, c("1EWF","A"))
-PDBarchitectures <- rbind(PDBarchitectures, c("2VXN","A"))
-PDBarchitectures <- rbind(PDBarchitectures, c("1I3K","A"))
-PDBarchitectures <- rbind(PDBarchitectures, c("1C0P","A"))
-PDBarchitectures <- rbind(PDBarchitectures, c("3QVP","A"))
-PDBarchitectures <- rbind(PDBarchitectures, c("1J5U","A"))
-PDBarchitectures <- rbind(PDBarchitectures, c("2IMH","A"))
-PDBarchitectures <- rbind(PDBarchitectures, c("3NVS","A"))
-PDBarchitectures <- rbind(PDBarchitectures, c("1UD9","A"))
-PDBarchitectures <- rbind(PDBarchitectures, c("1XKN","A"))
-PDBarchitectures <- rbind(PDBarchitectures, c("1OZN","A"))
-PDBarchitectures <- rbind(PDBarchitectures, c("2DKJ","A"))
+myPDBs <- selectPDBrep(10)
+# My selection is "2OVJ", "1HQS", "3BON", "4JZX", "3BQ3", "2IUM", "2C9E",
+# "4X1F", "2V3I", "3GE3". Yours will be different.
 
-dH <- c()
-dE <- c()
+# We are loading the files online - don't do this if you have bandwidth
+# limitations.
 
-for (i in 1:nrow(PDBarchitectures)) {
-  pdb <- read.pdb(PDBarchitectures[i,1])
-  chain <- PDBarchitectures[i,2]
-  H <- getSecondary(pdb$helix)
-  H.N <- getAtomIndex(pdb, H, "N", chain)
-  H.O <- getAtomIndex(pdb, H, "O", chain)
-  dH <- c(dH, HB(pdb, H.N, H.O))
 
-  E <- getSecondary(pdb$sheet)
-  E.N <- getAtomIndex(pdb, E, "N", chain)
-  E.O <- getAtomIndex(pdb, E, "O", chain)
-  dE <- c(dE, HB(pdb, E.N, E.O))
+dH <- c() # collect all helix H-bonds here
+dE <- c() # collect all sheet H-bonds here
+
+for (i in seq_along(myPDBs)) {
+  pdb <- read.pdb(myPDBs[i])
+
+  # helices...
+  iN <- ssSelect(pdb, ssType = c("helix"), myElety = "N")
+  iO <- ssSelect(pdb, ssType = c("helix"), myElety = "O")
+  x  <- filterHB(pdb, iN, iO, pairDist(pdb, iN, iO))
+  dH <- c(dH, x[!is.na(x)])
+
+  # sheets
+  iN <- ssSelect(pdb, ssType = c("sheet"), myElety = "N")
+  iO <- ssSelect(pdb, ssType = c("sheet"), myElety = "O")
+  x  <- filterHB(pdb, iN, iO, pairDist(pdb, iN, iO))
+  dE <- c(dE, x[!is.na(x)])
 }
+
+# Inspect the results
+
+length(dH)  # 4415 (your numbers are different, but it should be a lot)
+length(dE)  # 262
 
 brk=seq(2.0, 4.0, 0.1)
 
@@ -689,7 +782,8 @@ hH <- hist(dH,
            xlab="(N,O) distance (Å)",
            ylab="Density",
            ylim=c(0,4),
-           main="Helix and Sheet H-bond lengths")
+           cex.main = 0.8,
+           main="Helix and Sheet H-bond lengths (10 representative structures)")
 hE <- hist(dE,
            freq=FALSE,
            breaks=brk,
@@ -703,13 +797,10 @@ legend('topright',
        border = NA,
        inset = 0.1)
 
-# Why do you think these distributions are different?
-# At what distance do you think H-bonds have the lowest energy?
-
-
-
-
-# = 1 Tasks
+# Task:
+#    Why do you think these distributions are different?
+#    At what distance do you think H-bonds have the lowest energy?
+#    For alpha-helices? For beta-strands?
 
 
 
