@@ -10,43 +10,57 @@
 #
 # Versions:
 #           0.1    First code copied from 2016 material.
-
 #
 # TODO:
 #
 #
 # == DO NOT SIMPLY  source()  THIS FILE! =======================================
-
+#
 # If there are portions you don't understand, use R's help system, Google for an
 # answer, or ask your instructor. Don't continue if you don't understand what's
 # going on. That's not how it works ...
-
+#
 # ==============================================================================
 
-# = 1 Biostrings Pairwise Alignment
+#TOC> ==========================================================================
+#TOC>
+#TOC>   Section  Title                                   Line
+#TOC> -------------------------------------------------------
+#TOC>   1        Prepare                                   41
+#TOC>   2        Biostrings Pairwise Alignment             49
+#TOC>   2.1      Optimal global alignment                  60
+#TOC>   2.2      Optimal local alignment                  123
+#TOC>   3        APSES Domain annotation by alignment     147
+#TOC>   4        Update your database script              228
+#TOC>
+#TOC> ==========================================================================
 
-# Biostrings is one of the basic packages that the Bioconductor software
-# landscape builds on. It stores sequences in "AAstring" objects and these are
-# complex software structures that are designed to be able to handle
-# genome-scale sequences. Biostrings functions - such as the alignment functions
-# - expect their input to be Biostrings objects.
-?AAString
 
-AAString("ACDE")
-s <- AAString("ACDE")
-str(s)
-# See: it's complicated. This is an "S4" object. Bioconductor uses these objects
-# almost exclusively, but we will not be poking around in their internals. Just
-# this: how do we get the sequence back out of an AAString object? The help page
-# for XString - the parent "class" of AAStrings - mentions the  alternatives:
 
-as.character(s)  # the base R version
-toString(s)      # using the Biostrings function toString()
 
-# While we need to remember to convert our sequences from the character vectors
-# that we store in our database, to AAStrings that we can align, the alignment
-# itself is really straightforward. The pairwiseAlignment() function was written
-# to behave exactly like the functions you encountered on the EMBOSS server.
+# =    1  Prepare  =============================================================
+
+# You need to recreate the protein database that you have constructed in the
+# BIN-Storing_data unit.
+
+source("makeProteinDB.R")
+
+
+# =    2  Biostrings Pairwise Alignment  =======================================
+
+if (!require(Biostrings, quietly=TRUE)) {
+  source("https://bioconductor.org/biocLite.R")
+  biocLite("Biostrings")
+  library(Biostrings)
+}
+
+# Biostrings stores sequences in "XString" objects. Once we have onverted our
+# traget sequences to AAString objects, the alignment itself is straightforward.
+
+# ==   2.1  Optimal global alignment  ==========================================
+
+# The pairwiseAlignment() function was written to behave
+# exactly like the functions you encountered on the EMBOSS server.
 
 # First: make AAString objects ...
 sel <- myDB$protein$name == "MBP1_SACCE"
@@ -56,9 +70,8 @@ sel <- myDB$protein$name == paste("MBP1_", biCode(MYSPE), sep = "")
 aaMBP1_MYSPE <-   AAString(myDB$protein$sequence[sel])
 
 ?pairwiseAlignment
-
 # ... and align.
-# Global optimal alignment with end-gap penalties is default. (like EMBOSS needle)
+# Global optimal alignment with end-gap penalties is default.
 ali1 <-  pairwiseAlignment(
   aaMBP1_SACCE,
   aaMBP1_MYSPE,
@@ -66,7 +79,7 @@ ali1 <-  pairwiseAlignment(
   gapOpening = 10,
   gapExtension = 0.5)
 
-str(ali1)  # Did you think the AAString object was complicated ?
+str(ali1)  # ... it's complicated
 
 # This is a Biostrings alignment object. But we can use Biostrings functions to
 # tame it:
@@ -107,6 +120,8 @@ percentID <- function(al) {
 
 percentID(ali1)
 
+# ==   2.2  Optimal local alignment  ===========================================
+
 # Compare with local optimal alignment (like EMBOSS Water)
 ali2 <-  pairwiseAlignment(
   aaMBP1_SACCE,
@@ -117,8 +132,8 @@ ali2 <-  pairwiseAlignment(
   gapExtension = 10)
 
 writePairwiseAlignments(ali2)   # This has probably only aligned the N-terminal
-# DNA binding domain - but that one has quite
-# high sequence identity:
+                                # DNA binding domain - but that one has quite
+                                # high sequence identity:
 percentID(ali2)
 
 # == TASK: ==
@@ -128,73 +143,49 @@ percentID(ali2)
 # the gap penalties and see what happens: how does the number of indels change,
 # how does the length of indels change...
 
-# Fine. Please return to the Wiki to study BLAST alignment...
 
-
-# ==============================================================================
-#        PART FOUR: APSES Domain annotation by alignment
-# ==============================================================================
+# =    3  APSES Domain annotation by alignment  ================================
 
 # In this section we define the MYSPE APSES sequence by performing a global,
-# optimal sequence alignment of the yeast domain with the full length protein
-# sequence of the protein that was the most similar to the yeast APSES domain.
+# optimal sequence alignment of the yeast APSES domain with the full length
+# protein sequence of the protein that was the most similar to the yeast APSES
+# domain.
 #
 
-# I have annotated the yeast APSES domain as a proteinAnnotation in the
+# I have annotated the yeast APSES domain as a feature in the
 # database. To view the annotation, we can retrieve it via the proteinID and
 # featureID. Here is the yeast protein ID:
-myDB$protein$ID[myDB$protein$name == "MBP1_SACCE"]
+(proID <- myDB$protein$ID[myDB$protein$name == "MBP1_SACCE"])
 
-# ... assign it for convenience:
-proID <- myDB$protein$ID[myDB$protein$name == "MBP1_SACCE"]
 
 # ... and if you look at the feature table, you can identify the feature ID
-myDB$feature[ , c("ID", "name", "description")]
-myDB$feature$ID[myDB$feature$name == "APSES fold"]
+(ftrID <- myDB$feature$ID[myDB$feature$name == "APSES fold"])
 
-# ... assign it for convenience:
-ftrID <- myDB$feature$ID[myDB$feature$name == "APSES fold"]
-
-# ... and with the two annotations we can pull the entry from the protein
+# ... and with the two annotations we can get the corresponding ID from the
 # annotation table
+(fanID <- myDB$annotation$ID[myDB$annotation$proteinID == proID &
+                             myDB$annotation$featureID == ftrID])
+
 myDB$proteinAnnotation[myDB$proteinAnnotation$protein.ID == proID &
                          myDB$proteinAnnotation$feature.ID == ftrID, ]
 
-myDB$proteinAnnotation$ID[myDB$proteinAnnotation$protein.ID == proID &
-                            myDB$proteinAnnotation$feature.ID == ftrID]
-
-# ... assign it for convenience:
-fanID <- myDB$proteinAnnotation$ID[myDB$proteinAnnotation$protein.ID == proID &
-                                     myDB$proteinAnnotation$feature.ID == ftrID]
-
 # The annotation record contains the start and end coordinates which we can use
 # to define the APSES domain sequence with a substr() expression.
-substr(myDB$protein$sequence[myDB$protein$ID == proID],
-       myDB$proteinAnnotation$start[myDB$proteinAnnotation$ID == fanID],
-       myDB$proteinAnnotation$end[myDB$proteinAnnotation$ID == fanID])
+
+(start <- myDB$annotation$start[myDB$annotation$ID == fanID])
+(end   <- myDB$annotation$end[myDB$annotation$ID == fanID])
+(apses <- substr(myDB$protein$sequence[myDB$protein$ID == proID],
+                 start,
+                 end))
 
 # Lots of code. But don't get lost. Let's recapitulate what we have done: we
 # have selected from the sequence column of the protein table the sequence whose
-# name is "MBP1_SACCE", and selected from the proteinAnnotation table the start
+# name is "MBP1_SACCE", and selected from the annotation table the start
 # and end coordinates of the annotation that joins an "APSES fold" feature with
 # the sequence, and used the start and end coordinates to extract a substring.
-# The expressions get lengthy, but it's not hard to wrap all of this into a
-# function so that we only need to define name and feature.
-
-dbGetFeatureSequence
-dbGetFeatureSequence(myDB, "MBP1_SACCE", "APSES fold")
-
 
 # Let's convert this to an AAstring and assign it:
-aaMB1_SACCE_APSES <- AAString(dbGetFeatureSequence(myDB,
-                                                   "MBP1_SACCE",
-                                                   "APSES fold"))
-
-# To align, we need the MYSPE sequence. Here is it's definition again, just
-# in case ...
-
-sel <- myDB$protein$name == paste("MBP1_", biCode(MYSPE), sep = "")
-aaMBP1_MYSPE <- AAString(myDB$protein$sequence[sel])
+aaMB1_SACCE_APSES <- AAString(apses)
 
 # Now let's align these two sequences of very different length without end-gap
 # penalties using the "overlap" type. "overlap" turns the
@@ -233,57 +224,57 @@ aliApses@subject@range@start
 # ... and end is:
 aliApses@subject@range@start + aliApses@subject@range@width - 1
 
-# Since we have this section defined now, we can create a feature annotation
-# right away and store it in myDB.  Copy the code-template below to your
-# myCode.R file, edit it to replace the placeholder items with your data:
+
+# =    4  Update your database script  =========================================
+
+
+# Since we have this feature defined now, we can create a feature annotation
+# right away and store it in myDB.  Follow the following steps carefully:
 #
-#  - The <PROTEIN ID> is to be replaced with the ID of MBP1_MYSPE
-#  - The <FEATURE ID> is to be replaced with the ID of "APSES fold"
-#  - <START> and <END> are to be replaced with the coordinates you got above
 #
-# Then execute the code and continue below the code template. If you make an
-# error, there are instructions on how to recover, below.
+#   - Make a copy of the file "./data/refAnnotations.json" in your project
+#     directory and give it a new name that corresponds to MYSPE - e.g. if
+#     MYSPE is called "Crptycoccus neoformans", your file should be called
+#     "CRYNEAnnotations.json"; in that case "MBP1_CRYNE" would also be the
+#     "name" of your protein. Open the file in the RStudio editor and delete
+#     all annotations but one for an "APSES fold". Edit that annotation to
+#     correspond to the your MBP1_MYSPE protein and enter the start end end
+#     coordinates you have just discovered for the APSES domain in your
+#     sequence. Save your file.
 #
-# ===== begin code template: add a proteinAnnotation to the database =====
+#   - Validate your file online at https://jsonlint.com/
+#
+#   - Next, you need to update your "makeProteinDB.R" script to load the
+#     annotation when you recreate the database. Open the script in the
+#     RStudio ediotr, and add the following command at the end:
+#
+#     myDB <- dbAddAnnotation(myDB, fromJSON("<MYSPE>Annotations.json"))
+#
+#   - save the file and source() it:
+#
+#     source("makeProteinDB.R")
+#
+#     This should run without errors or warnings. If it doesn't work and you
+#     can't figure out quickly what's happeneing, ask on the mailing list for
+#     help.
+#
+#   - Confirm
+#     The following commands should retrieve the correct start and end
+#     coordinates for the MBP1_MYSPE APSES domain:
 
-# == edit all placeholder items!
-myProteinID <- "<PROTEIN ID>"
-myFeatureID <- "<FEATURE ID>"
-myStart <- <START>
-  myEnd   <- <END>
-
-  # == create the proteinAnnotation entry
-  panRow <- data.frame(ID = dbAutoincrement(myDB$proteinAnnotation$ID),
-                       protein.ID = myProteinID,
-                       feature.ID = myFeatureID,
-                       start = myStart,
-                       end = myEnd,
-                       stringsAsFactors = FALSE)
-myDB$proteinAnnotation <- rbind(myDB$proteinAnnotation, panRow)
-
-# == check that this was successful and has the right data
-myDB$proteinAnnotation[nrow(myDB$proteinAnnotation), ]
-
-# ===== end code template ===========================================
-
-# ... continue here.
-# I expect that a correct result would look something like
-#          ID protein.ID feature.ID start end
-# 63 my_fan_1   my_pro_1  ref_ftr_1     6 104
-
-# If you made a mistake, simply overwrite the current version of myDB by loading
-# your saved, good version:  load("myDB.01.RData") and correct your mistake
-
-# If this is correct, save it
-save(myDB, file = "myDB.02.RData")  # Note that it gets a new version number!
-
-# Done with this part. Copy the sequence of the APSES domain of MBP1_MYSPE - you
-# need it for the reverse BLAST search, and return to the course Wiki.
+sel <- myDB$protein$name == paste("MBP1_", biCode(MYSPE), sep = "")
+aaMBP1_MYSPE <-   AAString(myDB$protein$sequence[sel])
 
 
-
-# = 1 Tasks
-
+(proID <- myDB$protein$ID[myDB$protein$name == "MBP1_<MYSSPE>"]) # <<< EDIT
+(ftrID <- myDB$feature$ID[myDB$feature$name == "APSES fold"])
+(fanID <- myDB$annotation$ID[myDB$annotation$proteinID == proID &
+                             myDB$annotation$featureID == ftrID])
+(start <- myDB$annotation$start[myDB$annotation$ID == fanID])
+(end   <- myDB$annotation$end[myDB$annotation$ID == fanID])
+(apses <- substr(myDB$protein$sequence[myDB$protein$ID == proID],
+                 start,
+                 end))
 
 
 
