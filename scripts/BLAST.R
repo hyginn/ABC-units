@@ -4,14 +4,16 @@
 #          This script uses the BLAST URL-API
 #          (Application Programming Interface) at the NCBI.
 #          Read about the constraints here:
-# https://ncbi.github.io/blast-cloud/dev/api.html
+#          https://ncbi.github.io/blast-cloud/dev/api.html
 #
 #
-# Version: 2.0
-# Date:    2016 09 - 2017 09
+# Version: 2.1
+# Date:    2016 09 - 2017 10
 # Author:  Boris Steipe
 #
 # Versions:
+#    2.1   bugfix in BLAST(), bug was blanking non-split deflines;
+#          refactored parseBLASTalignment() to handle lists with multiple hits.
 #    2.0   Completely rewritten because the interface completely changed.
 #          Code adpated in part from NCBI Perl sample code:
 #          $Id: web_blast.pl,v 1.10 2016/07/13 14:32:50 merezhuk Exp $
@@ -68,8 +70,9 @@ BLAST <- function(q,
     results$rid <- rid
     results$rtoe <- 0
 
-    if (rid == "") {  # we skip, and proceed directly to retrieval
-                      # if rid is not the empty string
+    if (rid == "") {  # if rid is not the empty string we skip the
+                      # initial search and and proceed directly to retrieval
+
 
       # prepare query, GET(), and parse rid and rtoe from BLAST server response
       results$query <- paste0("https://blast.ncbi.nlm.nih.gov/blast/Blast.cgi",
@@ -216,8 +219,10 @@ BLAST <- function(q,
     #  Merge these lines to the preceding lines and delete them.
     #
     x <- which(grepl("]$", txt) & !(grepl("^>", txt)))
-    txt[x-1] <- paste0(txt[x-1], txt[x])
-    txt <- txt[-x]
+    if (length(x) > 0) {
+      txt[x-1] <- paste0(txt[x-1], txt[x])
+      txt <- txt[-x]
+    }
 
     # Special case: there may be multiple deflines when the BLAST hit is to
     # redundant, identical sequences. Keep only the first instance.
@@ -253,18 +258,32 @@ BLAST <- function(q,
     return(results)
 }
 
-parseBLASTalignment <- function(hit) {
-  # parse one BLAST hit;
-  # return a list
-
-  if (length(grep("Length", hit)) > 1) {
-    stop("Parsing function can't handle multiple HSPs (yet).")
-  }
+parseBLASTalignment <- function(hits, idx) {
+  # Parse one BLAST hit from a BLAST result
+  # Parameters:
+  #    hits  list   contains the BLAST hits
+  #    idx   int    index of the requested hit
+  # Value:
+  #          list   $def          chr   defline
+  #                 $accession    chr   accession number
+  #                 $organism     chr   complete organism definition
+  #                 $species      chr   binomial species
+  #                 $E            num   E value
+  #                 $lengthAli    num   length of the alignment
+  #                 $nIdentitites num   number of identities
+  #                 $nGaps        num   number of gaps
+  #                 $Qbounds      num   2-element vector of query start-end
+  #                 $Sbounds      num   2-element vector of subject start-end
+  #                 $Qseq         chr   query sequence
+  #                 $midSeq       chr   midline string
+  #                 $Sseq         chr   subject sequence
 
   h <- list()
 
+  hit <- hits$hits[[idx]]
+
   # FASTA defline
-  h$def <- hit[1]
+  h$def <- hit$def
 
   # accesion number (ID), use the first if there are several, separated by "|"
   patt <- "^>(.+?)(\\s|\\|)" # from ">" to space or "|"
@@ -276,68 +295,36 @@ parseBLASTalignment <- function(hit) {
 
   # species
   x <- unlist(strsplit(h$organism, "\\s+"))
-  if (length(x) < 2) {
-    h$species <- NA
+  if (length(x) >= 2) {
+    h$species <- paste(x[1], x[2])
+  } else if (length(x) == 1) {
+    h$species <- paste(x[1], "sp.")
   } else {
-    h$species <- paste(x[1:2], collapse = " ")
+    h$species <- NA
   }
 
   # E-value
-  x <- hit[grep("Expect\\s*=", hit)]
-  patt <- "Expect\\s*=\\s*([0-9.eE\\-]+)" #
-  h$E <-  as.numeric(regmatches(x, regexec(patt, x))[[1]][2])
+  h$E <-  hit$E
 
   # length of hit and # identities
-  x <- hit[grep("Identities\\s*=", hit)]
-  patt <- "Identities\\s*=\\s*([0-9]+)/([0-9]+)"
-  m <- regexec(patt, x)
-  h$lengthAli   <- as.numeric(regmatches(x, m)[[1]][2])
-  h$nIdentities <- as.numeric(regmatches(x, m)[[1]][3])
+  h$lengthAli   <- hit$lengthAli
+  h$nIdentities <- hit$nIdentities
 
   # number of gaps
-  x <- hit[grep("Gaps\\s*=", hit)]
-  patt <- "Gaps\\s*=\\s*([0-9]+)"
-  h$nGaps <- as.numeric(regmatches(x, regexec(patt, x))[[1]][2])
+  h$nGaps <- hit$nGaps
 
   # first and last positions
-  iAli <- grep("^Query\\s+", hit)
-  h$Qbounds <- getAliBounds(hit[iAli])
-  h$Sbounds <- getAliBounds(hit[iAli + 2])
+  h$Qbounds <- hit$Qbounds
+  h$Sbounds <- hit$Sbounds
 
   # aligned sequences
 
-  h$Qseq   <- character()
-  h$midSeq <- character()
-  h$Sseq   <- character()
-
-  for (i in iAli) {
-    patt <- "^Query\\s+[0-9]+\\s*"
-    first <- attr(regexec(patt, hit[i])[[1]], "match.length") + 1
-
-    patt <- "\\s*[0-9]*\\s*$"
-    last <- regexec(patt, hit[i])[[1]][1] - 1
-
-    h$Qseq   <- paste0(h$Qseq,   substr(hit[i],     first, last))
-    h$midSeq <- paste0(h$midSeq, substr(hit[i + 1], first, last))
-    h$Sseq   <- paste0(h$Sseq,   substr(hit[i + 2], first, last))
-  }
+  h$Qseq   <- hit$Qseq
+  h$midSeq <- hit$midSeq
+  h$Sseq   <- hit$Sseq
 
   return(h)
 }
-
-
-getAliBounds <- function(s) {
-  # get first and last position from a vector of BLAST alignments s
-  # value: numeric vector of first and last position
-  patt <- "^(Query|Sbjct)\\s+([0-9]+)\\s"
-  first <- as.numeric(regmatches(s[1], regexec(patt, s[1]))[[1]][3])
-
-  patt <- "\\s*([0-9]+)\\s*$"
-  last <- as.numeric(regmatches(s[length(s)],
-                                regexec(patt, s[length(s)]))[[1]][2])
-  return(c (first, last))
-}
-
 
 
 # ==== TESTS ===================================================================

@@ -3,12 +3,13 @@
 # Purpose: A Bioinformatics Course:
 #              R code accompanying the BIN-MYSPE unit
 #
-# Version: 1.0
+# Version: 1.0.1
 #
 # Date:    2017  09  21
 # Author:  Boris Steipe (boris.steipe@utoronto.ca)
 #
-# V 1.0    Final code, after rewriting BLAST parser and creating current MYSPElist
+# V 1.0.1  Move ABC-makeMYSPElist.R to ./scripts directory
+# V 1.0    Final code, after rewriting BLAST parser and updating MYSPElist
 # V 0.1    First code copied from BCH441_A03_makeMYSPElist.R
 #
 # TODO:
@@ -28,9 +29,9 @@
 #TOC>
 #TOC>   Section  Title                   Line
 #TOC> ---------------------------------------
-#TOC>   1        Preparations              38
-#TOC>   2        Suitable MYSPE Species    50
-#TOC>   3        Adopt "MYSPE"             64
+#TOC>   1        Preparations              39
+#TOC>   2        Suitable MYSPE Species    51
+#TOC>   3        Adopt "MYSPE"             65
 #TOC>
 #TOC> ==========================================================================
 
@@ -56,10 +57,10 @@ if (! exists("myStudentNumber")) {
 
 # A detailed description of the process of compiling the list of genome
 # sequenced fungi with protein annotations and Mbp1 homologues is in the file
-# ABC-makeMYSPElist.R
+# ./scripts/ABC-makeMYSPElist.R
 
-# Task: Study ABC-makeMYSPElist.R, it implements a rather typical workflow of
-# selecting and combining data from various public-domain data resources.
+# Task: Study ./scripts/ABC-makeMYSPElist.R, it implements a typical workflow
+#       of selecting and combining data from  public-domain data resources.
 
 # =    3  Adopt "MYSPE"  =======================================================
 

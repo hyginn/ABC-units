@@ -71,8 +71,8 @@
   {"pName" : "MBP1_COPCI", "fName" : "coiled coil", "start" : "500", "end" : "570"},
   {"pName" : "MBP1_COPCI", "fName" : "coiled coil", "start" : "651", "end" : "678"},
 
-  {"pName" : "MBP1_CRYNE", "fName" : "APSES fold", "start" : "113", "end" : "211"},
-  {"pName" : "MBP1_CRYNE", "fName" : "KilA-N", "start" : "131", "end" : "215"},
+  {"pName" : "MBP1_CRYNE", "fName" : "APSES fold", "start" : "16", "end" : "114"},
+  {"pName" : "MBP1_CRYNE", "fName" : "KilA-N", "start" : "34", "end" : "117"},
   {"pName" : "MBP1_CRYNE", "fName" : "low complexity", "start" : "66", "end" : "85"},
   {"pName" : "MBP1_CRYNE", "fName" : "low complexity", "start" : "413", "end" : "423"},
   {"pName" : "MBP1_CRYNE", "fName" : "low complexity", "start" : "633", "end" : "644"},

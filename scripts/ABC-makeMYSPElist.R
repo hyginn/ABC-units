@@ -3,11 +3,12 @@
 # Purpose:  Create a list of genome sequenced fungi with protein annotations and
 #               Mbp1 homologues.
 #
-# Version: 1.1.1
+# Version: 1.1.2
 #
 # Date:    2016 09 - 2017 09
 # Author:  Boris Steipe (boris.steipe@utoronto.ca)
 #
+# V 1.1.2  Moved BLAST.R to ./scripts directory
 # V 1.1    Update 2017
 # V 1.0    First code 2016
 #
@@ -184,12 +185,12 @@ length(GOLDspecies)
 # amount of error handling involved that is not supported by the API in a
 # principled way but requires rather ad hoc solutions. The code I threw together
 # to make a BLAST interface (demo-quality, not research-quality) is in the file
-# BLAST.R Feel encouraged to study how this works. It's a pretty standard task
-# of communicating with servers and parsing responses - everyday fare in the
-# bioinformatics lab. Surprisingly, there seems to be no good BLAST parser
-# in currently available packages.
+# ./scripts/BLAST.R Feel encouraged to study how this works. It's a pretty
+# standard task of communicating with servers and parsing responses - everyday
+# fare in thebioinformatics lab. Surprisingly, there seems to be no good BLAST
+# parser in currently available packages.
 
-# source("BLAST.R")   # load the function and its utilities
+# source("./scripts/BLAST.R")   # load the function and its utilities
 # Use BLAST() to find yeast Mbp1 homologues in other fungi in refseq
 # BLASThits <- BLAST("NP_010227",                  # Yeast Mbp1 RefSeq ID
 #                    db = "refseq_protein",        # database to search in
