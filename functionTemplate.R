@@ -29,5 +29,8 @@ myFunction <- function(a, b=1) {
 # ====  TESTS  =================================================================
 # Enter your function tests here...
 
+if (FALSE) {
+  # test ...
+}
 
 # [END]
