@@ -2,10 +2,11 @@
 #
 # Miscellaneous R code to suppport the project
 #
-# Version: 1.2
-# Date:    2017 09
+# Version: 1.3
+# Date:    2017  09 - 2017  10
 # Author:  Boris Steipe
 #
+# V 1.3    load msa support functions
 # V 1.2    update database utilities to support 2017 version of JSON sources
 # V 1.1    2017 updates for ABC-units
 # V 1.0    First code
@@ -18,6 +19,8 @@
 # ====== SCRIPTS =============================================================
 
 source("./scripts/ABC-dbUtilities.R")
+source("./scripts/ABC-writeALN.R")
+source("./scripts/ABC-writeMFA.R")
 
 
 # ====== SUPPORT FUNCTIONS =====================================================
