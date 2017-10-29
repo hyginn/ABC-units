@@ -10,27 +10,34 @@
 #
 # Versions:
 #           0.1    First code copied from 2016 material.
-
+#
 #
 # TODO:
 #
 #
 # == DO NOT SIMPLY  source()  THIS FILE! =======================================
-
+#
 # If there are portions you don't understand, use R's help system, Google for an
 # answer, or ask your instructor. Don't continue if you don't understand what's
 # going on. That's not how it works ...
-
+#
 # ==============================================================================
 
 # = 1 ___Section___
 
 # First, we install and load the Biostrings package.
 if (!require(Biostrings, quietly=TRUE)) {
-  source("https://bioconductor.org/biocLite.R")
+  if (! exists("biocLite")) {
+    source("https://bioconductor.org/biocLite.R")
+  }
   biocLite("Biostrings")
   library(Biostrings)
 }
+#  library(help = Biostrings)       # basic information
+#  browseVignettes("Biostrings")    # available vignettes
+#  data(package = "Biostrings")     # available datasets
+
+
 
 # Let's load BLOSUM62
 data(BLOSUM62)

@@ -24,18 +24,16 @@
 # going on. That's not how it works ...
 #
 # ==============================================================================
- 
+
+
 #TOC> ==========================================================================
 #TOC> 
 #TOC>   Section  Title                       Line
 #TOC> -------------------------------------------
-#TOC>   1        Identifier mapping            41
-#TOC>   2        Cross-referencing tables     142
+#TOC>   1        Identifier mapping            45
+#TOC>   2        Cross-referencing tables     151
 #TOC> 
 #TOC> ==========================================================================
- 
-
-
 
 
 # =    1  Identifier mapping  ==================================================
@@ -59,6 +57,11 @@ if (!require(httr, quietly=TRUE)) {
   install.packages("httr")
   library(httr)
 }
+# Package information:
+#  library(help = httr)       # basic information
+#  browseVignettes("httr")    # available vignettes
+#  data(package = "httr")     # available datasets
+
 
 # We will walk through the process with the refSeqID
 # of yeast Mbp1 and Swi4, and we will also enter a dummy ID to check what
@@ -68,7 +71,7 @@ myQueryIDs <- "NP_010227 NP_00000 NP_011036"
 
 # The UniProt ID mapping service API is very straightforward to use: just define
 # the URL of the server and send a list of items labelled as "query" in the body
-# of the request.
+# of the request. GET() and POST() are functions from httr.
 
 URL <- "http://www.uniprot.org/mapping/"
 response <- POST(URL,

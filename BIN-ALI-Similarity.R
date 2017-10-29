@@ -23,18 +23,17 @@
 # going on. That's not how it works ...
 #
 # ==============================================================================
- 
+
+
 #TOC> ==========================================================================
 #TOC> 
 #TOC>   Section  Title                    Line
 #TOC> ----------------------------------------
-#TOC>   1        Amino Acid Properties      40
-#TOC>   2        Mutation Data matrix      150
-#TOC>   3        Background score          188
+#TOC>   1        Amino Acid Properties      43
+#TOC>   2        Mutation Data matrix      163
+#TOC>   3        Background score          205
 #TOC> 
 #TOC> ==========================================================================
- 
-
 
 
 # =    1  Amino Acid Properties  ===============================================
@@ -46,6 +45,10 @@ if (!require(seqinr)) {
   install.packages("seqinr")
   library(seqinr)
 }
+# Package information:
+#  library(help = seqinr)       # basic information
+#  browseVignettes("seqinr")    # available vignettes
+#  data(package = "seqinr")     # available datasets
 
 # A true Labor of Love has gone into the compilation of the seqinr "aaindex"
 #  data:
@@ -128,6 +131,12 @@ if (!require(ggtern)) {
   install.packages("ggtern")
   library(ggtern)
 }
+# Package information:
+#  library(help = ggtern)       # basic information
+#  browseVignettes("ggtern")    # available vignettes
+#  data(package = "ggtern")     # available datasets
+
+
 
 # collect into data frame, normalize to (0.05, 0.95)
 myDat <- data.frame("phi" = 0.9*(((Y$I-min(Y$I))/(max(Y$I)-min(Y$I))))+0.05,
@@ -154,12 +163,16 @@ ggtern(data = myDat,
 # The Biostrings package contains the most common mutation data matrices.
 
 if (!require(Biostrings, quietly=TRUE)) {
-  source("https://bioconductor.org/biocLite.R")
+  if (! exists("biocLite")) {
+    source("https://bioconductor.org/biocLite.R")
+  }
   biocLite("Biostrings")
   library(Biostrings)
 }
-
-data(package = "Biostrings")
+# Package information:
+#  library(help=Biostrings)       # basic information
+#  browseVignettes("Biostrings")  # available vignettes
+#  data(package = "Biostrings")   # available datasets
 
 # Let's load the BLOSUM62 mutation data matrix from the package
 data(BLOSUM62)

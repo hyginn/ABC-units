@@ -24,27 +24,26 @@
 # going on. That's not how it works ...
 #
 # ==============================================================================
- 
+
+
 #TOC> ==========================================================================
 #TOC> 
 #TOC>   Section  Title                                Line
 #TOC> ----------------------------------------------------
-#TOC>   1        Introduction to the bio3D package      59
-#TOC>   2        A Ramachandran plot                   148
-#TOC>   3        Density plots                         224
-#TOC>   3.1      Density-based colours                 238
-#TOC>   3.2      Plotting with smoothScatter()         257
-#TOC>   3.3      Plotting hexbins                      272
-#TOC>   3.4      Plotting density contours             291
-#TOC>   3.4.1    ... as overlay on a colored grid      321
-#TOC>   3.4.2    ... as filled countour                338
-#TOC>   3.4.3    ... as a perspective plot             369
-#TOC>   4        cis-peptide bonds                     387
-#TOC>   5        H-bond lengths                        402
+#TOC>   1        Introduction to the bio3D package      63
+#TOC>   2        A Ramachandran plot                   151
+#TOC>   3        Density plots                         227
+#TOC>   3.1      Density-based colours                 241
+#TOC>   3.2      Plotting with smoothScatter()         260
+#TOC>   3.3      Plotting hexbins                      275
+#TOC>   3.4      Plotting density contours             299
+#TOC>   3.4.1    ... as overlay on a colored grid      333
+#TOC>   3.4.2    ... as filled countour                350
+#TOC>   3.4.3    ... as a perspective plot             381
+#TOC>   4        cis-peptide bonds                     399
+#TOC>   5        H-bond lengths                        414
 #TOC> 
 #TOC> ==========================================================================
- 
-
 
 
 # In this example of protein structure interpretation, we ...
@@ -59,16 +58,15 @@
 # =    1  Introduction to the bio3D package  ===================================
 
 
-if(!require(bio3d)) {
-  install.packages("bio3d", dependencies=TRUE)
+if (! require(bio3d, quietly=TRUE)) {
+  install.packages("bio3d")
   library(bio3d)
 }
+# Package information:
+#  library(help = bio3d)       # basic information
+#  browseVignettes("bio3d")    # available vignettes
+#  data(package = "bio3d")     # available datasets
 
-lbio3d() # ... lists the newly installed  functions,
-# they all have help files associated.
-# More information is available in the so-called
-# "vignettes" that are distributed with most R packages:
-vignette("bio3d_vignettes")
 
 # bio3d can load molecules directly from the PDB servers, you don't _have_ to
 # store them locally, but you could.
@@ -273,10 +271,15 @@ abline(v = 0, lwd = 0.5, col = "#00000044")
 
 # If we wish to approximate values in a histogram-like fashion, we can use
 # hexbin()
-if (!require(hexbin)) {
+if (! require(hexbin, quietly=TRUE)) {
   install.packages("hexbin")
   library(hexbin)
 }
+# Package information:
+#  library(help = hexbin)       # basic information
+#  browseVignettes("hexbin")    # available vignettes
+#  data(package = "hexbin")     # available datasets
+
 
 myColorRamp <- colorRampPalette(c("#EEEEEE",
                                   "#3399CC",
@@ -301,10 +304,14 @@ plot(hexbin(phi, psi, xbins = 10),
 # distributions. But for 2D data like or phi-psi plots, we need a function from
 # the MASS package: kde2d()
 
-if (!require(MASS)) {
+if (! require(MASS, quietly=TRUE)) {
   install.packages("MASS")
   library(MASS)
 }
+# Package information:
+#  library(help = MASS)       # basic information
+#  browseVignettes("MASS")    # available vignettes
+#  data(package = "MASS")     # available datasets
 
 ?kde2d
 dPhiPsi <-kde2d(phi, psi,

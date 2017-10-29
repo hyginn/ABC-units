@@ -11,7 +11,7 @@
 #
 # ToDo:
 # Notes:
-# 
+#
 # ==============================================================================
 
 setwd("<your/project/directory>")
@@ -24,10 +24,16 @@ setwd("<your/project/directory>")
 # ====  PACKAGES  ==============================================================
 # Load all required packages.
 
-if (!require(RUnit, quietly=TRUE)) {
-    install.packages("RUnit")
-    library(RUnit)
+if (! require(seqinr, quietly=TRUE)) {
+  install.packages("seqinr")
+  library(seqinr)
 }
+# Package information:
+#  library(help = seqinr)       # basic information
+#  browseVignettes("seqinr")    # available vignettes
+#  data(package = "seqinr")     # available datasets
+
+
 
 
 # ====  FUNCTIONS  =============================================================
@@ -43,9 +49,9 @@ myFunction <- function(a, b=1) {
 	#     b: ...
 	# Value:
 	#     result: ...
-	
+
 	# code ...
-	
+
 	return(result)
 }
 

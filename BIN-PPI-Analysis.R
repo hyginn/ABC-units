@@ -154,11 +154,17 @@ ENSPsel
 # day), simply a few lines of sample code to get you started on the specific use
 # case of retrieving descriptions for ensembl protein IDs.
 
-if (!require(biomaRt)) {
-  source("http://bioconductor.org/biocLite.R")
+if (!require(biomaRt, quietly=TRUE)) {
+  if (! exists("biocLite")) {
+    source("https://bioconductor.org/biocLite.R")
+  }
   biocLite("biomaRt")
-  library("biomaRt")
+  library(biomaRt)
 }
+# Package information:
+#  library(help = biomaRt)       # basic information
+#  browseVignettes("biomaRt")    # available vignettes
+#  data(package = "biomaRt")     # available datasets
 
 # define which dataset to use ...
 myMart <- useMart("ensembl", dataset="hsapiens_gene_ensembl")

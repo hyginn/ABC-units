@@ -22,25 +22,24 @@
 # going on. That's not how it works ...
 #
 # ==============================================================================
- 
+
+
 #TOC> ==========================================================================
 #TOC> 
 #TOC>   Section  Title                                    Line
 #TOC> --------------------------------------------------------
-#TOC>   1        Designing a computational experiment       53
-#TOC>   2        Setting up the tools                       69
-#TOC>   2.1      Natural and alternative genetic codes      72
-#TOC>   2.2      Effect of mutations                       126
-#TOC>   2.2.1    reverse-translate                         137
-#TOC>   2.2.2    Randomly mutate                           162
-#TOC>   2.2.3    Forward- translate                        187
-#TOC>   2.2.4    measure effect                            205
-#TOC>   3        Run the experiment                        252
-#TOC>   4        Task solutions                            339
+#TOC>   1        Designing a computational experiment       57
+#TOC>   2        Setting up the tools                       73
+#TOC>   2.1      Natural and alternative genetic codes      76
+#TOC>   2.2      Effect of mutations                       135
+#TOC>   2.2.1    reverse-translate                         146
+#TOC>   2.2.2    Randomly mutate                           171
+#TOC>   2.2.3    Forward- translate                        196
+#TOC>   2.2.4    measure effect                            214
+#TOC>   3        Run the experiment                        261
+#TOC>   4        Task solutions                            348
 #TOC> 
 #TOC> ==========================================================================
- 
-
 
 
 # This unit demonstrates R code to simulate alternate genetic codes and evaluate
@@ -71,14 +70,19 @@
 
 # ==   2.1  Natural and alternative genetic codes  =============================
 
-# Load the code from the Biostrings package
-if (! require(Biostrings)) {
+# Load genetic code tables from the Biostrings package
+if (! require(Biostrings, quietly=TRUE)) {
   if (! exists("biocLite")) {
     source("https://bioconductor.org/biocLite.R")
   }
   biocLite("Biostrings")
   library(Biostrings)
 }
+# Package information:
+#  library(help = Biostrings)       # basic information
+#  browseVignettes("Biostrings")    # available vignettes
+#  data(package = "Biostrings")     # available datasets
+
 
 # There are many ways to generate alternative codes. The simplest way is to
 # randomly assign amino acids to codons. A more sophisticated way is to keep the

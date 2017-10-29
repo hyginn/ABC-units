@@ -23,27 +23,33 @@
 # going on. That's not how it works ...
 #
 # ==============================================================================
- 
+
+
 #TOC> ==========================================================================
 #TOC> 
 #TOC>   Section  Title                                           Line
 #TOC> ---------------------------------------------------------------
-#TOC>   1        Constructing a POST command from a Web query      40
-#TOC>   1.1      Task - fetchPrositeFeatures() function           134
-#TOC>   2        Task solutions                                   142
+#TOC>   1        Constructing a POST command from a Web query      44
+#TOC>   1.1      Task - fetchPrositeFeatures() function           145
+#TOC>   2        Task solutions                                   153
 #TOC> 
 #TOC> ==========================================================================
- 
-
 
 
 # =    1  Constructing a POST command from a Web query  ========================
 
 
-if (!require(httr)) {
+if (! require(httr, quietly=TRUE)) {
   install.packages("httr")
   library(httr)
 }
+# Package information:
+#  library(help = httr)       # basic information
+#  browseVignettes("httr")    # available vignettes
+#  data(package = "httr")     # available datasets
+
+
+
 
 # We have reverse engineered the Web form for a ScanProsite request, and can now
 # construct a POST request. The command is similar to GET(), but we need an

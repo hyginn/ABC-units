@@ -39,8 +39,14 @@ if (!require(Rphylip, quietly=TRUE)) {
   install.packages("Rphylip")
   library(Rphylip)
 }
+# Package information:
+#  library(help = Rphylip)       # basic information
+#  browseVignettes("Rphylip")    # available vignettes
+#  data(package = "Rphylip")     # available datasets
 
 # This will install RPhylip, as well as its dependency, the package "ape".
+
+
 
 # The next part may be tricky. You will need to figure out where
 # on your computer Phylip has been installed and define the path

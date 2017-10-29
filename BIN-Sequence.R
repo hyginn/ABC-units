@@ -23,26 +23,29 @@
 #
 # ==============================================================================
 
+
 #TOC> ==========================================================================
-#TOC>
+#TOC> 
 #TOC>   Section  Title                          Line
 #TOC> ----------------------------------------------
-#TOC>   1        Prepare                          52
-#TOC>   2        Storing Sequence                 66
-#TOC>   3        String properties                95
-#TOC>   4        Substrings                      102
-#TOC>   5        Creating strings: sprintf()     108
-#TOC>   6        Changing strings                139
-#TOC>   6.1      stringi and stringr             191
-#TOC>   6.2      dbSanitizeSequence()            201
-#TOC>   7        Permuting and sampling          213
-#TOC>   7.1      Permutations                    220
-#TOC>   7.2      Sampling                        263
-#TOC>   7.2.1    Equiprobable characters         265
-#TOC>   7.2.2    Defined probability vector      300
-#TOC>   8        Tasks                           328
-#TOC>
+#TOC>   1        Prepare                          56
+#TOC>   2        Storing Sequence                 74
+#TOC>   3        String properties               103
+#TOC>   4        Substrings                      110
+#TOC>   5        Creating strings: sprintf()     116
+#TOC>   6        Changing strings                147
+#TOC>   6.1      stringi and stringr             199
+#TOC>   6.2      dbSanitizeSequence()            209
+#TOC>   7        Permuting and sampling          221
+#TOC>   7.1      Permutations                    228
+#TOC>   7.2      Sampling                        271
+#TOC>   7.2.1    Equiprobable characters         273
+#TOC>   7.2.2    Defined probability vector      313
+#TOC>   8        Tasks                           341
+#TOC> 
 #TOC> ==========================================================================
+
+
 #
 #
 #
@@ -54,13 +57,17 @@
 # Much basic sequence handling is supported by the Bioconductor package
 # Biostrings.
 
-if (! require(Biostrings)) {
+if (! require(Biostrings, quietly=TRUE)) {
   if (! exists("biocLite")) {
     source("https://bioconductor.org/biocLite.R")
   }
   biocLite("Biostrings")
   library(Biostrings)
 }
+# Package information:
+#  library(help = Biostrings)       # basic information
+#  browseVignettes("Biostrings")    # available vignettes
+#  data(package = "Biostrings")     # available datasets
 
 
 # =    2  Storing Sequence  ====================================================
@@ -262,7 +269,7 @@ sum(d <= 2.5) # 276. 276 of our 10000 samples are just as bunched near the
 
 # ==   7.2  Sampling  ==========================================================
 
-# ===  7.2.1  Equiprobable characters
+# ===  7.2.1  Equiprobable characters    
 
 # Assume you need a large random-nucleotide string for some statistical model.
 # How to create such a string? sample() can easily create it:
@@ -280,10 +287,15 @@ sum(table(v)[c("G", "C")]) # 51 is close to expected
 # What's the number of CpG motifs? Easy to check with the stringi
 # stri_match_all() function
 
-if (! require(stringi)) {
+if (! require(stringi, quietly=TRUE)) {
   install.packages("stringi")
   library(stringi)
 }
+# Package information:
+#  library(help = stringi)       # basic information
+#  browseVignettes("stringi")    # available vignettes
+#  data(package = "stringi")     # available datasets
+
 
 (x <- stri_match_all(mySeq, regex = "CG"))
 length(unlist(x))
@@ -297,7 +309,7 @@ length(unlist(x))
 # of the smaller number of Cs and Gs - before biology even comes into play. How
 # do we account for that?
 
-# ===  7.2.2  Defined probability vector
+# ===  7.2.2  Defined probability vector 
 
 # This is where we need to know how to create samples with specific probability
 # distributions. A crude hack would be to create a sampling source vector with

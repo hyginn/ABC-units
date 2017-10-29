@@ -32,8 +32,11 @@ if (!require(seqinr, quietly=TRUE)) {
   install.packages("seqinr")
   library(seqinr)
 }
+# Package information:
+#  library(help = seqinr)       # basic information
+#  browseVignettes("seqinr")    # available vignettes
+#  data(package = "seqinr")     # available datasets
 
-help(package = seqinr) # shows the available functions
 
 # Let's try a simple function
 ?computePI

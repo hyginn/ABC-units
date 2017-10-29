@@ -22,22 +22,21 @@
 # going on. That's not how it works ...
 #
 # ==============================================================================
- 
+
+
 #TOC> ==========================================================================
 #TOC> 
 #TOC>   Section  Title                                      Line
 #TOC> ----------------------------------------------------------
-#TOC>   1        Storing the genetic code                     43
-#TOC>   1.1      Genetic code in Biostrings                   61
-#TOC>   2        Working with the genetic code                88
-#TOC>   2.1      Translate a sequence.                       117
-#TOC>   3        An alternative representation: 3D array     199
-#TOC>   3.1      Print a Genetic code table                  232
-#TOC>   4        Tasks                                       258
+#TOC>   1        Storing the genetic code                     47
+#TOC>   1.1      Genetic code in Biostrings                   65
+#TOC>   2        Working with the genetic code                97
+#TOC>   2.1      Translate a sequence.                       126
+#TOC>   3        An alternative representation: 3D array     208
+#TOC>   3.1      Print a Genetic code table                  241
+#TOC>   4        Tasks                                       267
 #TOC> 
 #TOC> ==========================================================================
- 
-
 
 
 # =    1  Storing the genetic code  ============================================
@@ -64,13 +63,18 @@ x["TAA"]
 # available in the Bioconductor "Biostrings" package:
 
 
-if (! require(Biostrings)) {
+if (! require(Biostrings, quietly=TRUE)) {
   if (! exists("biocLite")) {
     source("https://bioconductor.org/biocLite.R")
   }
   biocLite("Biostrings")
   library(Biostrings)
 }
+# Package information:
+#  library(help = Biostrings)       # basic information
+#  browseVignettes("Biostrings")    # available vignettes
+#  data(package = "Biostrings")     # available datasets
+
 
 # The standard genetic code vector
 GENETIC_CODE

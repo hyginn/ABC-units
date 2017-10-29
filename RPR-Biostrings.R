@@ -23,27 +23,26 @@
 # going on. That's not how it works ...
 #
 # ==============================================================================
- 
+
+
 #TOC> ==========================================================================
 #TOC> 
 #TOC>   Section  Title                                     Line
 #TOC> ---------------------------------------------------------
-#TOC>   1        The Biostrings package                      53
-#TOC>   2        Getting Data into Biostrings Objects        82
-#TOC>   3        Working with Biostrings Objects            102
-#TOC>   3.1      Properties                                 105
-#TOC>   3.2      Subsetting                                 142
-#TOC>   3.3      Operators                                  154
-#TOC>   3.4      Transformations                            161
-#TOC>   4        Getting Data out of Biostrings Objects     168
-#TOC>   5        More                                       177
-#TOC>   5.1      Views                                      179
-#TOC>   5.2      Iranges                                    191
-#TOC>   5.3      StringSets                                 197
+#TOC>   1        The Biostrings package                      57
+#TOC>   2        Getting Data into Biostrings Objects        91
+#TOC>   3        Working with Biostrings Objects            111
+#TOC>   3.1      Properties                                 114
+#TOC>   3.2      Subsetting                                 151
+#TOC>   3.3      Operators                                  163
+#TOC>   3.4      Transformations                            170
+#TOC>   4        Getting Data out of Biostrings Objects     177
+#TOC>   5        More                                       186
+#TOC>   5.1      Views                                      188
+#TOC>   5.2      Iranges                                    200
+#TOC>   5.3      StringSets                                 206
 #TOC> 
 #TOC> ==========================================================================
- 
-
 
 
 # This is a very brief introduction to the biostrings package, other units will
@@ -55,15 +54,20 @@
 
 # First, we install and load the Biostrings package from bioconductor
 
-if (!require(Biostrings, quietly=TRUE)) {
-  source("https://bioconductor.org/biocLite.R")
+if (! require(Biostrings, quietly=TRUE)) {
+  if (! exists("biocLite")) {
+    source("https://bioconductor.org/biocLite.R")
+  }
   biocLite("Biostrings")
   library(Biostrings)
 }
 
+# Examine the ackage information:
+library(help = Biostrings)       # basic information
+browseVignettes("Biostrings")    # available vignettes
+data(package = "Biostrings")     # available datasets
 
-# This is a large collection of tools ...
-help(package = "Biostrings")
+
 
 # At its core, Biostrings objects are "classes" of type XString (you can think
 # of a "class" in R as a special kind of list), that can take on particular

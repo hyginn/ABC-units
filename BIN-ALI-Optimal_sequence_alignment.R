@@ -22,20 +22,19 @@
 #
 # ==============================================================================
 
+
 #TOC> ==========================================================================
 #TOC>
 #TOC>   Section  Title                                   Line
 #TOC> -------------------------------------------------------
-#TOC>   1        Prepare                                   41
-#TOC>   2        Biostrings Pairwise Alignment             49
-#TOC>   2.1      Optimal global alignment                  60
-#TOC>   2.2      Optimal local alignment                  123
-#TOC>   3        APSES Domain annotation by alignment     147
-#TOC>   4        Update your database script              228
+#TOC>   1        Prepare                                   45
+#TOC>   2        Biostrings Pairwise Alignment             53
+#TOC>   2.1      Optimal global alignment                  70
+#TOC>   2.2      Optimal local alignment                  133
+#TOC>   3        APSES Domain annotation by alignment     157
+#TOC>   4        Update your database script              238
 #TOC>
 #TOC> ==========================================================================
-
-
 
 
 # =    1  Prepare  =============================================================
@@ -49,13 +48,19 @@ source("makeProteinDB.R")
 # =    2  Biostrings Pairwise Alignment  =======================================
 
 if (!require(Biostrings, quietly=TRUE)) {
-  source("https://bioconductor.org/biocLite.R")
+  if (! exists("biocLite")) {
+    source("https://bioconductor.org/biocLite.R")
+  }
   biocLite("Biostrings")
   library(Biostrings)
 }
+#  library(help = Biostrings)       # basic information
+#  browseVignettes("Biostrings")    # available vignettes
+#  data(package = "Biostrings")     # available datasets
 
-# Biostrings stores sequences in "XString" objects. Once we have onverted our
-# traget sequences to AAString objects, the alignment itself is straightforward.
+
+# Biostrings stores sequences in "XString" objects. Once we have converted our
+# target sequences to AAString objects, the alignment itself is straightforward.
 
 # ==   2.1  Optimal global alignment  ==========================================
 

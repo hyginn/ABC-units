@@ -22,29 +22,27 @@
 #
 # ==============================================================================
 
+
 #TOC> ==========================================================================
-#TOC>
+#TOC> 
 #TOC>   Section  Title                                                   Line
 #TOC> -----------------------------------------------------------------------
-#TOC>   1        Introduction                                              50
-#TOC>   2        Three fundamental distributions                          113
-#TOC>   2.1      The Poisson Distribution                                 116
-#TOC>   2.2      The uniform distribution                                 169
-#TOC>   2.3      The Normal Distribution                                  189
-#TOC>   3        quantile-quantile comparison                             230
-#TOC>   3.1      qqnorm()                                                 240
-#TOC>   3.2      qqplot()                                                 300
-#TOC>   4        Quantifying the difference                               317
-#TOC>   4.1      Chi2 test for discrete distributions                     351
-#TOC>   4.2      Kullback-Leibler divergence                              435
-#TOC>   4.2.1    An example from tossing dice                             446
-#TOC>   4.2.2    An example from lognormal distributions                  568
-#TOC>   4.3      Kolmogorov-Smirnov test for continuous distributions     609
-#TOC>
+#TOC>   1        Introduction                                              54
+#TOC>   2        Three fundamental distributions                          117
+#TOC>   2.1      The Poisson Distribution                                 120
+#TOC>   2.2      The uniform distribution                                 173
+#TOC>   2.3      The Normal Distribution                                  193
+#TOC>   3        quantile-quantile comparison                             234
+#TOC>   3.1      qqnorm()                                                 244
+#TOC>   3.2      qqplot()                                                 304
+#TOC>   4        Quantifying the difference                               321
+#TOC>   4.1      Chi2 test for discrete distributions                     355
+#TOC>   4.2      Kullback-Leibler divergence                              446
+#TOC>   4.2.1    An example from tossing dice                             457
+#TOC>   4.2.2    An example from lognormal distributions                  579
+#TOC>   4.3      Kolmogorov-Smirnov test for continuous distributions     620
+#TOC> 
 #TOC> ==========================================================================
-
-
-
 
 
 # =    1  Introduction  ========================================================
@@ -372,12 +370,19 @@ myBreaks <- c(myBreaks, maxX) # ... and one that contains the outliers
 hist(rG1.5, breaks = myBreaks, col = myCols[4])
 
 # ... but basic R has no inbuilt function to stack histogram bars side-by-side.
-# We use the multhist() function in the plotrix package:
+# We use the multhist() function in the plotrix package: check out the
+# package information - plotrix has _many_ useful utilities to enhance
+# plots or produce informative visualizations.
 
-if (!require(plotrix)) {
+if (! require(plotrix, quietly=TRUE)) {
   install.packages("plotrix")
   library(plotrix)
 }
+# Package information:
+#  library(help = plotrix)       # basic information
+#  browseVignettes("plotrix")    # available vignettes
+#  data(package = "plotrix")     # available datasets
+
 
 h <- multhist(list(rL1, rL2, rG1.2, rG1.5, rG1.9 ),
               breaks = myBreaks,
@@ -436,14 +441,14 @@ chisq.test(countsL1, countsG1.9, simulate.p.value = TRUE, B = 10000)
 
 # For discrete probability distributions, there is a much better statistic, the
 # Kullback-Leibler divergence (or relative entropy). It is based in information
-# theory, and evaluates how different each matching pair of outcomem categories
+# theory, and evaluates how different the matched pairs of outcome categories
 # are. Its inputs are the probability mass functions (p.m.f.) of the two
 # functions to be compared. A probability mass function is the probability of
 # every outcome the process can have. Kullback-Leibler divergence therefore can
 # be applied to discrete distributions. But we need to talk a bit about
 # converting counts to p.m.f.'s.
 
-# ===  4.2.1  An example from tossing dice
+# ===  4.2.1  An example from tossing dice                        
 
 #  The p.m.f of an honest die is (1:1/6, 2:1/6, 3:1/6, 4:1/6, 5:1/6, 6:1/6). But
 #  there is an issue when we convert sampled counts to frequencies, and estimate
@@ -565,7 +570,7 @@ abline(v = KLdiv(rep(1/6, 6), pmfPC(counts, 1:6)), col="firebrick")
 # somewhat but not drastically atypical.
 
 
-# ===  4.2.2  An example from lognormal distributions
+# ===  4.2.2  An example from lognormal distributions             
 
 # We had compared a set of lognormal and gamma distributions above, now we
 # can use KL-divergence to quantify their similarity:

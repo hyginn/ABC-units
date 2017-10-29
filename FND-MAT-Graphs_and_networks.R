@@ -23,26 +23,25 @@
 # going on. That's not how it works ...
 #
 # ==============================================================================
- 
+
+
 #TOC> ==========================================================================
 #TOC> 
 #TOC>   Section  Title                                  Line
 #TOC> ------------------------------------------------------
-#TOC>   1        Review                                   48
-#TOC>   2        DEGREE DISTRIBUTIONS                    192
-#TOC>   2.1      Random graph                            198
-#TOC>   2.2      scale-free graph (Barabasi-Albert)      242
-#TOC>   2.3      Random geometric graph                  304
-#TOC>   3        A CLOSER LOOK AT THE igraph PACKAGE     424
-#TOC>   3.1      Basics                                  427
-#TOC>   3.2      Components                              499
-#TOC>   4        RANDOM GRAPHS AND GRAPH METRICS         518
-#TOC>   4.1      Diameter                                553
-#TOC>   5        GRAPH CLUSTERING                        621
+#TOC>   1        Review                                   52
+#TOC>   2        DEGREE DISTRIBUTIONS                    201
+#TOC>   2.1      Random graph                            207
+#TOC>   2.2      scale-free graph (Barabasi-Albert)      251
+#TOC>   2.3      Random geometric graph                  313
+#TOC>   3        A CLOSER LOOK AT THE igraph PACKAGE     433
+#TOC>   3.1      Basics                                  436
+#TOC>   3.2      Components                              508
+#TOC>   4        RANDOM GRAPHS AND GRAPH METRICS         527
+#TOC>   4.1      Diameter                                562
+#TOC>   5        GRAPH CLUSTERING                        630
 #TOC> 
 #TOC> ==========================================================================
- 
-
 
 
 # =    1  Review  ==============================================================
@@ -121,10 +120,15 @@ set.seed(112358)
 # standard package for work with graphs in r is "igraph". We'll go into more
 # details of the igraph package a bit later, for now we just use it to plot:
 
-if (!require(igraph)) {
+if (! require(igraph, quietly=TRUE)) {
   install.packages("igraph")
   library(igraph)
 }
+# Package information:
+#  library(help = igraph)       # basic information
+#  browseVignettes("igraph")    # available vignettes
+#  data(package = "igraph")     # available datasets
+
 
 myG <- graph_from_adjacency_matrix(myRandAM, mode = "undirected")
 set.seed(112358)

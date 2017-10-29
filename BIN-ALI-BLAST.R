@@ -23,28 +23,31 @@
 # going on. That's not how it works ...
 #
 # ==============================================================================
- 
+
+
 #TOC> ==========================================================================
 #TOC> 
 #TOC>   Section  Title                         Line
 #TOC> ---------------------------------------------
-#TOC>   1        Packages                        41
-#TOC>   2        Defining the APSES domain       50
-#TOC>   3        Executing the BLAST search      72
-#TOC>   4        Analysing results               94
+#TOC>   1        Preparations                    41
+#TOC>   2        Defining the APSES domain       54
+#TOC>   3        Executing the BLAST search      76
+#TOC>   4        Analysing results               98
 #TOC> 
 #TOC> ==========================================================================
- 
 
 
-
-# =    1  Packages  ============================================================
+# =    1  Preparations  ========================================================
 
 if (!require(Biostrings, quietly=TRUE)) {
   source("https://bioconductor.org/biocLite.R")
   biocLite("Biostrings")
   library(Biostrings)
 }
+# Package information:
+#  library(help = Biostrings)       # basic information
+#  browseVignettes("Biostrings")    # available vignettes
+#  data(package = "Biostrings")     # available datasets
 
 
 # =    2  Defining the APSES domain  ===========================================

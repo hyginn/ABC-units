@@ -23,18 +23,17 @@
 # going on. That's not how it works ...
 #
 # ==============================================================================
- 
+
+
 #TOC> ==========================================================================
 #TOC> 
 #TOC>   Section  Title                                Line
 #TOC> ----------------------------------------------------
-#TOC>   1        UniProt files via GET                  40
-#TOC>   1.1      Task - fetchUniProtSeq() function      98
-#TOC>   2        Task solutions                        105
+#TOC>   1        UniProt files via GET                  44
+#TOC>   1.1      Task - fetchUniProtSeq() function     107
+#TOC>   2        Task solutions                        114
 #TOC> 
 #TOC> ==========================================================================
- 
-
 
 
 # =    1  UniProt files via GET  ===============================================
@@ -49,10 +48,15 @@
 # a Web browser. Since this is a short and simple request, the GET verb is the
 # right tool:
 
-if (!require(httr)) {
+if (! require(httr, quietly=TRUE)) {
   install.packages("httr")
   library(httr)
 }
+# Package information:
+#  library(help = httr)       # basic information
+#  browseVignettes("httr")    # available vignettes
+#  data(package = "httr")     # available datasets
+
 
 # The UniProt ID for Mbp1 is ...
 

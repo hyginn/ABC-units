@@ -23,18 +23,17 @@
 # going on. That's not how it works ...
 #
 # ==============================================================================
- 
+
+
 #TOC> ==========================================================================
 #TOC> 
 #TOC>   Section  Title                                 Line
 #TOC> -----------------------------------------------------
-#TOC>   1        Working with NCBI eUtils                40
-#TOC>   1.1      Task - fetchNCBItaxData() function     149
-#TOC>   2        Task solutions                         156
+#TOC>   1        Working with NCBI eUtils                44
+#TOC>   1.1      Task - fetchNCBItaxData() function     162
+#TOC>   2        Task solutions                         169
 #TOC> 
 #TOC> ==========================================================================
- 
-
 
 
 # =    1  Working with NCBI eUtils  ============================================
@@ -44,19 +43,28 @@
 # To begin, we load some libraries with functions
 # we need...
 
-# httr sends and receives information via the http
+# ... the package httr, which sends and receives information via the http
 # protocol, just like a Web browser.
-if (!require(httr, quietly=TRUE)) {
+if (! require(httr, quietly=TRUE)) {
   install.packages("httr")
   library(httr)
 }
+# Package information:
+#  library(help = httr)       # basic information
+#  browseVignettes("httr")    # available vignettes
+#  data(package = "httr")     # available datasets
 
-# NCBI's eUtils send information in XML format; we
+
+# ...plus the package xml2: NCBI's eUtils send information in XML format so we
 # need to be able to parse XML.
-if (!require(xml2)) {
+if (! require(xml2, quietly=TRUE)) {
   install.packages("xml2")
   library(xml2)
 }
+# Package information:
+#  library(help = xml2)       # basic information
+#  browseVignettes("xml2")    # available vignettes
+#  data(package = "xml2")     # available datasets
 
 
 

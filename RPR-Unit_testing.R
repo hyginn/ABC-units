@@ -23,27 +23,30 @@
 #
 # ==============================================================================
 
+
 #TOC> ==========================================================================
-#TOC>
+#TOC> 
 #TOC>   Section  Title                       Line
 #TOC> -------------------------------------------
-#TOC>   1        Unit Tests with testthat      39
-#TOC>   2        Organizing your tests        148
-#TOC>   3        Task solutions               173
-#TOC>
+#TOC>   1        Unit Tests with testthat      43
+#TOC>   2        Organizing your tests        156
+#TOC>   3        Task solutions               181
+#TOC> 
 #TOC> ==========================================================================
-
-
 
 
 # =    1  Unit Tests with testthat  ============================================
 
 # The testthat package supports writing and executing unit tests in many ways.
 
-if (!require(testthat)) {
+if (! require(testthat, quietly=TRUE)) {
   install.packages("testthat")
   library(testthat)
 }
+# Package information:
+#  library(help = testthat)       # basic information
+#  browseVignettes("testthat")    # available vignettes
+#  data(package = "testthat")     # available datasets
 
 # An atomic test consists of an expectation about the bahaviour of a function or
 # the existence of an object. testthat provides a number of useful expectations:
