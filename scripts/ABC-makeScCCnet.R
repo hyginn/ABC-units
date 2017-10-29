@@ -28,7 +28,7 @@
 #
 # ==============================================================================
 
-if (!require(readr, quietly = TRUE)) {
+if (! require(readr, quietly = TRUE)) {
   install.packages("readr")
   library(readr)
 }

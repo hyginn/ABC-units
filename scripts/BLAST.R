@@ -28,7 +28,7 @@
 # ==============================================================================
 
 
-if (!require(httr, quietly = TRUE)) {
+if (! require(httr, quietly = TRUE)) {
   install.packages("httr")
   library(httr)
 }

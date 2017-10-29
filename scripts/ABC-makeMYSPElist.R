@@ -70,7 +70,7 @@
 #  (https://gold.jgi.doe.gov/). Use the data that is hosted at the NCBI.
 
 # ==   2.1  Initialize  ========================================================
-if (!require(httr)) { # httr provides interfaces to Webservers on the Internet
+if (! require(httr)) { # httr provides interfaces to Webservers on the Internet
     install.packages("httr")
     library(httr)
 }

@@ -15,13 +15,13 @@ if (! require(jsonlite, quietly = TRUE)) {
 }
 
 
-if (!require(httr, quietly = TRUE)) {
+if (! require(httr, quietly = TRUE)) {
   install.packages("httr")
   library(httr)
 }
 
 
-if (!require(xml2, quietly = TRUE)) {
+if (! require(xml2, quietly = TRUE)) {
   install.packages("xml2")
   library(xml2)
 }
