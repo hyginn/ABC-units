@@ -3,13 +3,14 @@
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the RPR-Genetic_code_optimality unit.
 #
-# Version:  1.0
+# Version:  1.0.1
 #
 # Date:     2017  10  16
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
-#           1.0    New material.
+#           1.0.1    Fixed two bugs discovered by Suan Chin Yeo.
+#           1.0      New material.
 #
 #
 # TODO:
@@ -25,7 +26,7 @@
 
 
 #TOC> ==========================================================================
-#TOC> 
+#TOC>
 #TOC>   Section  Title                                    Line
 #TOC> --------------------------------------------------------
 #TOC>   1        Designing a computational experiment       57
@@ -38,7 +39,7 @@
 #TOC>   2.2.4    measure effect                            214
 #TOC>   3        Run the experiment                        261
 #TOC>   4        Task solutions                            348
-#TOC> 
+#TOC>
 #TOC> ==========================================================================
 
 
@@ -118,10 +119,10 @@ swappedGC <- function(GC) {
   # Value:  named chr  same vector with random amino acid assignments where the
   #                       amino acids have been swapped.
 
-  aaOrig <- unique(GC)                # the amino acids in the input code
-  aaSwap <- sample(aa, length(aa))    # shuffled
-  names(aaSwap) <- aaOrig             # name them after the original
-  GC[1:64] <- aaSwap[GC]              # replace original with shuffled
+  aaOrig <- unique(GC)                       # the amino acids in the input code
+  aaSwap <- sample(aaOrig, length(aaOrig))   # shuffled
+  names(aaSwap) <- aaOrig                    # name them after the original
+  GC[1:64] <- aaSwap[GC]                     # replace original with shuffled
 
   return(GC)
 }
@@ -138,7 +139,7 @@ swappedGC <- function(GC) {
 #   - we count the number of mutations and evaluate their severity.
 
 
-# ===  2.2.1  reverse-translate                    
+# ===  2.2.1  reverse-translate
 
 # To reverse-translate an amino acid vector, we randomly pick one of its
 # codons from a genetic code, and assemble all codons to a sequence.
@@ -163,7 +164,7 @@ traRev <- function(s, GC) {
 }
 
 
-# ===  2.2.2  Randomly mutate                      
+# ===  2.2.2  Randomly mutate
 
 # To mutate, we split a codon into it's three nucleotides, then randomly replace
 # one of the three with another nucleotide.
@@ -188,7 +189,7 @@ randMut <- function(vC) {
 
 
 
-# ===  2.2.3  Forward- translate                   
+# ===  2.2.3  Forward- translate
 
 traFor <- function(vC, GC) {
   # Parameters:
@@ -206,7 +207,7 @@ traFor <- function(vC, GC) {
   }
 
 
-# ===  2.2.4  measure effect                       
+# ===  2.2.4  measure effect
 
 # How do we evaluate the effect of the mutation? We'll take a simple ad hoc
 # approach: we divide amino acids into hydrophobic, hydrophilic, and neutral
@@ -291,7 +292,7 @@ hist(valUGC,
 
 # This looks like a normal distribution. Let's assume the effect of mutations
 # under the universal genetic code is the mean of this distribution:
-effectUGC <- mean(val)  # 178.1
+effectUGC <- mean(valUGC)  # 178.1
 
 # Now we can look at the effects of alternate genetic codes:
 
