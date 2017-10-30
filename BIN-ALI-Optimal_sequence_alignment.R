@@ -3,12 +3,14 @@
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the BIN-ALI-Optimal_sequence_alignment unit.
 #
-# Version:  0.1
+# Version:  1.0.1
 #
-# Date:     2017  08  28
+# Date:     2017  09   -   2017  10
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.0.1  bugfix
+#           1.0    First 2017 live version.
 #           0.1    First code copied from 2016 material.
 #
 # TODO:
@@ -171,8 +173,8 @@ percentID(ali2)
 (fanID <- myDB$annotation$ID[myDB$annotation$proteinID == proID &
                              myDB$annotation$featureID == ftrID])
 
-myDB$proteinAnnotation[myDB$proteinAnnotation$protein.ID == proID &
-                         myDB$proteinAnnotation$feature.ID == ftrID, ]
+myDB$annotation[myDB$annotation$ID == proID &
+                myDB$annotation$ID == ftrID, ]
 
 # The annotation record contains the start and end coordinates which we can use
 # to define the APSES domain sequence with a substr() expression.
