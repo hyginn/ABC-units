@@ -1,33 +1,33 @@
-# ___ID___ .R
+# BIN-PHYLO-Tree_building.R
 #
 # Purpose:  A Bioinformatics Course:
-#              R code accompanying the ___ID___ unit.
+#              R code accompanying the BIN-PHYLO-Tree_building unit.
 #
-# Version:  0.1
+# Version:  1.0
 #
-# Date:     2017  08  28
+# Date:     2017  10.  31
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.0    First 2017 version
 #           0.1    First code copied from 2016 material.
-
+#
 #
 # TODO:
 #
 #
 # == DO NOT SIMPLY  source()  THIS FILE! =======================================
-
+#
 # If there are portions you don't understand, use R's help system, Google for an
 # answer, or ask your instructor. Don't continue if you don't understand what's
 # going on. That's not how it works ...
-
+#
 # ==============================================================================
 
-# = 1 ___Section___
 
-# ==============================================================================
-#        PART FOUR: Calculating trees
-# ==============================================================================
+
+# = 1  Calculating Trees
+
 
 # Follow the instructions found at phylip's home on the Web to install. If you
 # are on a Windows computer, take note of the installation directory.
@@ -82,16 +82,15 @@ if (!require(Rphylip, quietly=TRUE)) {
 # Confirm that the settings are right.
 PROMLPATH                # returns the path
 list.dirs(PROMLPATH)     # returns the directories in that path
-list.files(PROMLPATH)    # lists the files
+list.files(PROMLPATH)    # lists the files [1] "proml"   "proml.command"
 
 # If "proml" is NOT among the files that the last command returns, you
-# can't continue.
+# can't continue. Ask on the mailing list for advice.
 
-# Now read the mfa file you have saved, as a "proseq" object with the
-# read.protein() function of the RPhylip package:
+# Now read the mfa file you have saved in the BIB-PHYLO-Data_preparation unit,
+# as a "proseq" object with the read.protein() function of the RPhylip package:
 
-apsIn <- read.protein("APSES.mfa")
-apsIn <- read.protein("~/Desktop/APSES_HISCA.mfa")
+apsIn <- read.protein("APSESphyloSet.mfa")
 
 # ... and you are ready to build a tree.
 
@@ -103,15 +102,14 @@ apsIn <- read.protein("~/Desktop/APSES_HISCA.mfa")
 
 apsTree <- Rproml(apsIn, path=PROMLPATH)
 
-
-
 # A quick first look:
 
 plot(apsTree)
 
+# save your tree:
+save(apsTree, file = "APSEStreeRproml.RData")
 
-
-# = 1 Tasks
+# If this did not work, ask for advice.
 
 
 

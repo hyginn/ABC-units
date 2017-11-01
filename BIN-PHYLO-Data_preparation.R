@@ -3,108 +3,138 @@
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the BIN-PHYLO-Data_preparation unit.
 #
-# Version:  0.1
+# Version:  1.0
 #
-# Date:     2017  08  28
+# Date:     2017  10.  31
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.0    First 2017 version
 #           0.1    First code copied from 2016 material.
-
+#
 #
 # TODO:
 #
 #
 # == DO NOT SIMPLY  source()  THIS FILE! =======================================
-
+#
 # If there are portions you don't understand, use R's help system, Google for an
 # answer, or ask your instructor. Don't continue if you don't understand what's
 # going on. That's not how it works ...
-
-# ==============================================================================
-
-# = 1 ___Section___
-
-# ==============================================================================
-#        PART ONE: Choosing sequences
-# ==============================================================================
-
-# Start by loading libraries. You already have the packages installed.
-library(Biostrings)
-library(msa)
-library(stringr)
-
-# What is the latest version of myDB that you have saved?
-list.files(pattern = "myDB.*")
-
-# ... load it (probably myDB.05.RData - if not, change the code below).
-load("myDB.05.RData")
-
-# The database contains the ten Mbp1 orthologues from the reference species
-# and the Mbp1 RBM for MYSPE.
 #
-# We will construct a phylogenetic tree from the proteins' APSES domains.
-# You have annotated their ranges as a feature.
+# ==============================================================================
 
-# Collect APSES domain sequences from your database. The function
-# dbGetFeatureSequence() retrieves the sequence that is annotated for a feature
-# from its start and end coordinates. Try:
+# =    1  Preparations  ========================================================
 
-dbGetFeatureSequence(myDB, "MBP1_SACCE", "APSES fold")
 
-# Lets put all APSES sequences into a vector:
-APSESnames <- myDB$protein$name[grep("^MBP1_", myDB$protein$name)]
-APSES <- character(length(APSESnames))
+# You need to reload your protein database, including changes that might have
+# been made to the reference files. If you have worked with the prerequiste
+# units, you should have a script named "makeProteinDB.R" that will create the
+# myDB object with a protein and feature database. Ask for advice if not.
+source("makeProteinDB.R")
 
-for (i in 1:length(APSESnames)) {
-  APSES[i] <- dbGetFeatureSequence(myDB, APSESnames[i], "APSES fold")
+# Load packages we need
+
+if (! require(Biostrings, quietly=TRUE)) {
+  if (! exists("biocLite")) {
+    source("https://bioconductor.org/biocLite.R")
+  }
+  biocLite("Biostrings")
+  library(Biostrings)
+}
+# Package information:
+#  library(help = Biostrings)       # basic information
+#  browseVignettes("Biostrings")    # available vignettes
+#  data(package = "Biostrings")     # available datasets
+
+
+if (! require(msa, quietly=TRUE)) {
+  if (! exists("biocLite")) {
+    source("https://bioconductor.org/biocLite.R")
+  }
+  biocLite("msa")
+  library(msa)
+}
+# Package information:
+#  library(help=msa)       # basic information
+#  browseVignettes("msa")  # available vignettes
+#  data(package = "msa")   # available datasets
+
+
+if (! require(stringr, quietly=TRUE)) {
+  install.packages("stringr")
+  library(stringr)
+}
+# Package information:
+#  library(help=stringr)       # basic information
+#  browseVignettes("stringr")  # available vignettes
+#  data(package = "stringr")   # available datasets
+
+
+
+# = 1      Fetching sequences
+
+
+# myDB contains the ten Mbp1 orthologues from the reference species and the Mbp1
+# RBM for MYSPE. We will construct a phylogenetic tree from the proteins' APSES
+# domains. You have annotated their ranges as a feature. The following code
+# retrieves the sequences from myDB. You have seen similar code in other units.
+
+sel <- grep("^MBP1_", myDB$protein$name)
+(proNames <- myDB$protein$name[sel])
+(proIDs <- myDB$protein$ID[sel])
+
+(sel <- myDB$feature$ID[myDB$feature$name == "APSES fold"])
+(fanIDs <- myDB$annotation$ID[myDB$annotation$proteinID %in% proIDs & # %in% !
+                              myDB$annotation$featureID == sel])      #  ==  !
+                                                                      # Why?
+APSI <- character(length(fanIDs))
+
+for (i in seq_along(fanIDs)) {
+  sel   <- myDB$annotation$ID == fanIDs[i]  # get the feature row index
+  proID <- myDB$annotation$proteinID[sel]   # get its protein ID
+  start <- myDB$annotation$start[sel]       # get start ...
+  end   <- myDB$annotation$end[sel]         # ... and end
+
+  sel <- myDB$protein$ID == proID           # get the protein row index ...
+                                            # ... and the sequence
+  APSI[i] <- substring(myDB$protein$sequence[sel], start, end)
+  names(APSI)[i] <- (myDB$protein$name[sel])
 }
 
-# Let's name the rows of our vector with the BiCode part of the protein name.
-# This is important so we can keep track of which sequence is which. We use the
-# gsub() funcion to substitute "" for "MBP1_", thereby deleting this prefix.
-names(APSES) <- gsub("^MBP1_", "", APSESnames)
-
-# inspect the result: what do you expect? Is this what you expect?
-head(APSES)
+head(APSI)
 
 # Let's add the E.coli Kila-N domain sequence as an outgroup, for rooting our
-# phylogegetic tree (see the Assignment Course Wiki page for details on the
-# sequence).
+# phylogenetic tree (see the unit's Wiki page for details on the sequence).
 
-APSES[length(APSES) + 1] <-
-  "IDGEIIHLRAKDGYINATSMCRTAGKLLSDYTRLKTTQEFFDELSRDMGIPISELIQSFKGGRPENQGTWVHPDIAINLAQ"
-names(APSES)[length(APSES)] <- "ESCCO"
+APSI <- c(APSI,
+"IDGEIIHLRAKDGYINATSMCRTAGKLLSDYTRLKTTQEFFDELSRDMGIPISELIQSFKGGRPENQGTWVHPDIAINLAQ")
+names(APSI)[length(APSI)] <- "KILA_ESCCO"
+tail(APSI)
 
 
-# ==============================================================================
-#        PART TWO: Multiple sequence alignment
-# ==============================================================================
+# = 1 Multiple Sequence Alignment
 
 # This vector of sequences with named elements fulfills the requirements to be
 # imported as a Biostrings object - an AAStringSet - which we need as input for
 # the MSA algorithms in Biostrings.
 #
 
-APSESSeqSet <- AAStringSet(APSES)
-
-APSESMsaSet <- msaMuscle(APSESSeqSet, order = "aligned")
+APSESSet <- AAStringSet(APSI)
+APSESMsa <- msaMuscle(APSESSet, order = "aligned")
 
 # inspect the alignment.
-writeSeqSet(APSESMsaSet, format = "ali")
+writeALN(APSESMsa)
 
 
 # What do you think? Is this a good alignment for phylogenetic inference?
 
-# ==============================================================================
-#        PART THREE: reviewing and editing alignments
-# ==============================================================================
 
-# Head back to the assignment 7 course wiki page and read up on the background
+# = 1 Reviewing and Editing Alignments
+
+
+# Head back to the Wiki page for this unit and read up on the background
 # first.
-#
-
-
 
 # Let's mask out all columns that have observations for
 # less than 1/3 of the sequences in the dataset. This
@@ -116,81 +146,54 @@ writeSeqSet(APSESMsaSet, format = "ali")
 # go through the matrix, column by column and decide
 # whether we want to include that column.
 
-# Step 1. Go through this by hand...
+# = 1.1 Masking workflow
 
 # get the length of the alignment
-lenAli <- APSESMsaSet@unmasked@ranges@width[1]
+(lenAli <- APSESMsa@unmasked@ranges@width[1])
 
 # initialize a matrix that can hold all characters
 # individually
-msaMatrix <- matrix(character(nrow(APSESMsaSet) * lenAli),
+msaMatrix <- matrix(character(nrow(APSESMsa) * lenAli),
                     ncol = lenAli)
 
 # assign the correct rownames
-rownames(msaMatrix) <- APSESMsaSet@unmasked@ranges@NAMES
-for (i in 1:nrow(APSESMsaSet)) {
-  seq <- as.character(APSESMsaSet@unmasked[i])
-  msaMatrix[i, ] <- unlist(strsplit(seq, ""))
+rownames(msaMatrix) <- APSESMsa@unmasked@ranges@NAMES
+for (i in 1:nrow(APSESMsa)) {
+  msaMatrix[i, ] <- unlist(strsplit(as.character(APSESMsa@unmasked[i]), ""))
 }
 
 # inspect the result
-msaMatrix[1:5, ]
+msaMatrix[1:7, 1:14]
 
-# Now let's make a logical vector with an element
-# for each column that selects which columns should
-# be masked out.
+# Now let's make a logical vector with an element for each column that selects
+# which columns should be masked out.
 
-# To count the number of elements in a vector, R has
-# the table() function. For example ...
-table(msaMatrix[ , 1])
-table(msaMatrix[ , 10])
-table(msaMatrix[ , 20])
-table(msaMatrix[ , 30])
+# The number of hyphens in a column is easy to count. Consider:
 
+    msaMatrix[ , 20]
+    msaMatrix[ , 20] == "-"
+sum(msaMatrix[ , 20] == "-")
 
-# Since the return value of table() is a named vector, where
-# the name is the element that was counted in each slot,
-# we can simply get the counts for hyphens from the
-# return value of table(). We don't even need to assign
-# the result to an intermediate variable, but we
-# can attach the selection via square brackets,
-# i.e.: ["-"],  directly to the function call:
-table(msaMatrix[ , 1])["-"]
+# Thus filling our logical vector is simple:
 
-# ... to get the number of hyphens. And we can compare
-# whether it is eg. > 4.
-table(msaMatrix[ , 1])["-"] > 4
-
-# Thus filling our logical vector is really simple:
-
-# initialize the mask
-colMask <- logical(lenAli)
+# initialize a mask
+colMask <- logical(ncol(msaMatrix))
 
 # define the threshold for rejecting a column
-limit <- round(nrow(APSESMsaSet) * (2/3))
+limit <- round(nrow(APSESMsa) * (2/3))
 
 # iterate over all columns, and write TRUE if there are less-or-equal to "limit"
 # hyphens, FALSE if there are more.
-for (i in 1:lenAli) {
-  count <- table(msaMatrix[ , i])["-"]
-  if (is.na(count)) { # No hyphen
-    count <- 0
-  }
-  colMask[i] <- count <= limit
+for (i in 1:ncol(msaMatrix)) {
+  count <- sum(msaMatrix[ , i] == "-")
+  colMask[i] <- count <= limit # FALSE if less-or-equal to limit, TRUE if not
 }
 
 # inspect the mask
 colMask
 
-# How many positions were masked? R has a simple trick
-# to count the number of TRUE and FALSE in a logical
-# vector. If a logical TRUE or FALSE is converted into
-# a number, it becomes 1 or 0 respectively. If we use
-# the sum() function on the vector, the conversion is
-# done implicitly. Thus ...
+# How many positions were masked?
 sum(colMask)
-
-# ... gives the number of TRUE elements.
 
 cat(sprintf("We are masking %4.2f %% of alignment columns.\n",
             100 * (1 - (sum(colMask) / length(colMask)))))
@@ -203,46 +206,22 @@ maskedMatrix <- msaMatrix[ , colMask]
 # check:
 ncol(maskedMatrix)
 
-
-# ... then collapse each row back into a sequence ...
-
-apsMaskedSeq <- character()
+# ... then collapse each row of single characters back into a string ...
+APSESphyloSet <- character()
 for (i in 1:nrow(maskedMatrix)) {
-  apsMaskedSeq[i] <- paste(maskedMatrix[i, ], collapse="")
+  APSESphyloSet[i] <- paste(maskedMatrix[i, ], collapse="")
 }
-names(apsMaskedSeq) <- rownames(maskedMatrix)
-
-# ... and read it back into an AAStringSet object
-
-apsMaskedSet <- AAStringSet(apsMaskedSeq)
+names(APSESphyloSet) <- rownames(maskedMatrix)
 
 # inspect ...
-writeSeqSet(apsMaskedSet, format = "ali")
+writeALN(APSESphyloSet)
 
+# As you see, we have removed a three residue insertion from MBP1_NEUCR, and
+# several indels from the KILA_ESCCO outgroup sequence.
 
-
-# Step 2. Turn this code into a function...
-
-# Even though the procedure is simple, doing this more than once is tedious and
-# prone to errors. I have assembled the steps we just went through into a
-# function maskSet() and put it into the utilities.R file, from where it has
-# been loaded when you started this sesssion.
-
-maskSet
-
-# Check that the function gives identical results
-# to what we did before by hand:
-identical(apsMaskedSet, maskSet(APSESMsaSet))
-
-# The result must be TRUE. If it's not TRUE you have
-# an error somewhere.
 
 # We save the aligned, masked domains to a file in multi-FASTA format.
-writeSeqSet(maskSet(APSESMsaSet), file = "APSES.mfa",   format = "mfa")
-
-
-
-# = 1 Tasks
+writeMFA(APSESphyloSet, myCon = "APSESphyloSet.mfa")
 
 
 
