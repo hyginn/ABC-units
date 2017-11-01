@@ -3,12 +3,13 @@
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the BIN-ALI-MSA unit.
 #
-# Version:  1.0
+# Version:  1.1
 #
-# Date:     2017  10  23
+# Date:     2017  10
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.1    Added fetchMSAmotif()
 #           1.0    Fully refactored and rewritten for 2017
 #           0.1    First code copied from 2016 material.
 #
@@ -26,7 +27,7 @@
 
 
 #TOC> ==========================================================================
-#TOC> 
+#TOC>
 #TOC>   Section  Title                                        Line
 #TOC> ------------------------------------------------------------
 #TOC>   1        Preparations                                   51
@@ -44,7 +45,7 @@
 #TOC>   6        Sequence Logos                                539
 #TOC>   6.1      Subsetting an alignment by motif              548
 #TOC>   6.2      Plot a Sequence Logo                          591
-#TOC> 
+#TOC>
 #TOC> ==========================================================================
 
 
@@ -53,7 +54,7 @@
 # You need to reload you protein database, including changes that might
 # have been made to the reference files. If you have worked with the
 # prerequiste units, you should have a script named "makeProteinDB.R"
-# that will create the myDB object with aprotein and feature database.
+# that will create the myDB object with a protein and feature database.
 # Ask for advice if not.
 source("makeProteinDB.R")
 
@@ -242,7 +243,7 @@ for (i in seq_along(highScoringRanges$lengths)) {
 #   -  adjust the sequence names
 #   -  convert to msaAAMultipleAlignment object
 
-# ===  4.1.1  importing an .aln file                   
+# ===  4.1.1  importing an .aln file
 
 # The seqinr package has a function to read CLUSTAL W formatted .aln files ...
 if (! require(seqinr, quietly=TRUE)) {
@@ -586,6 +587,12 @@ x <- cumsum(x)
 # ... and subset the alignment
 
 (motifAli <- subseq(msaM@unmasked, start = aliStart, end = aliEnd))
+
+# Packaging this into a function is convenient to have, therefore I have added
+# such a function to the .utilities.R script:  fetchMSAmotif(). Try it:
+
+wing <- "HEKVQGGFGKYQGTWV" # the MBP1_SACCE APSES "wing" sequence
+writeALN(fetchMSAmotif(msaM, wing))
 
 
 # ==   6.2  Plot a Sequence Logo  ==============================================

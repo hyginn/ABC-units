@@ -133,6 +133,50 @@ waitTimer <- function(t, nIntervals = 50) {
 }
 
 
+fetchMSAmotif <- function(ali, mot) {
+  # retrieve a subset from ali that spans the sequence in mot.
+  # Parameters:
+  #    ali        MsaAAMultipleAlignment object
+  #    mot  chr   substring within ali
+  # Value:  AAStringset
+
+  if (class(ali) != "MsaAAMultipleAlignment" &&
+      class(ali) != "MsaDNAMultipleAlignment" &&
+      class(ali) != "MsaRNAMultipleAlignment") {
+    stop("ali has to be an msa multiple alignment object.")
+  }
+
+  if (class(mot) != "character") {
+    stop("mot has to be a character object.")
+  }
+
+  x <- gsub("-", "", as.character(ali))  # pure sequence, no hyphens
+
+  idx <- grep(mot, x)[1] # first sequence containing mot. If no match,
+                         # idx becomes NA
+  if (is.na(idx)) {
+    stop("mot is not a subsequence in ali.")
+  }
+
+  # Find the match range
+  m <- regexpr(mot, x[idx])
+  motifStart <- as.numeric(m)
+  motifEnd <- attr(m, "match.length") + motifStart - 1
+
+  # Count characters, skip hyphens ...
+  x <- unlist(strsplit(as.character(ali)[idx], ""))
+  x <- x != "-"
+  x <- as.numeric(x)
+  x <- cumsum(x)
+
+  return(subseq(ali@unmasked,
+                start = which(x == motifStart)[1], # get the first position
+                end   = which(x == motifEnd)[1]))
+}
+
+
+
+
 # ====== PDB ID selection ======================================================
 
 selectPDBrep <- function(n) {
