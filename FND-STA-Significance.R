@@ -3,12 +3,13 @@
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the FND-STA-Significance unit.
 #
-# Version:  1.0
+# Version:  1.1
 #
-# Date:     2017  09  05
+# Date:     2017  09  - 2017  10
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.1    Corrected treatment of empirical p-value
 #           1.0    First contents
 #
 # TODO:
@@ -20,27 +21,22 @@
 # answer, or ask your instructor. Don't continue if you don't understand what's
 # going on. That's not how it works ...
 # ==============================================================================
- 
+
+
 #TOC> ==========================================================================
 #TOC> 
 #TOC>   Section  Title                                        Line
 #TOC> ------------------------------------------------------------
-#TOC>   1        Significance and p-value                       46
-#TOC>   1.1      Significance levels                            57
-#TOC>   1.2      probability and p-value                        74
+#TOC>   1        Significance and p-value                       42
+#TOC>   1.1      Significance levels                            53
+#TOC>   1.2      probability and p-value                        70
 #TOC>   1.2.1    p-value illustrated                           100
-#TOC>   2        One- or two-sided                             152
-#TOC>   3        Significance by integration                   192
-#TOC>   4        Significance by simulation or permutation     198
-#TOC>   5        Final tasks                                   298
+#TOC>   2        One- or two-sided                             153
+#TOC>   3        Significance by integration                   193
+#TOC>   4        Significance by simulation or permutation     199
+#TOC>   5        Final tasks                                   302
 #TOC> 
 #TOC> ==========================================================================
- 
-
-#TOC>
-#TOC>
-
-
 
 
 # =    1  Significance and p-value  ============================================
@@ -56,7 +52,7 @@
 
 # ==   1.1  Significance levels  ===============================================
 
-# A "very small" probability is purely a matter of convention, a cultural
+# A "very small" probability is purely a matter of convention - a cultural
 # convention. In the biomedical field we usually call probabilities of less then
 # 0.05 (5%) small enough to reject the null-hypothesis. Thus we call
 # observations with a probability of less than 0.05 "significant" and if we want
@@ -67,7 +63,7 @@
 # also be 0.0498631, or 0.03, or 1/(pi^3). 0.05 is just the value that the
 # British statistician Ronald Fisher happened to propose for this purpose in
 # 1925. Incidentally, Fisher later recommended to use different cutoffs for
-# diffrent purposes (cf.
+# different purposes (cf.
 # https://en.wikipedia.org/wiki/Statistical_significance).
 
 
@@ -93,8 +89,12 @@ print(x, digits = 22)
 # 2: that distribution can be integrated between any specific value
 #      and its upper and lower bounds (or +- infinity).
 
-# Then what we really mean by the probability of an observation in the context of that distribution is: the
-# probability of observing that value, or a value more extreme than the one we have. We call this the p-value. Note that we are not talking about an individual number anymore, we are talking about the area under the curve between our observation and the upper (or lower) bound of the curve, as a fraction of the whole.
+# Then what we really mean by the probability of an observation in the context
+# of that distribution is: the probability of observing that value, or a value
+# more extreme than the one we have. We call this the p-value. Note that we are
+# not talking about an individual number anymore, we are talking about the area
+# under the curve between our observation and the upper (or lower) bound of the
+# curve, as a fraction of the whole.
 
 
 # ===  1.2.1  p-value illustrated                      
@@ -102,6 +102,7 @@ print(x, digits = 22)
 # Let's illustrate. First we draw a million random values from our
 # standard, normal distribution:
 
+set.seed(112358)
 r <- rnorm(1000000)
 
 # Let's see what the distribution looks like:
@@ -201,8 +202,11 @@ sum(r > quantile(r, probs = 0.95))
 # be warranted for biological data, can be a highly technical question.
 # Fortunately, we can often simply run a simulation, a random resampling, or a
 # permutation and then count the number of outcomes, just as we did with our
-# rnorm() samples. Here is an example. Assume you have a protein sequence and
-# you speculate that postively charged residues are close to negatively charged
+# rnorm() samples. We call this an empirical p-value. (Actually, the "empirical
+# p-value" is defined as (Nobs + 1) / (N + 1).  )
+
+# Here is an example. Assume you have a protein sequence and
+# you speculate that positively charged residues are close to negatively charged
 # residues to balance charge locally. A statistic that would capture this is the
 # mean minimum distance between all D,E residues and the closest R,K,H
 # residue. Let's compute this for the sequence of yeast Mbp1.
@@ -297,8 +301,8 @@ abline(v = chSep(v), col = "#EE0000")
 
 # =    5  Final tasks  =========================================================
 
-# From chs, compute the probability of a mean minimum charge separation to be
-#   larger or equal to the value observed for the yeast MBP1 sequence. Note
+# From chs, compute the empirical p-value of a mean minimum charge separation to
+#   be larger or equal to the value observed for the yeast MBP1 sequence. Note
 #   the result in your journal. Is it significant? Also note the result of
 #   the following expression for validation:
 writeBin(sum(chs), raw(8))

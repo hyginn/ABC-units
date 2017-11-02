@@ -3,12 +3,13 @@
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the FND-STA-Probability_distribution unit.
 #
-# Version:  1.0
+# Version:  1.1
 #
-# Date:     2017  10  10
+# Date:     2017  10
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.1    Corrected empirical p-value
 #           1.0    First code live version
 #
 # TODO:
@@ -27,20 +28,20 @@
 #TOC> 
 #TOC>   Section  Title                                                   Line
 #TOC> -----------------------------------------------------------------------
-#TOC>   1        Introduction                                              54
-#TOC>   2        Three fundamental distributions                          117
-#TOC>   2.1      The Poisson Distribution                                 120
-#TOC>   2.2      The uniform distribution                                 173
-#TOC>   2.3      The Normal Distribution                                  193
-#TOC>   3        quantile-quantile comparison                             234
-#TOC>   3.1      qqnorm()                                                 244
-#TOC>   3.2      qqplot()                                                 304
-#TOC>   4        Quantifying the difference                               321
-#TOC>   4.1      Chi2 test for discrete distributions                     355
-#TOC>   4.2      Kullback-Leibler divergence                              446
-#TOC>   4.2.1    An example from tossing dice                             457
-#TOC>   4.2.2    An example from lognormal distributions                  579
-#TOC>   4.3      Kolmogorov-Smirnov test for continuous distributions     620
+#TOC>   1        Introduction                                              49
+#TOC>   2        Three fundamental distributions                          112
+#TOC>   2.1      The Poisson Distribution                                 115
+#TOC>   2.2      The uniform distribution                                 168
+#TOC>   2.3      The Normal Distribution                                  188
+#TOC>   3        quantile-quantile comparison                             229
+#TOC>   3.1      qqnorm()                                                 239
+#TOC>   3.2      qqplot()                                                 299
+#TOC>   4        Quantifying the difference                               316
+#TOC>   4.1      Chi2 test for discrete distributions                     350
+#TOC>   4.2      Kullback-Leibler divergence                              441
+#TOC>   4.2.1    An example from tossing dice                             452
+#TOC>   4.2.2    An example from lognormal distributions                  574
+#TOC>   4.3      Kolmogorov-Smirnov test for continuous distributions     616
 #TOC> 
 #TOC> ==========================================================================
 
@@ -606,9 +607,10 @@ abline(v = KLdiv(pmfL1, pmfL2), col="firebrick")
 # How many KL-divergences were less than the difference we observed?
 sum(divs < KLdiv(pmfL1, pmfL2)) #933
 
-# Therefore the probability that the samples came from the same distribution
-# is only 100 * (N - 933) / N (%) ... 6.7%. You see that this gives a much more
-# powerful statistical approach than the chi2 test we used above.
+# Therefore the empirical p-value that the samples came from the same
+# distribution is only 100 * ((N - 933) + 1) / (N + 1) (%) ... 6.8%. You see
+# that this gives a much more powerful statistical approach than the chi2 test
+# we used above.
 
 
 # ==   4.3  Kolmogorov-Smirnov test for continuous distributions  ==============
@@ -628,7 +630,7 @@ ks.test(dl1, dg1.5)
 ks.test(dl1, dg1.9)
 ks.test(dg1.5, dg1.9) # the two last gammas against each other
 
-# (The warnings about the presence of ties comes from the 0s in our function
+# (The warnings about the presence of ties comes from the 0's in our function
 # values). The p-value that these distributions are samples of the same
 # probability distribution gets progressively smaller.
 
