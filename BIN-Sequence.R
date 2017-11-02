@@ -3,12 +3,13 @@
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the BIN-Sequence unit.
 #
-# Version:  1.1
+# Version:  1.2
 #
-# Date:     2017  09  28
+# Date:     2017  09  - 2017  10
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.2    Removed irrelevant task. How did that even get in there? smh
 #           1.1    Add chartr()
 #           1.0    First live version 2017.
 #
@@ -28,20 +29,19 @@
 #TOC> 
 #TOC>   Section  Title                          Line
 #TOC> ----------------------------------------------
-#TOC>   1        Prepare                          56
-#TOC>   2        Storing Sequence                 74
-#TOC>   3        String properties               103
-#TOC>   4        Substrings                      110
-#TOC>   5        Creating strings: sprintf()     116
-#TOC>   6        Changing strings                147
-#TOC>   6.1      stringi and stringr             199
-#TOC>   6.2      dbSanitizeSequence()            209
-#TOC>   7        Permuting and sampling          221
-#TOC>   7.1      Permutations                    228
-#TOC>   7.2      Sampling                        271
-#TOC>   7.2.1    Equiprobable characters         273
-#TOC>   7.2.2    Defined probability vector      313
-#TOC>   8        Tasks                           341
+#TOC>   1        Prepare                          55
+#TOC>   2        Storing Sequence                 73
+#TOC>   3        String properties               102
+#TOC>   4        Substrings                      109
+#TOC>   5        Creating strings: sprintf()     115
+#TOC>   6        Changing strings                146
+#TOC>   6.1      stringi and stringr             198
+#TOC>   6.2      dbSanitizeSequence()            208
+#TOC>   7        Permuting and sampling          220
+#TOC>   7.1      Permutations                    227
+#TOC>   7.2      Sampling                        270
+#TOC>   7.2.1    Equiprobable characters         272
+#TOC>   7.2.2    Defined probability vector      312
 #TOC> 
 #TOC> ==========================================================================
 
@@ -335,46 +335,6 @@ sum(table(v)[c("G", "C")]) # Close to expected
 # What's the number of CpG motifs?
 (x <- stri_match_all(mySeq, regex = "CG"))
 # ... not a single one in this case.
-
-
-# =    8  Tasks  ===============================================================
-
-# Task: Phone numbers that are entered into Web forms can come in many
-#         different formats. Write a function sanitizePhone() that accepts
-#         a single object as input and returns a single string of only numbers.
-
-          if (! require(testthat)) {
-            install.packages("testthat")
-            library(testthat)
-          }
-
-          sanitizePhone <- function(s) {
-            # ... your function code here
-          }
-
-          # All tests must pass!
-          s <- "1-858 651-5050"
-          expect_equal(sanitizePhone(s), "18586515050")
-          s <- "1 858 651 5050"
-          expect_equal(sanitizePhone(s), "18586515050")
-          s <- "+1 (858) 651-5050"
-          expect_equal(sanitizePhone(s), "18586515050")
-          s <- "18586515050"
-          expect_equal(sanitizePhone(s), "18586515050")
-          s <- "1 858 6515050"
-          expect_equal(sanitizePhone(s), "18586515050")
-          s <- "1.858.651.5050"
-          expect_equal(sanitizePhone(s), "18586515050")
-          s <- "1\t8 5 8\t6 5 1-5 0 5 0"
-          expect_equal(sanitizePhone(s), "18586515050")
-          s <- "1n8e5v8e6r5 1g5o0n5n0a"
-          expect_equal(sanitizePhone(s), "18586515050")
-          s <- "IDK"
-          expect_equal(sanitizePhone(s), "")
-          s <- ""
-          expect_equal(sanitizePhone(s), "")
-          s <- pi
-          expect_equal(sanitizePhone(s), "314159265358979")
 
 
 
