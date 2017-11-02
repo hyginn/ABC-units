@@ -5,7 +5,7 @@
 #
 # Version:  1.0
 #
-# Date:     2017  10.  31
+# Date:     2017  10  31
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
@@ -23,6 +23,20 @@
 # going on. That's not how it works ...
 #
 # ==============================================================================
+
+
+#TOC> ==========================================================================
+#TOC> 
+#TOC>   Section  Title                               Line
+#TOC> ---------------------------------------------------
+#TOC>   1        Preparations                          41
+#TOC>   2        Fetching sequences                    78
+#TOC>   3        Multiple Sequence Alignment          119
+#TOC>   4        Reviewing and Editing Alignments     136
+#TOC>   4.1      Masking workflow                     152
+#TOC> 
+#TOC> ==========================================================================
+
 
 # =    1  Preparations  ========================================================
 
@@ -61,18 +75,7 @@ if (! require(msa, quietly=TRUE)) {
 #  data(package = "msa")   # available datasets
 
 
-if (! require(stringr, quietly=TRUE)) {
-  install.packages("stringr")
-  library(stringr)
-}
-# Package information:
-#  library(help=stringr)       # basic information
-#  browseVignettes("stringr")  # available vignettes
-#  data(package = "stringr")   # available datasets
-
-
-
-# = 1      Fetching sequences
+# =    2  Fetching sequences  ==================================================
 
 
 # myDB contains the ten Mbp1 orthologues from the reference species and the Mbp1
@@ -113,7 +116,7 @@ names(APSI)[length(APSI)] <- "KILA_ESCCO"
 tail(APSI)
 
 
-# = 1 Multiple Sequence Alignment
+# =    3  Multiple Sequence Alignment  =========================================
 
 # This vector of sequences with named elements fulfills the requirements to be
 # imported as a Biostrings object - an AAStringSet - which we need as input for
@@ -130,7 +133,7 @@ writeALN(APSESMsa)
 # What do you think? Is this a good alignment for phylogenetic inference?
 
 
-# = 1 Reviewing and Editing Alignments
+# =    4  Reviewing and Editing Alignments  ====================================
 
 
 # Head back to the Wiki page for this unit and read up on the background
@@ -146,7 +149,7 @@ writeALN(APSESMsa)
 # go through the matrix, column by column and decide
 # whether we want to include that column.
 
-# = 1.1 Masking workflow
+# ==   4.1  Masking workflow  ==================================================
 
 # get the length of the alignment
 (lenAli <- APSESMsa@unmasked@ranges@width[1])

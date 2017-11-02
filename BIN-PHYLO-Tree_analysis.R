@@ -24,7 +24,21 @@
 #
 # ==============================================================================
 
-# = 1 ___Section___
+
+#TOC> ==========================================================================
+#TOC> 
+#TOC>   Section  Title                       Line
+#TOC> -------------------------------------------
+#TOC>   1        ___Section___                 38
+#TOC>   2        Tree Analysis                 77
+#TOC>   2.1      Rooting Trees                136
+#TOC>   2.2      Rotating Clades              182
+#TOC>   2.3      Computing tree distances     229
+#TOC> 
+#TOC> ==========================================================================
+
+
+# =    1  ___Section___  =======================================================
 
 
 if (!require(Rphylip, quietly=TRUE)) {
@@ -63,7 +77,7 @@ nodelabels(text=orgTree$node.label, cex=0.6, adj=0.2, bg="#D4F2DA")
 # species tree.
 
 
-# = 1 Tree Analysis
+# =    2  Tree Analysis  =======================================================
 
 
 # 1.1  Visualizing your tree
@@ -122,7 +136,7 @@ Ntip(apsTree)
 # Finally, write the tree to console in Newick format
 write.tree(apsTree)
 
-# = 1.1 Rooting Trees
+# ==   2.1  Rooting Trees  =====================================================
 
 # In order to analyse the tree, it is helpful to root it first and reorder its
 # clades. Contrary to documentation, Rproml() returns an unrooted tree.
@@ -168,7 +182,7 @@ plot(apsTree, cex=0.7, root.edge=TRUE)
 nodelabels(text="MRCA", node=12, cex=0.5, adj=0.8, bg="#ff8866")
 
 
-# = 1.1 Rotating Clades
+# ==   2.2  Rotating Clades  ===================================================
 
 # To interpret the tree, it is useful to rotate the clades so that they appear
 # in the order expected from the cladogram of species.
@@ -202,11 +216,104 @@ plot(rotateConstr(apsTree, apsTree$tip.label[nOrg:1]),
 add.scale.bar(length=0.5)
 layout(matrix(1), widths=1.0, heights=1.0)
 
-# Study the two trees and consider their similarities and differences. What do
-# you expect? What do you find? Note that this is not a "mixed" gene tree yet,
-# since it contains only a single gene for the species we considered. All of the
-# branch points in this tree are speciation events.
+# Task: Study the two trees and consider their similarities and differences.
+#         What do you expect? What do you find? Note that this is not a "mixed"
+#         gene tree yet, since it contains only a single gene for the species
+#         we considered. All of the branch points in this tree are speciation
+#         events. Thus the gene tree should have the same topology as the
+#         species tree. Does it? Are the differences important? How many
+#         branches would you need to remove and reinsert elsewhere to get the
+#         same topology as the species tree?
 
+# In order to quantiofy how different these tow trees are, we need to compute
+# tree distances.
+
+
+# ==   2.3  Computing tree distances  ==========================================
+
+
+# Many superb phylogeny tools are contributed by the phangorn package.
+
+if (!require(phangorn, quietly=TRUE)) {
+  install.packages("phangorn")
+  library(phangorn)
+}
+# Package information:
+#  library(help = phangorn)       # basic information
+#  browseVignettes("phangorn")    # available vignettes
+#  data(package = "phangorn")     # available datasets
+
+# To compare two trees, they must have the same tip labels. We delete "MBP1_" or
+# "KILA_" from the existing tip labels in a copy of our APSES domain tree.
+apsTree2 <- apsTree
+apsTree2$tip.label <- gsub("(MBP1_)|(KILA_)", "", apsTree2$tip.label)
+
+# phangorn provides several functions to compute tree-differences (and there
+# is a _whole_ lot of theory on how to compare trees). treedist() returns the
+# "symmetric difference"
+treedist(fungiTree, apsTree2, check.labels = TRUE)
+
+# Numbers. What do they mean? How much more similar is our apsTree to the
+# (presumably) ground truth of fungiTree than a random tree would be?
+# The ape package (which was loaded with RPhylip) provides the function rtree()
+# to compute random trees.
+
+rtree(n = length(apsTree2$tip.label),  # number of tips
+      rooted = TRUE,                   # we rooted the tree above,
+                                       #  and fungiTree is rooted anyway
+      tip.label = apsTree2$tip.label,  # use the apsTree2 labels
+      br = NULL)                       # don't generate branch lengths since
+                                       #   fungiTree has none, so we can't
+                                       #   compare them anyway.
+
+# Let's compute some random trees this way, calculate the distances to
+# fungiTree, and then compare the values we get for apsTree2:
+
+set.seed(112358)
+N <- 10000  # takes about 15 seconds
+myTreeDistances <- matrix(numeric(N * 2), ncol = 2)
+colnames(myTreeDistances) <- c("symm", "path")
+
+for (i in 1:N) {
+  xTree <- rtree(n = length(apsTree2$tip.label),
+                 rooted = TRUE,
+                 tip.label = apsTree2$tip.label,
+                 br = NULL)
+  myTreeDistances[i, ] <- treedist(fungiTree, xTree)
+}
+
+table(myTreeDistances[, "symm"])
+
+(symmObs <- treedist(fungiTree, apsTree2)[1])
+
+# Random events less-or-equal to observation, divided by total number of
+# events gives us the empirical p-value.
+cat(sprintf("\nEmpirical p-value for symmetric diff. of observed tree is %1.4f\n",
+            (sum(myTreeDistances[ , "symm"] <= symmObs) + 1) / (N + 1)))
+
+hist(myTreeDistances[, "path"],
+     col = "aliceblue",
+     main = "Distances of random Trees to fungiTree")
+(pathObs <- treedist(fungiTree, apsTree2)[2])
+abline(v = pathObs, col = "chartreuse")
+
+# Random events less-or-equal to observation, divided by total number of
+# events gives us the empirical p-value.
+cat(sprintf("\nEmpirical p-value for path diff. of observed tree is %1.4f\n",
+            (sum(myTreeDistances[ , "path"] <= symmObs) + 1) / (N + 1)))
+
+# Indeed, our apsTree is _very_ much more similar to the species tree than
+# we would expect by random chance.
+
+# What do we gain from that analysis? Analyzing the tree we get from a single
+# gene of orthologous sequences is a positive control in our computational
+# experiment. If these genes are indeed orthologues, a correct tree-building
+# program ought to give us a tree that exactly matches the species tree.
+# Evaluating how far off we are from the known correct result gives us a way to
+# validate our workflow and our algorithm. If we can't get that right, we can't
+# expect to get "real" data right either. Employing such positive controls in
+# every computational experiment is essential for research. Not doing so is
+# Cargo Cult Bioinformatics.
 
 
 # [END]
