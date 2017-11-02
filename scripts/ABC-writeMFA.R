@@ -1,7 +1,8 @@
 # ABC-writeMFA.R
 #
 # ToDo:
-# Notes:
+# Notes:  2.1  bugfix: empty notes caused superfluous blank after header.
+#
 #
 # ==============================================================================
 
@@ -14,7 +15,7 @@ writeMFA <- function(ali,
   # Purpose:
   #     Write an MsaAAMultipleAlignment or AAStringSet object to stdout() or
   #     a file in multi-FASTA format.
-  # Version: 2.0
+  # Version: 2.1
   # Date:    2017  10
   # Author:  Boris Steipe
   #
@@ -82,7 +83,12 @@ writeMFA <- function(ali,
 
   # Process each sequence
   txt <- character()
-  headers <- paste(names(sSet), note)
+  if (note != "") {  # construct header line
+    headers <- paste(names(sSet), note)
+  } else {
+    headers <- names(sSet)
+  }
+
   for (i in seq_along(sSet)) {
 
     # output FASTA header
