@@ -89,7 +89,7 @@ DNAString("AUG")  # Error! No "U" in IUPAC DNA codes
 x <- readLines("./data/S288C_YDL056W_MBP1_coding.fsa")
 x <- dbSanitizeSequence(x)
 myDNAseq <- DNAString(x)   # takes the nucleotide sequence and converts into a
-                           # object of class DNAstring
+# object of class DNAstring
 
 # Multi FASTA files can be read directly as a "XStringSet) ...
 (myDNASet <- readDNAStringSet("./data/S288C_YDL056W_MBP1_coding.fsa"))
@@ -109,9 +109,9 @@ identical(myDNAseq, Xseq)  # ... and indeed the objects are deemed identical.
 # ==   3.1  Properties  ========================================================
 str(myDNAseq)
 length(myDNAseq)  # This gives you the _number of nucleotides_!
-                  # By comparison ...
+# By comparison ...
 length(x)         # ... is 1: one string only. To get the number of
-                  # characters in a string, you need nchar().
+# characters in a string, you need nchar().
 nchar(x)          # However ...
 nchar(myDNAseq)   # ... also works.
 
@@ -159,7 +159,7 @@ subseq(myDNAseq, start = 1, end = 30)
 
 # RNAstring() and DNAstring() objects compare U and T as equals!
 RNAString("AUGUCUAACCAAAUAUACUCAGCGAGAUAU") ==
-DNAString("ATGTCTAACCAAATATACTCAGCGAGATAT")
+  DNAString("ATGTCTAACCAAATATACTCAGCGAGATAT")
 
 
 # ==   3.4  Transformations  ===================================================
