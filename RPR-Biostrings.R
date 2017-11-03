@@ -29,18 +29,18 @@
 #TOC> 
 #TOC>   Section  Title                                     Line
 #TOC> ---------------------------------------------------------
-#TOC>   1        The Biostrings package                      57
-#TOC>   2        Getting Data into Biostrings Objects        91
-#TOC>   3        Working with Biostrings Objects            111
-#TOC>   3.1      Properties                                 114
-#TOC>   3.2      Subsetting                                 151
-#TOC>   3.3      Operators                                  163
-#TOC>   3.4      Transformations                            170
-#TOC>   4        Getting Data out of Biostrings Objects     177
-#TOC>   5        More                                       186
-#TOC>   5.1      Views                                      188
-#TOC>   5.2      Iranges                                    200
-#TOC>   5.3      StringSets                                 206
+#TOC>   1        The Biostrings Package                      52
+#TOC>   2        Getting Data into Biostrings Objects        85
+#TOC>   3        Working with Biostrings Objects            106
+#TOC>   3.1      Properties                                 109
+#TOC>   3.2      Subsetting                                 146
+#TOC>   3.3      Operators                                  158
+#TOC>   3.4      Transformations                            165
+#TOC>   4        Getting Data out of Biostrings Objects     172
+#TOC>   5        More                                       181
+#TOC>   5.1      Views                                      183
+#TOC>   5.2      Iranges                                    195
+#TOC>   5.3      StringSets                                 201
 #TOC> 
 #TOC> ==========================================================================
 
@@ -49,7 +49,7 @@
 # be using more of the biostrings functions.
 
 
-# =    1  The Biostrings package  ==============================================
+# =    1  The Biostrings Package  ==============================================
 
 
 # First, we install and load the Biostrings package from bioconductor
@@ -62,11 +62,10 @@ if (! require(Biostrings, quietly=TRUE)) {
   library(Biostrings)
 }
 
-# Examine the ackage information:
+# Examine the package information:
 library(help = Biostrings)       # basic information
 browseVignettes("Biostrings")    # available vignettes
 data(package = "Biostrings")     # available datasets
-
 
 
 # At its core, Biostrings objects are "classes" of type XString (you can think
@@ -89,17 +88,18 @@ DNAString("AUG")  # Error! No "U" in IUPAC DNA codes
 # Example: read FASTA. Extract sequence. Convert to DNAString object.
 x <- readLines("./data/S288C_YDL056W_MBP1_coding.fsa")
 x <- dbSanitizeSequence(x)
-myDNAseq <- DNAString(x)   # takes the nucleotide sequence and conerts into a
+myDNAseq <- DNAString(x)   # takes the nucleotide sequence and converts into a
                            # object of class DNAstring
 
-# Multi FASTA files can be read directly ...
-readDNAStringSet("./data/S288C_YDL056W_MBP1_coding.fsa") # Note: XStringSet
+# Multi FASTA files can be read directly as a "XStringSet) ...
+(myDNASet <- readDNAStringSet("./data/S288C_YDL056W_MBP1_coding.fsa"))
 
 # ... and if you subset one sequence from the set, you get an XString object
-(  x <- readDNAStringSet("./data/S288C_YDL056W_MBP1_coding.fsa")[[1]]  )
+# back again.
+(Xseq <- myDNASet[[1]])
 
-myDNAseq == x
-identical(myDNAseq, x)
+myDNAseq == Xseq           # the comparison evaluates to TRUE ...
+identical(myDNAseq, Xseq)  # ... and indeed the objects are deemed identical.
 
 
 
@@ -108,7 +108,7 @@ identical(myDNAseq, x)
 
 # ==   3.1  Properties  ========================================================
 str(myDNAseq)
-length(nchar(x))  # This gives you the _number of nucleotides_!
+length(myDNAseq)  # This gives you the _number of nucleotides_!
                   # By comparison ...
 length(x)         # ... is 1: one string only. To get the number of
                   # characters in a string, you need nchar().
