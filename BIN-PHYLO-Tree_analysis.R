@@ -3,12 +3,13 @@
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the BIN-PHYLO-Tree_analysis unit.
 #
-# Version:  1.0
+# Version:  1.0.1
 #
-# Date:     2017  10.  31
+# Date:     2017  10  31
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.0.1  Wrong section heading
 #           1.0    First 2017 version
 #           0.1    First code copied from 2016 material.
 #
@@ -26,7 +27,7 @@
 
 
 #TOC> ==========================================================================
-#TOC> 
+#TOC>
 #TOC>   Section  Title                       Line
 #TOC> -------------------------------------------
 #TOC>   1        ___Section___                 38
@@ -34,11 +35,11 @@
 #TOC>   2.1      Rooting Trees                136
 #TOC>   2.2      Rotating Clades              182
 #TOC>   2.3      Computing tree distances     229
-#TOC> 
+#TOC>
 #TOC> ==========================================================================
 
 
-# =    1  ___Section___  =======================================================
+# =    1 Preparation and Tree Plot  ============================================
 
 
 if (!require(Rphylip, quietly=TRUE)) {
