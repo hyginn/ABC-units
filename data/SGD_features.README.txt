@@ -1,0 +1,47 @@
+SGD_features.tab
+
+The latest version of the SGD_features.tab file is based on Genome Version R64-2-1.
+
+The SGD_features.tab file is updated weekly (Saturday).
+
+NOTE: On 4 September 2004, the SGD_features.tab file replaced the previously
+used chromosomal_feature.tab file.
+
+File contents:
+
+1. Information on current chromosomal features in SGD, including Dubious ORFs. 
+Also contains coordinates of intron, exons, and other subfeatures that are located
+within a chromosomal feature.
+
+2. The relationship between subfeatures and the feature in which they
+are located is identified by the feature name in column #7 (parent
+feature). For example, the parent feature of the intron found in
+ACT1/YFL039C will be YFL039C. The parent feature of YFL039C is
+chromosome 6.
+
+3. The coordinates of all features are in chromosomal coordinates.
+
+
+Columns within SGD_features.tab:
+
+1.   Primary SGDID (mandatory)
+2.   Feature type (mandatory)
+3.   Feature qualifier (optional)
+4.   Feature name (optional)
+5.   Standard gene name (optional)
+6.   Alias (optional, multiples separated by |)
+7.   Parent feature name (optional)
+8.   Secondary SGDID (optional, multiples separated by |)
+9.   Chromosome (optional)
+10.  Start_coordinate (optional)
+11.  Stop_coordinate (optional)
+12.  Strand (optional)
+13.  Genetic position (optional)
+14.  Coordinate version (optional)
+15.  Sequence version (optional)
+16.  Description (optional)
+
+Note that "chromosome 17" is the mitochondrial chromosome.
+
+The SGD_features.tab file is complemented by GFF3 file saccharomyces_cerevisiae.gff
+
