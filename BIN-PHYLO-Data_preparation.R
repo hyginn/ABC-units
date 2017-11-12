@@ -26,7 +26,7 @@
 
 
 #TOC> ==========================================================================
-#TOC> 
+#TOC>
 #TOC>   Section  Title                               Line
 #TOC> ---------------------------------------------------
 #TOC>   1        Preparations                          41
@@ -34,7 +34,7 @@
 #TOC>   3        Multiple Sequence Alignment          119
 #TOC>   4        Reviewing and Editing Alignments     136
 #TOC>   4.1      Masking workflow                     152
-#TOC> 
+#TOC>
 #TOC> ==========================================================================
 
 
@@ -70,7 +70,7 @@ if (! require(msa, quietly=TRUE)) {
   library(msa)
 }
 # Package information:
-#  library(help=msa)       # basic information
+#  library(help = msa)       # basic information
 #  browseVignettes("msa")  # available vignettes
 #  data(package = "msa")   # available datasets
 
