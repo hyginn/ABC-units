@@ -15,7 +15,7 @@
 #           0.1    First code copied from 2016 material.
 #
 # TODO:
-#
+#          Confirm that SS residue numbers are indices
 #
 # == DO NOT SIMPLY  source()  THIS FILE! =======================================
 #
@@ -27,7 +27,7 @@
 
 
 #TOC> ==========================================================================
-#TOC> 
+#TOC>
 #TOC>   Section  Title                                Line
 #TOC> ----------------------------------------------------
 #TOC>   1        Introduction to the bio3D package      63
@@ -42,7 +42,7 @@
 #TOC>   3.4.3    ... as a perspective plot             381
 #TOC>   4        cis-peptide bonds                     399
 #TOC>   5        H-bond lengths                        414
-#TOC> 
+#TOC>
 #TOC> ==========================================================================
 
 
@@ -325,7 +325,7 @@ str(dPhiPsi)
 contour(dPhiPsi)
 
 
-# ===  3.4.1  ... as overlay on a colored grid 
+# ===  3.4.1  ... as overlay on a colored grid
 
 image(dPhiPsi,
       col = myColorRamp(100),
@@ -342,7 +342,7 @@ abline(h = 0, lwd = 0.5, col = "#00000044")
 abline(v = 0, lwd = 0.5, col = "#00000044")
 
 
-# ===  3.4.2  ... as filled countour           
+# ===  3.4.2  ... as filled countour
 
 filled.contour(dPhiPsi,
                xlim = c(-180, 180), ylim = c(-180, 180),
@@ -373,7 +373,7 @@ filled.contour(dPhiPsi,
                     abline(v = 0, lwd = 0.5, col = "#00000044")
                   })
 
-# ===  3.4.3  ... as a perspective plot        
+# ===  3.4.3  ... as a perspective plot
 
 persp(dPhiPsi,
       xlab = "phi",
