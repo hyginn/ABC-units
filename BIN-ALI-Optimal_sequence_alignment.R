@@ -3,12 +3,14 @@
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the BIN-ALI-Optimal_sequence_alignment unit.
 #
-# Version:  1.0.1
+# Version:  1.1
 #
-# Date:     2017  09   -   2017  10
+# Date:     2017  09   -   2017  11
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.1    Update annotation file logic - it could already have been
+#                    prepared in the BIN-FUNC-Annotation unit.
 #           1.0.1  bugfix
 #           1.0    First 2017 live version.
 #           0.1    First code copied from 2016 material.
@@ -26,16 +28,20 @@
 
 
 #TOC> ==========================================================================
-#TOC>
-#TOC>   Section  Title                                   Line
-#TOC> -------------------------------------------------------
-#TOC>   1        Prepare                                   45
-#TOC>   2        Biostrings Pairwise Alignment             53
-#TOC>   2.1      Optimal global alignment                  70
-#TOC>   2.2      Optimal local alignment                  133
-#TOC>   3        APSES Domain annotation by alignment     157
-#TOC>   4        Update your database script              238
-#TOC>
+#TOC> 
+#TOC>   Section  Title                                                Line
+#TOC> --------------------------------------------------------------------
+#TOC>   1        Prepare                                                48
+#TOC>   2        Biostrings Pairwise Alignment                          56
+#TOC>   2.1      Optimal global alignment                               73
+#TOC>   2.2      Optimal local alignment                               136
+#TOC>   3        APSES Domain annotation by alignment                  160
+#TOC>   4        Update your database script                           241
+#TOC>   4.1      Preparing an annotation file ...                      247
+#TOC>   4.1.1    If you HAVE NOT done the BIN-FUNC-Annotation unit     249
+#TOC>   4.1.2    If you HAVE done the BIN-FUNC-Annotation unit         292
+#TOC>   4.2      Execute and Validate                                  316
+#TOC> 
 #TOC> ==========================================================================
 
 
@@ -236,38 +242,90 @@ aliApses@subject@range@start + aliApses@subject@range@width - 1
 
 
 # Since we have this feature defined now, we can create a feature annotation
-# right away and store it in myDB.  Follow the following steps carefully:
+# right away and store it in myDB.
+
+# ==   4.1  Preparing an annotation file ...  ==================================
+#
+# ===  4.1.1  If you HAVE NOT done the BIN-FUNC-Annotation unit
 #
 #
-#   - Make a copy of the file "./data/refAnnotations.json" in your project
-#     directory and give it a new name that corresponds to MYSPE - e.g. if
-#     MYSPE is called "Crptycoccus neoformans", your file should be called
-#     "CRYNEAnnotations.json"; in that case "MBP1_CRYNE" would also be the
-#     "name" of your protein. Open the file in the RStudio editor and delete
-#     all annotations but one for an "APSES fold". Edit that annotation to
-#     correspond to the your MBP1_MYSPE protein and enter the start end end
-#     coordinates you have just discovered for the APSES domain in your
-#     sequence. Save your file.
+#   You DON'T already have a file called "<MYSPE>-Annotations.json" in the
+#   ./data/ directory:
+#
+#   - Make a copy of the file "./data/refAnnotations.json" and put it in your
+#     project directory.
+#
+#   - Give it a name that is structured like "<MYSPE>-Annotations.json" - e.g.
+#     if MYSPE is called "Crptycoccus neoformans", your file should be called
+#     "CRYNE-Annotations.json" (and the "name" of your Mbp1 orthologue is
+#     "MBP1_CRYNE").
+#
+#   - Open the file in the RStudio editor and delete all blocks for
+#     the Mbp1 protein annotations except the first one.
+#
+#   - From that block, delete all lines except for the line that says:
+#
+# {"pName" : "MBP1_SACCE", "fName" : "APSES fold", "start" : "4", "end" : "102"},
+#
+#   - Then delete the comma at the end of the line (your file will just have
+#     this one annotation).
+#
+#   - Edit that annotation: change MBP1_SACCE  to MBP1_<MYSPE> and change the
+#     "start" and "end" features to the coordinates you just discovered for the
+#     APSES domain in your sequence.
+#
+#   - Save your file.
+#
+##   - Validate your file online at https://jsonlint.com/
+#
+#   - Update your "makeProteinDB.R" script to load your new
+#     annotation when you recreate the database. Open the script in the
+#     RStudio editor, and add the following command at the end:
+#
+#     myDB <- dbAddAnnotation(myDB, fromJSON("<MYSPE>-Annotations.json"))
+#
+#   - save and close the file.
+#
+# Then SKIP the next section.
+#
+#
+# ===  4.1.2  If you HAVE done the BIN-FUNC-Annotation unit    
+#
+#
+#   You DO already have a file called "<MYSPE>-Annotations.json" in the
+#   ./data/ directory:
+#
+#   - Open the file in the RStudio editor.
+#
+#   - Below the last feature lines (but before the closing "]") add the
+#     following feature line (without the "#")
+#
+# {"pName" : "MBP1_SACCE", "fName" : "APSES fold", "start" : "4", "end" : "102"}
+#
+#   - Edit that annotation: change MBP1_SACCE  to MBP1_<MYSPE> and change the
+#     "start" and "end" features to the coordinates you just discovered for the
+#     APSES domain in your sequence.
+#
+#   - Add a comma after the preceding feature line.
+#
+#   - Save your file.
 #
 #   - Validate your file online at https://jsonlint.com/
 #
-#   - Next, you need to update your "makeProteinDB.R" script to load the
-#     annotation when you recreate the database. Open the script in the
-#     RStudio ediotr, and add the following command at the end:
 #
-#     myDB <- dbAddAnnotation(myDB, fromJSON("<MYSPE>Annotations.json"))
+# ==   4.2  Execute and Validate  ==============================================
 #
-#   - save the file and source() it:
+#   - source() your database creation script:
 #
 #     source("makeProteinDB.R")
 #
 #     This should run without errors or warnings. If it doesn't work and you
-#     can't figure out quickly what's happeneing, ask on the mailing list for
+#     can't figure out quickly what's happening, ask on the mailing list for
 #     help.
 #
 #   - Confirm
 #     The following commands should retrieve the correct start and end
-#     coordinates for the MBP1_MYSPE APSES domain:
+#     coordinates and sequence of the MBP1_MYSPE APSES domain:
 
 sel <- myDB$protein$name == paste("MBP1_", biCode(MYSPE), sep = "")
 aaMBP1_MYSPE <-   AAString(myDB$protein$sequence[sel])
@@ -276,13 +334,12 @@ aaMBP1_MYSPE <-   AAString(myDB$protein$sequence[sel])
 (proID <- myDB$protein$ID[myDB$protein$name == "MBP1_<MYSSPE>"]) # <<< EDIT
 (ftrID <- myDB$feature$ID[myDB$feature$name == "APSES fold"])
 (fanID <- myDB$annotation$ID[myDB$annotation$proteinID == proID &
-                             myDB$annotation$featureID == ftrID])
+                               myDB$annotation$featureID == ftrID])
 (start <- myDB$annotation$start[myDB$annotation$ID == fanID])
 (end   <- myDB$annotation$end[myDB$annotation$ID == fanID])
 (apses <- substr(myDB$protein$sequence[myDB$protein$ID == proID],
                  start,
                  end))
-
 
 
 # [END]

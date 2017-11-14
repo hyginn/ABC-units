@@ -3,65 +3,160 @@
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the BIN-FUNC-Domain_annotation unit.
 #
-# Version:  0.1
+# Version:  1.0
 #
-# Date:     2017  08  28
+# Date:     2017  11 13
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.0    Live version 2017
 #           0.1    First code copied from 2016 material.
-
 #
 # TODO:
 #
 #
 # == DO NOT SIMPLY  source()  THIS FILE! =======================================
-
+#
 # If there are portions you don't understand, use R's help system, Google for an
 # answer, or ask your instructor. Don't continue if you don't understand what's
 # going on. That's not how it works ...
-
+#
 # ==============================================================================
 
-# = 1 SMART Domain annotations
 
-# Plot domain annotations as colored rectangles on a sequence.
-# Step one: enter your domain annotations as features into the database.
-#
-# == Update myDB
-# If the reference database has changed, we need to merge it in with myDB.
-load("myDB.03.RData")  # load the previous version of myDB
-# the new version of refDB was loaded when you
-# pulled it from GitHub, and then typed init()
-myDB <- dbMerge(myDB)  # merge the two databases and update myDB with the result
-save(myDB, file = "myDB.04.RData") # save the new version
+#TOC> ==========================================================================
+#TOC> 
+#TOC>   Section  Title                                                               Line
+#TOC> -----------------------------------------------------------------------------------
+#TOC>   1        Update your database script                                           41
+#TOC>   1.1      Preparing an annotation file ...                                      47
+#TOC>   1.1.1    If you HAVE NOT done the BIN-ALI-Optimal_sequence_alignment unit      49
+#TOC>   1.1.2    If you HAVE done the BIN-ALI-Optimal_sequence_alignment               93
+#TOC>   1.2      Execute and Validate                                                 119
+#TOC>   2        Plot Annotations                                                     144
+#TOC> 
+#TOC> ==========================================================================
 
-# == Update myDB
 
-# Every annotated feature requires its own entry in the database. You have added
-# the feature for the "APSES fold" before, so you can copy and edit that code
-# from your myCode.R script. Here is again the table of feature IDs:
-myDB$feature[ , c("ID", "name", "description")]
+# =    1  Update your database script  =========================================
 
-# Add every SMART annotated feaure for MBP1_MYSPE to the database. If you make
-# mistakes, just reload the latest version (probably "myDB.04.RData"), then run
-# your corrected annotation script again. Execute ...
-myDB$proteinAnnotation
-# ... to confirm.
+
+# Since you have recorded domain features at the SMART database, we can store
+# the feature annotations in myDB.
+
+# ==   1.1  Preparing an annotation file ...  ==================================
 #
-# Once you are sure your annotations are correct, save the database again.
-save(myDB, file = "myDB.05.RData") # save the new version
+# ===  1.1.1  If you HAVE NOT done the BIN-ALI-Optimal_sequence_alignment unit
 #
-# Now let's plot the annotations.
 #
+#   You DON'T already have a file called "<MYSPE>-Annotations.json" in the
+#   ./data/ directory:
+#
+#   - Make a copy of the file "./data/refAnnotations.json" and put it in your
+#     project directory.
+#
+#   - Give it a name that is structured like "<MYSPE>-Annotations.json" - e.g.
+#     if MYSPE is called "Crptycoccus neoformans", your file should be called
+#     "CRYNE-Annotations.json" (and the "name" of your Mbp1 orthologue is
+#     "MBP1_CRYNE").
+#
+#   - Open the file in the RStudio editor and delete all blocks for
+#     the Mbp1 protein annotations except the first one.
+#
+#   - From that block, delete all lines that have annotations you did not
+#     find in SMART for MBP1_MYSPE.
+#
+#   - Make enough copies of the "Ankyrin fold" and "low complexity" region
+#     lines to have a line for each feature you found.
+#
+#   - Then delete the comma at the end of the last line.
+#
+#   - Edit the annotations: change MBP1_SACCE  to MBP1_<MYSPE> everywhere
+#     and change the "start" and "end" features to the coordinates you
+#     recorded in the SMART database.
+#
+#   - Save your file.
+#
+#   - Validate your file online at https://jsonlint.com/
+#
+#   - Update your "makeProteinDB.R" script to load your new
+#     annotation when you recreate the database. Open the script in the
+#     RStudio editor, and add the following command at the end:
+#
+#     myDB <- dbAddAnnotation(myDB, fromJSON("<MYSPE>-Annotations.json"))
+#
+#   - save and close the file.
+#
+# Then SKIP the next section.
+#
+#
+# ===  1.1.2  If you HAVE done the BIN-ALI-Optimal_sequence_alignment         
+#
+#
+#   You DO already have a file called "<MYSPE>-Annotations.json" in the
+#   ./data/ directory:
+#
+#   - Open the file in the RStudio editor.
+#
+#   - Make as many copies of the "APSES fold" line as you have found
+#     features in SMART.
+#
+#   - Add a comma after every line except for the last one
+#
+#   - Edit the annotations but include only features that are in the
+#     myDB$feature table. Check which features are in the databse by executing
+#
+#        myDB$feature$name
+#
+#   - Update the "start" and "end" coordinates for each feature to the
+#     values you found.
+#
+#   - Save your file.
+#
+#   - Validate your file online at https://jsonlint.com/
+#
+#
+# ==   1.2  Execute and Validate  ==============================================
+#
+#   - source() your database creation script:
+#
+#     source("makeProteinDB.R")
+#
+#     This should run without errors or warnings. If it doesn't work and you
+#     can't figure out quickly what's happening, ask on the mailing list for
+#     help.
+#
+#   - Confirm
+#     The following commands should retrieve all of the features that have been
+#     annotated for MBP1_MYSPE
+
+sel <- myDB$protein$name == paste("MBP1_", biCode(MYSPE), sep = "")
+
+(proID  <- myDB$protein$ID[sel])
+(fanIDs <- myDB$annotation$ID[myDB$annotation$proteinID == proID])
+(ftrIDs <- unique(myDB$annotation$featureID[fanIDs]))
+myDB$feature$name[ftrIDs] # This should list ALL of your annotated features
+                          # (once). If not, consider what could have gone wrong
+                          # and ask on the list if you have difficulties fixing
+                          # it.
+
+
+# =    2  Plot Annotations  ====================================================
+
+# In this section we will plot domain annotations as colored rectangles on a
+# sequence, as an example for using the R plotting system for generic, data
+# driven images.
+
 # We need a small utility function that draws the annotation boxes on a
-# representation of sequence. It will accept the left and right boundaries, the
-# height and the color of the box and plot it using R's rect() function.
+# representation of sequence. It should accept the start and end coordinates,
+# the y value where it should be plotted and the color of the box, and plot a
+# rectangle using R's rect() function.
 
-drawBox <- function(xLeft, xRight, y, colour) {
-  # Draw a box from xLeft to xRight at y, filled with colour
-  rect(xLeft, (y - 0.1), xRight, (y + 0.1),
-       border = "black", col = colour)
+drawBox <- function(xStart, xEnd, y, myCol) {
+  # Draw a box from xStart to xEnd at y, filled with colour myCol
+  delta <- 0.1
+  rect(xStart, (y - delta), xEnd, (y + delta),
+       border = "black", col = myCol)
 }
 
 # test this:
@@ -71,10 +166,10 @@ drawBox(-1, 1, 0.0, "peachpuff")
 # Next, we define a function to plot annotations for one protein: the name of
 # the protein, a horizontal grey line for its length, and all of its features.
 
-plotProtein <- function(DB, ID, y) {
-  # DB: protein database, probably you want myDB
-  # ID: the ID of the protein to plot.
-  # y: where to draw the plot
+plotProtein <- function(DB, name, y) {
+  # DB: protein database
+  # name: the name of the protein in the database.
+  # y: height where to draw the plot
   #
   # Define colors: we create a vector of color values, one for
   # each feature, and we give it names of the feature ID. Then we
@@ -89,58 +184,79 @@ plotProtein <- function(DB, ID, y) {
                              space="Lab",
                              interpolate="linear")(nrow(DB$feature))
   # B: Features may overlap, so we make the colors transparent by setting
-  #    their "alpha channel" to 1/2  (hex: 7F)
-  ftrCol <- paste(ftrCol, "7F", sep = "")
+  #    their "alpha channel" to 1/3  (hex: 55)
+  ftrCol <- paste0(ftrCol, "55")
   # C: we asssign names
   names(ftrCol) <- DB$feature$ID
   # E.g. color for the third feature: ftrCol[ DB$feature$ID[3] ]
 
   # find the row-index of the protein ID in the protein table of DB
-  iProtein <- which(DB$protein$ID == ID)
+  iProtein <- which(DB$protein$name == name)
 
   # write the name of the protein
-  text(-30, y, adj=1, labels=DB$protein$name[iProtein], cex=0.75 )
+  text(-30, y, adj=1, labels=name, cex=0.75 )
 
   #draw a line from 0 to nchar(sequence-of-the-protein)
   lines(c(0, nchar(DB$protein$sequence[iProtein])), c(y, y),
         lwd=3, col="#999999")
 
   # get the rows of feature annotations for the protein
-  iFtr <- which(DB$proteinAnnotation$protein.ID == ID)
+  iFtr <- which(DB$annotation$proteinID == DB$protein$ID[iProtein])
 
   # draw a colored box for each feature
   for (i in iFtr) {
-    drawBox(DB$proteinAnnotation$start[i],
-            DB$proteinAnnotation$end[i],
+    drawBox(DB$annotation$start[i],
+            DB$annotation$end[i],
             y,
-            ftrCol[ DB$proteinAnnotation$feature.ID[i] ])
+            ftrCol[ DB$annotation$featureID[i] ])
   }
 }
 
 # Plot each annotated protein:
-# Get the rows of all unique annotated protein IDs in the protein table
-iRows <- which(myDB$protein$ID %in% unique(myDB$proteinAnnotation$protein.ID))
+# Get the rows of all unique annotated Mbp1 proteins in myDB
+
+iRows <- grep("^MBP1_", myDB$protein$name)
+
 # define the size of the plot-frame to accomodate all proteins
 yMax <- length(iRows) * 1.1
 xMax <- max(nchar(myDB$protein$sequence[iRows])) * 1.1  # longest sequence
 
 # plot an empty frame
-plot(1,1, xlim=c(-200, xMax), ylim=c(0, yMax),
-     type="n", axes=FALSE, bty="n", xlab="sequence position", ylab="")
+plot(1, 1,
+     xlim = c(-200, xMax + 100),
+     ylim = c(0, yMax),
+     type = "n",
+     axes = FALSE,
+     bty = "n",
+     main = "Mbp1 orthologue domain annotations",
+     xlab = "sequence position",
+     ylab="")
 axis(1, at = seq(0, xMax, by = 100))
+myCol <- colorRampPalette(c("#f2003c", "#F0A200",
+                            "#f0ea00", "#62C923",
+                            "#0A9A9B", "#1958C3",
+                            "#8000D3", "#D0007F"),
+                          space="Lab",
+                          interpolate="linear")(nrow(myDB$feature))
+myCol <- paste0(myCol, "55")
+legend(xMax - 150, 6,
+       legend = myDB$feature$name,
+       cex = 0.7,
+       fill = myCol)
+
 
 # Finally, iterate over all proteins and call plotProtein()
-for (i in 1:length(iRows)) {
-  plotProtein(myDB, myDB$protein$ID[iRows[i]], i)
+for (i in seq_along(iRows)) {
+  plotProtein(myDB, myDB$protein$name[iRows[i]], i)
 }
 
-# The plot shows clearly what is variable and what is constant about the
-# annotations in a group of related proteins. Print the plot and bring it to
-# class for the next quiz.
-#
+# The plot shows what is variable and what is constant about the annotations in
+# a group of related proteins. Your MBP1_MYSPE annotations should appear at the
+# top.
 
-# = 1 Tasks
-
+# Task:
+#    Put a copy of the plot into your journal and interpret it with respect
+#    to MBP1_MYSPE, i.e. and note what you learn about MBP1_MYSPE from the plot.
 
 
 
