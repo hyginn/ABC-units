@@ -3,12 +3,13 @@
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the BIN-ALI-BLAST unit.
 #
-# Version:  1.0
+# Version:  1.1
 #
 # Date:     2017  10  23
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.1    Fixed parsing logic.
 #           1.0    First live version 2017.
 #           0.1    First code copied from 2016 material.
 #
@@ -26,14 +27,14 @@
 
 
 #TOC> ==========================================================================
-#TOC> 
+#TOC>
 #TOC>   Section  Title                         Line
 #TOC> ---------------------------------------------
 #TOC>   1        Preparations                    41
 #TOC>   2        Defining the APSES domain       54
 #TOC>   3        Executing the BLAST search      76
 #TOC>   4        Analysing results               98
-#TOC> 
+#TOC>
 #TOC> ==========================================================================
 
 
@@ -83,23 +84,20 @@ source("./scripts/BLAST.R")
 # Use BLAST() to find the best match to the MYSPE APSES domain in Saccharomyces
 # cerevisiae:
 
-BLASThits <- BLAST(apses,                       # MYSPE APSES domain sequence
-                  db = "refseq_protein",        # database to search in
-                  nHits = 10,                   #
-                  E = 0.01,                     #
-                  limits = "txid559292[ORGN]")  # S. cerevisiae S288c
+BLASTresults <- BLAST(apses,                       # MYSPE APSES domain sequence
+                     db = "refseq_protein",        # database to search in
+                     nHits = 10,                   #
+                     E = 0.01,                     #
+                     limits = "txid559292[ORGN]")  # S. cerevisiae S288c
 
 
-length(BLASThits)  # There should be at least one hit there. Ask for advice
-                   # in case this step fails.
+length(BLASTresults$hits)  # There should be at least one hit there. Ask for advice
+                           # in case this step fails.
 
 
 # =    4  Analysing results  ===================================================
 
-# The BLAST.R script has defined a convenience function to parse BLAST
-# alignments.
-
-(topHit <- parseBLASTalignment(BLASThits, idx = 1))   # Parse the top hit
+(topHit <- BLASTresults$hits[[1]])   # Get the top hit
 
 # What is the refseq ID of the top hit
 topHit$accession

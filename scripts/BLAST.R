@@ -7,11 +7,12 @@
 #          https://ncbi.github.io/blast-cloud/dev/api.html
 #
 #
-# Version: 2.1
-# Date:    2016 09 - 2017 10
+# Version: 3
+# Date:    2016 09 - 2017 11
 # Author:  Boris Steipe
 #
 # Versions:
+#    3     parsing logic had not been fully implemented; Fixed.
 #    2.1   bugfix in BLAST(), bug was blanking non-split deflines;
 #          refactored parseBLASTalignment() to handle lists with multiple hits.
 #    2.0   Completely rewritten because the interface completely changed.
@@ -44,9 +45,6 @@ BLAST <- function(q,
                   myTimeout = 120) {
     # Purpose:
     #     Basic BLAST search
-    # Version: 2.0
-    # Date:    2017-09
-    # Author:  Boris Steipe
     #
     # Parameters:
     #     q: query - either a valid ID or a sequence
@@ -258,11 +256,10 @@ BLAST <- function(q,
     return(results)
 }
 
-parseBLASTalignment <- function(hits, idx) {
-  # Parse one BLAST hit from a BLAST result
+parseBLASTalignment <- function(hit) {
+  # Parse data from a character vector containing a BLAST hit
   # Parameters:
-  #    hits  list   contains the BLAST hits
-  #    idx   int    index of the requested hit
+  #    hit  char   one BLAST hit as char vector
   # Value:
   #          list   $def          chr   defline
   #                 $accession    chr   accession number
@@ -278,12 +275,20 @@ parseBLASTalignment <- function(hits, idx) {
   #                 $midSeq       chr   midline string
   #                 $Sseq         chr   subject sequence
 
+  getToken <- function(patt, v) {
+    # get the first token identified by pattern patt in character vector v
+    v <- v[grep(patt, v)]
+    if (length(v) > 1) { v <- v[1] }
+    if (length(v) == 0) { token <- NA
+    } else {
+      token <- regmatches(v, regexec(patt, v))[[1]][2] }
+    return(token)
+  }
+
   h <- list()
 
-  hit <- hits$hits[[idx]]
-
   # FASTA defline
-  h$def <- hit$def
+  h$def <- hit[1]
 
   # accesion number (ID), use the first if there are several, separated by "|"
   patt <- "^>(.+?)(\\s|\\|)" # from ">" to space or "|"
@@ -304,24 +309,46 @@ parseBLASTalignment <- function(hits, idx) {
   }
 
   # E-value
-  h$E <-  hit$E
+  h$E <- as.numeric(getToken("Expect\\s*=(.+?), Method", hit))
 
-  # length of hit and # identities
-  h$lengthAli   <- hit$lengthAli
-  h$nIdentities <- hit$nIdentities
+  # length of alignment
+  h$lengthAli <- as.numeric(getToken("^\\s*Length\\s*=(.+)$", hit))
+
+  # number of identities
+  h$nIdentities <- as.numeric(getToken("^\\s*Identities\\s*=(.+?)/", hit))
 
   # number of gaps
-  h$nGaps <- hit$nGaps
+  h$nGaps <- as.numeric(getToken("\\s*Gaps\\s*=(.+?)/", hit))
+
+  # split up alignment section
+  idx <- grep("^Query ", hit)
+  Que <- hit[idx]
+  Mid <- hit[idx + 1]
+  Sbj <- hit[idx + 2]
 
   # first and last positions
-  h$Qbounds <- hit$Qbounds
-  h$Sbounds <- hit$Sbounds
+  h$Qbounds <- c(start = 0, end = 0)
+  h$Qbounds[1] <- as.numeric(getToken("^Query\\s*(\\d+)", Que[1]))
+  h$Qbounds[2] <- as.numeric(getToken("\\s*(\\d+)\\s*$", Que[length(Que)]))
+
+  h$Sbounds <- c(start = 0, end = 0)
+  h$Sbounds[1] <- as.numeric(getToken("^Sbjct\\s*(\\d+)", Sbj[1]))
+  h$Sbounds[2] <- as.numeric(getToken("\\s*(\\d+)\\s*$", Sbj[length(Sbj)]))
 
   # aligned sequences
+  for (i in seq_along(Que)) {
+    patt <- ("^\\s*Query\\s*\\d+\\s*([A-Za-z-]+)") # capture aligned string
+    m <- regexec(patt, Que[i])
+    iFirst <- m[[1]][2]
+    iLast <- iFirst + attr(m[[1]], which = "match.length")[2] - 1
+    Que[i] <- substring(Que[i], iFirst, iLast)
+    Mid[i] <- substring(Mid[i], iFirst, iLast)
+    Sbj[i] <- substring(Sbj[i], iFirst, iLast)
+  }
 
-  h$Qseq   <- hit$Qseq
-  h$midSeq <- hit$midSeq
-  h$Sseq   <- hit$Sseq
+  h$Qseq   <- paste0(Que, collapse = "")
+  h$midSeq <- paste0(Mid, collapse = "")
+  h$Sseq   <- paste0(Sbj, collapse = "")
 
   return(h)
 }
