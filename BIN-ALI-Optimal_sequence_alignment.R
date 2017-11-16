@@ -3,12 +3,13 @@
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the BIN-ALI-Optimal_sequence_alignment unit.
 #
-# Version:  1.1
+# Version:  1.2
 #
 # Date:     2017  09   -   2017  11
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.2    Added missing load of seqinr package
 #           1.1    Update annotation file logic - it could already have been
 #                    prepared in the BIN-FUNC-Annotation unit.
 #           1.0.1  bugfix
@@ -28,24 +29,37 @@
 
 
 #TOC> ==========================================================================
-#TOC> 
+#TOC>
 #TOC>   Section  Title                                                Line
 #TOC> --------------------------------------------------------------------
-#TOC>   1        Prepare                                                48
-#TOC>   2        Biostrings Pairwise Alignment                          56
-#TOC>   2.1      Optimal global alignment                               73
-#TOC>   2.2      Optimal local alignment                               136
-#TOC>   3        APSES Domain annotation by alignment                  160
-#TOC>   4        Update your database script                           241
-#TOC>   4.1      Preparing an annotation file ...                      247
-#TOC>   4.1.1    If you HAVE NOT done the BIN-FUNC-Annotation unit     249
-#TOC>   4.1.2    If you HAVE done the BIN-FUNC-Annotation unit         292
-#TOC>   4.2      Execute and Validate                                  316
-#TOC> 
+#TOC>   1        Prepare                                                49
+#TOC>   2        Biostrings Pairwise Alignment                          70
+#TOC>   2.1      Optimal global alignment                               88
+#TOC>   2.2      Optimal local alignment                               151
+#TOC>   3        APSES Domain annotation by alignment                  175
+#TOC>   4        Update your database script                           256
+#TOC>   4.1      Preparing an annotation file ...                      262
+#TOC>   4.1.1    If you HAVE NOT done the BIN-FUNC-Annotation unit     264
+#TOC>   4.1.2    If you HAVE done the BIN-FUNC-Annotation unit         307
+#TOC>   4.2      Execute and Validate                                  331
+#TOC>
 #TOC> ==========================================================================
 
 
 # =    1  Prepare  =============================================================
+
+# To simplify code a bit, we will use seqinr's function s2c(x) to make
+# character vectors from sequence strings below, rather than the lengthier
+# base idiom unlist(strsplit(x, "").
+if (!require(seqinr)) {
+  install.packages("seqinr")
+  library(seqinr)
+}
+# Package information:
+#  library(help = seqinr)       # basic information
+#  browseVignettes("seqinr")    # available vignettes
+#  data(package = "seqinr")     # available datasets
+
 
 # You need to recreate the protein database that you have constructed in the
 # BIN-Storing_data unit.
@@ -54,6 +68,7 @@ source("makeProteinDB.R")
 
 
 # =    2  Biostrings Pairwise Alignment  =======================================
+
 
 if (!require(Biostrings, quietly=TRUE)) {
   if (! exists("biocLite")) {
@@ -113,12 +128,12 @@ nchar(ali1@pattern)
 
 # the number of identities
 sum(s2c(as.character(ali1@pattern)) ==
-      s2c(as.character(ali1@subject)))
+    s2c(as.character(ali1@subject)))
 
 # ... e.g. to calculate the percentage of identities
 100 *
   sum(s2c(as.character(ali1@pattern)) ==
-        s2c(as.character(ali1@subject))) /
+      s2c(as.character(ali1@subject))) /
   nchar(ali1@pattern)
 # ... which should be the same as reported in the writePairwiseAlignments()
 # output. Awkward to type? Then it calls for a function:
@@ -127,7 +142,7 @@ percentID <- function(al) {
   # returns the percent-identity of a Biostrings alignment object
   return(100 *
            sum(s2c(as.character(al@pattern)) ==
-                 s2c(as.character(al@subject))) /
+               s2c(as.character(al@subject))) /
            nchar(al@pattern))
 }
 
@@ -289,7 +304,7 @@ aliApses@subject@range@start + aliApses@subject@range@width - 1
 # Then SKIP the next section.
 #
 #
-# ===  4.1.2  If you HAVE done the BIN-FUNC-Annotation unit    
+# ===  4.1.2  If you HAVE done the BIN-FUNC-Annotation unit
 #
 #
 #   You DO already have a file called "<MYSPE>-Annotations.json" in the
