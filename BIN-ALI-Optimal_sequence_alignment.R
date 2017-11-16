@@ -3,12 +3,14 @@
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the BIN-ALI-Optimal_sequence_alignment unit.
 #
-# Version:  1.3
+# Version:  1.4
 #
 # Date:     2017  09   -   2017  11
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.4    Pull s2c() from seqinr package, rather then loading the
+#                    entire library.
 #           1.3    Updated confirmation task with correct logic
 #           1.2    Added missing load of seqinr package
 #           1.1    Update annotation file logic - it could already have been
@@ -30,36 +32,29 @@
 
 
 #TOC> ==========================================================================
-#TOC> 
+#TOC>
 #TOC>   Section  Title                                                Line
 #TOC> --------------------------------------------------------------------
-#TOC>   1        Prepare                                                50
-#TOC>   2        Biostrings Pairwise Alignment                          71
-#TOC>   2.1      Optimal global alignment                               89
-#TOC>   2.2      Optimal local alignment                               152
-#TOC>   3        APSES Domain annotation by alignment                  176
-#TOC>   4        Update your database script                           257
-#TOC>   4.1      Preparing an annotation file ...                      263
-#TOC>   4.1.1    If you HAVE NOT done the BIN-FUNC-Annotation unit     265
-#TOC>   4.1.2    If you HAVE done the BIN-FUNC-Annotation unit         308
-#TOC>   4.2      Execute and Validate                                  332
-#TOC> 
+#TOC>   1        Prepare                                                52
+#TOC>   2        Biostrings Pairwise Alignment                          66
+#TOC>   2.1      Optimal global alignment                               84
+#TOC>   2.2      Optimal local alignment                               147
+#TOC>   3        APSES Domain annotation by alignment                  171
+#TOC>   4        Update your database script                           252
+#TOC>   4.1      Preparing an annotation file ...                      258
+#TOC>   4.1.1    If you HAVE NOT done the BIN-FUNC-Annotation unit     260
+#TOC>   4.1.2    If you HAVE done the BIN-FUNC-Annotation unit         303
+#TOC>   4.2      Execute and Validate                                  327
+#TOC>
 #TOC> ==========================================================================
 
 
 # =    1  Prepare  =============================================================
 
-# To simplify code a bit, we will use seqinr's function s2c(x) to make
-# character vectors from sequence strings below, rather than the lengthier
-# base idiom unlist(strsplit(x, "").
-if (!require(seqinr)) {
-  install.packages("seqinr")
-  library(seqinr)
-}
-# Package information:
-#  library(help = seqinr)       # basic information
-#  browseVignettes("seqinr")    # available vignettes
-#  data(package = "seqinr")     # available datasets
+# To simplify code, we pull the function s2c(x) from the seqinr package,
+# rather than using the lengthier idiom unlist(strsplit(x, "").
+# This assumes that the seqinr package has been installed previously.
+s2c <- seqinr::s2c
 
 
 # You need to recreate the protein database that you have constructed in the
@@ -142,8 +137,8 @@ sum(s2c(as.character(ali1@pattern)) ==
 percentID <- function(al) {
   # returns the percent-identity of a Biostrings alignment object
   return(100 *
-           sum(s2c(as.character(al@pattern)) ==
-               s2c(as.character(al@subject))) /
+           sum(seqinr::s2c(as.character(al@pattern)) ==
+               seqinr::s2c(as.character(al@subject))) /
            nchar(al@pattern))
 }
 
@@ -305,7 +300,7 @@ aliApses@subject@range@start + aliApses@subject@range@width - 1
 # Then SKIP the next section.
 #
 #
-# ===  4.1.2  If you HAVE done the BIN-FUNC-Annotation unit    
+# ===  4.1.2  If you HAVE done the BIN-FUNC-Annotation unit
 #
 #
 #   You DO already have a file called "<MYSPE>-Annotations.json" in the
