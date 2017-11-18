@@ -25,7 +25,7 @@
 
 
 #TOC> ==========================================================================
-#TOC> 
+#TOC>
 #TOC>   Section  Title                                      Line
 #TOC> ----------------------------------------------------------
 #TOC>   1        Storing the genetic code                     47
@@ -35,7 +35,7 @@
 #TOC>   3        An alternative representation: 3D array     208
 #TOC>   3.1      Print a Genetic code table                  241
 #TOC>   4        Tasks                                       267
-#TOC> 
+#TOC>
 #TOC> ==========================================================================
 
 
@@ -43,7 +43,7 @@
 
 # The genetic code maps trinucleotide codons to amino acids. To store it, we
 # need some mechanism to associate these two informattion items. The most
-# convenient way to do that is a "named vector" which holds the maino acid
+# convenient way to do that is a "named vector" which holds the amino acid
 # code and assigns the codons as names to its elements.
 
 x <- c("M", "*")
