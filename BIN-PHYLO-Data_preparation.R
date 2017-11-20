@@ -32,8 +32,8 @@
 #TOC>   1        Preparations                          41
 #TOC>   2        Fetching sequences                    78
 #TOC>   3        Multiple Sequence Alignment          119
-#TOC>   4        Reviewing and Editing Alignments     136
-#TOC>   4.1      Masking workflow                     152
+#TOC>   4        Reviewing and Editing Alignments     138
+#TOC>   4.1      Masking workflow                     154
 #TOC>
 #TOC> ==========================================================================
 
@@ -126,9 +126,11 @@ tail(APSI)
 APSESSet <- AAStringSet(APSI)
 APSESMsa <- msaMuscle(APSESSet, order = "aligned")
 
+# Nb. msaMuscle() sometimes fails - reproducibly, but I am not sure why. If
+# that happens in your case, just use msaClustalOmega() instead.
+
 # inspect the alignment.
 writeALN(APSESMsa)
-
 
 # What do you think? Is this a good alignment for phylogenetic inference?
 
