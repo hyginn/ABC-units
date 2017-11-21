@@ -44,7 +44,7 @@ writeALN <- function(ali,
     stop("PANIC: parameter \"blockWidth\" must be greater than zero.")
   }
   if (blockWidth > 60) {
-    stop("PANIC: \"blockWidth\" for CLUSTAL format can't be greater than 60.")
+    warning("Programs that read CLUSTAL format might not expect blockWidth > 60.")
   }
 
   # Extract the raw data from the objects depending on their respective class
