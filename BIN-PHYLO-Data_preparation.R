@@ -188,16 +188,17 @@ colMask <- logical(ncol(msaMatrix))
 limit <- round(nrow(APSESMsa) * (2/3))
 
 # iterate over all columns, and write TRUE if there are less-or-equal to "limit"
-# hyphens, FALSE if there are more.
+# hyphens, FALSE if there are more - i.e. TRUE columns will be used fr analysis
+# and FALSE columns will be rejected.
 for (i in 1:ncol(msaMatrix)) {
   count <- sum(msaMatrix[ , i] == "-")
-  colMask[i] <- count <= limit # FALSE if less-or-equal to limit, TRUE if not
+  colMask[i] <- count <= limit # TRUE if less-or-equal to limit, FALSE if not
 }
 
-# inspect the mask
+# Inspect the mask
 colMask
 
-# How many positions were masked?
+# How many positions are being kept?
 sum(colMask)
 
 cat(sprintf("We are masking %4.2f %% of alignment columns.\n",
