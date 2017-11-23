@@ -3,12 +3,13 @@
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the BIN-PHYLO-Tree_analysis unit.
 #
-# Version:  1.0.1
+# Version:  1.0.2
 #
 # Date:     2017  10  31
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.0.2  Typo in variable name, style changes
 #           1.0.1  Wrong section heading
 #           1.0    First 2017 version
 #           0.1    First code copied from 2016 material.
@@ -28,18 +29,18 @@
 
 #TOC> ==========================================================================
 #TOC>
-#TOC>   Section  Title                       Line
-#TOC> -------------------------------------------
-#TOC>   1        ___Section___                 38
-#TOC>   2        Tree Analysis                 77
-#TOC>   2.1      Rooting Trees                136
-#TOC>   2.2      Rotating Clades              182
-#TOC>   2.3      Computing tree distances     229
+#TOC>   Section  Title                        Line
+#TOC> --------------------------------------------
+#TOC>   1        Preparation and Tree Plot      43
+#TOC>   2        Tree Analysis                  82
+#TOC>   2.1      Rooting Trees                 141
+#TOC>   2.2      Rotating Clades               187
+#TOC>   2.3      Computing tree distances      234
 #TOC>
 #TOC> ==========================================================================
 
 
-# =    1 Preparation and Tree Plot  ============================================
+# =    1  Preparation and Tree Plot  ===========================================
 
 
 if (!require(Rphylip, quietly=TRUE)) {
@@ -71,8 +72,8 @@ for (i in seq_along(fungiTree$tip.label)) {
 }
 
 # Plot the tree
-plot(fungiTree, cex=1.0, root.edge=TRUE, no.margin=TRUE)
-nodelabels(text=orgTree$node.label, cex=0.6, adj=0.2, bg="#D4F2DA")
+plot(fungiTree, cex = 1.0, root.edge = TRUE, no.margin = TRUE)
+nodelabels(text = fungiTree$node.label, cex = 0.6, adj = 0.2, bg = "#D4F2DA")
 # Note that you can use the arrow buttons in the menu above the plot to scroll
 # back to plots you have created earlier - so you can reference back to the
 # species tree.
@@ -102,15 +103,15 @@ nodelabels(text=orgTree$node.label, cex=0.6, adj=0.2, bg="#D4F2DA")
 load(file = "APSEStreeRproml.RData")
 
 plot(apsTree) # default type is "phylogram"
-plot(apsTree, type="unrooted")
-plot(apsTree, type="fan", no.margin = TRUE)
+plot(apsTree, type = "unrooted")
+plot(apsTree, type = "fan", no.margin = TRUE)
 
 # rescale to show all of the labels:
 # record the current plot parameters by assigning them to a variable ...
 (tmp <- plot(apsTree, type="fan", no.margin = TRUE, plot=FALSE))
 # ... and adjust the plot limits for a new plot:
 plot(apsTree,
-     type="fan",
+     type = "fan",
      x.lim = tmp$x.lim * 1.8,
      y.lim = tmp$y.lim * 1.8,
      cex = 0.8,
@@ -150,8 +151,8 @@ is.rooted(apsTree)
 plot(apsTree)
 
 # add labels for internal nodes and tips
-nodelabels(cex=0.5, frame="circle")
-tiplabels(cex=0.5, frame="rect")
+nodelabels(cex = 0.5, frame = "circle")
+tiplabels(cex = 0.5, frame = "rect")
 
 # The outgroup of the tree is tip "11" in my sample tree, it may be a different
 # number in yours. Substitute the correct node number below for "outgroup".
@@ -170,8 +171,8 @@ apsTree$edge.length
 # to show how it connects to the tree without having an
 # overlap.
 apsTree$edge.length[1] <- 0.1
-plot(apsTree, cex=0.7)
-nodelabels(text="MRCA", node=12, cex=0.5, adj=0.1, bg="#ff8866")
+plot(apsTree, cex = 0.7)
+nodelabels(text = "MRCA", node = 12, cex = 0.5, adj = 0.1, bg = "#ff8866")
 
 
 # This procedure does however not assign an actual length to a root edge, and
@@ -179,8 +180,8 @@ nodelabels(text="MRCA", node=12, cex=0.5, adj=0.1, bg="#ff8866")
 # myself that too. We'll just add a length by hand.
 
 apsTree$root.edge <- mean(apsTree$edge.length) * 1.5
-plot(apsTree, cex=0.7, root.edge=TRUE)
-nodelabels(text="MRCA", node=12, cex=0.5, adj=0.8, bg="#ff8866")
+plot(apsTree, cex = 0.7, root.edge = TRUE)
+nodelabels(text = "MRCA", node = 12, cex = 0.5, adj = 0.8, bg = "#ff8866")
 
 
 # ==   2.2  Rotating Clades  ===================================================
@@ -190,13 +191,13 @@ nodelabels(text="MRCA", node=12, cex=0.5, adj=0.8, bg="#ff8866")
 
 # We can either rotate around individual internal nodes ...
 layout(matrix(1:2, 1, 2))
-plot(apsTree, no.margin=TRUE, root.edge=TRUE)
-nodelabels(node=17, cex=0.7, bg="#ff8866")
-plot(rotate(apsTree, node=17), no.margin=TRUE, root.edge=TRUE)
-nodelabels(node=17, cex=0.7, bg="#88ff66")
+plot(apsTree, no.margin = TRUE, root.edge = TRUE)
+nodelabels(node = 17, cex = 0.7, bg = "#ff8866")
+plot(rotate(apsTree, node = 17), no.margin = TRUE, root.edge = TRUE)
+nodelabels(node = 17, cex = 0.7, bg = "#88ff66")
 # Note that the species at the bottom of the clade descending from node
 # 17 is now plotted at the top.
-layout(matrix(1), widths=1.0, heights=1.0)
+layout(matrix(1), widths = 1.0, heights = 1.0)
 
 # ... or we can plot the tree so it corresponds as well as possible to a
 # predefined tip ordering. Here we use the ordering that phyloT has returned
@@ -209,13 +210,13 @@ nOrg <- length(apsTree$tip.label)
 
 layout(matrix(1:2, 1, 2))
 plot(fungiTree,
-     no.margin=TRUE, root.edge=TRUE)
-nodelabels(text=fungiTree$node.label, cex=0.5, adj=0.2, bg="#D4F2DA")
+     no.margin = TRUE, root.edge = TRUE)
+nodelabels(text = fungiTree$node.label, cex = 0.5, adj = 0.2, bg = "#D4F2DA")
 
 plot(rotateConstr(apsTree, apsTree$tip.label[nOrg:1]),
-     no.margin=TRUE, root.edge=TRUE)
-add.scale.bar(length=0.5)
-layout(matrix(1), widths=1.0, heights=1.0)
+     no.margin = TRUE, root.edge = TRUE)
+add.scale.bar(length = 0.5)
+layout(matrix(1), widths = 1.0, heights = 1.0)
 
 # Task: Study the two trees and consider their similarities and differences.
 #         What do you expect? What do you find? Note that this is not a "mixed"
