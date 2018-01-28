@@ -34,6 +34,7 @@
 #TOC> 
 #TOC>   Section  Title                                                Line
 #TOC> --------------------------------------------------------------------
+<<<<<<< HEAD
 #TOC>   1        Preparations                                           53
 #TOC>   2        Loading a GEO Dataset                                  84
 #TOC>   3        Column wise analysis - time points                    154
@@ -46,6 +47,20 @@
 #TOC>   5.1      Final task: Gene descriptions                         490
 #TOC>   6        Improving on Discovery by Differential Expression     495
 #TOC>   7        Annotation data                                       577
+=======
+#TOC>   1        Preparations                                           51
+#TOC>   2        Loading a GEO Dataset                                  82
+#TOC>   3        Column wise analysis - time points                    152
+#TOC>   3.1      Task - Comparison of experiments                      158
+#TOC>   3.2      Grouped Samples                                       205
+#TOC>   4        Row-wise Analysis: Expression Profiles                240
+#TOC>   4.1      Task - Read a table of features                       275
+#TOC>   4.2      Selected Expression profiles                          323
+#TOC>   5        Differential Expression                               364
+#TOC>   5.1      Final task: Gene descriptions                         488
+#TOC>   6        Improving on Discovery by Differential Expression     493
+#TOC>   7        Annotation data                                       575
+>>>>>>> b17a9e202ad3429a716683538b3d0ed8d7d9ff9e
 #TOC> 
 #TOC> ==========================================================================
 
@@ -586,6 +601,7 @@ GSE3635annot <- getGEO("GSE3635", GSEMatrix = TRUE, getGPL = TRUE)
 GSE3635annot <- GSE3635annot[[1]]
 
 # ... and the feature data is then available in the GSE3635@featureData@data
+<<<<<<< HEAD
 #     slot:
 str(GSE3635annot@featureData@data)
 GSE3635annot@featureData@data[ 1:20 , ]
@@ -610,6 +626,13 @@ myAnnot[which(myAnnot$Gene == "MBP1"), ]
 
 
 # Alternatively, we could have identified the GPL file for this set:
+=======
+# slot:
+str(GSE3635annot@featureData@data)
+GSE3635annot@featureData@data[ 1:20 , ]
+
+# ... or we could have identified the GPL file for this set:
+>>>>>>> b17a9e202ad3429a716683538b3d0ed8d7d9ff9e
 GSE3635@annotation   # "GPL1914"
 
 # ... and downloaded it directly from NCBI:
@@ -617,9 +640,13 @@ GPL1914 <- getGEO("GPL1914")
 str(GPL1914)
 
 # ... from which we can get the data - which is however NOT necessarily
+<<<<<<< HEAD
 # matched to the rows of our expression dataset. Note that here to: the majority
 # of data elements are factors and will likely have to be converted before
 # use.
+=======
+# matched to the rows of our expression dataset.
+>>>>>>> b17a9e202ad3429a716683538b3d0ed8d7d9ff9e
 
 
 # [END]
