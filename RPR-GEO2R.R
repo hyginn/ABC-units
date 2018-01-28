@@ -32,17 +32,18 @@
 #TOC> 
 #TOC>   Section  Title                                                Line
 #TOC> --------------------------------------------------------------------
-#TOC>   1        Preparations                                           50
-#TOC>   2        Loading a GEO Dataset                                  81
-#TOC>   3        Column wise analysis - time points                    151
-#TOC>   3.1      Task - Comparison of experiments                      157
-#TOC>   3.2      Grouped Samples                                       204
-#TOC>   4        Row-wise Analysis: Expression Profiles                239
-#TOC>   4.1      Task - Read a table of features                       274
-#TOC>   4.2      Selected Expression profiles                          322
-#TOC>   5        Differential Expression                               363
-#TOC>   5.1      Final task: Gene descriptions                         487
-#TOC>   6        Improving on Discovery by Differential Expression     492
+#TOC>   1        Preparations                                           51
+#TOC>   2        Loading a GEO Dataset                                  82
+#TOC>   3        Column wise analysis - time points                    152
+#TOC>   3.1      Task - Comparison of experiments                      158
+#TOC>   3.2      Grouped Samples                                       205
+#TOC>   4        Row-wise Analysis: Expression Profiles                240
+#TOC>   4.1      Task - Read a table of features                       275
+#TOC>   4.2      Selected Expression profiles                          323
+#TOC>   5        Differential Expression                               364
+#TOC>   5.1      Final task: Gene descriptions                         488
+#TOC>   6        Improving on Discovery by Differential Expression     493
+#TOC>   7        Annotation data                                       575
 #TOC> 
 #TOC> ==========================================================================
 
@@ -74,8 +75,8 @@ if (! require(GEOquery, quietly=TRUE)) {
 }
 # Package information:
 #  library(help = GEOquery)       # basic information
-#  browseVignettes("GEOquery")  # available vignettes
-#  data(package = "GEOquery")   # available datasets
+#  browseVignettes("GEOquery")    # available vignettes
+#  data(package = "GEOquery")      # available datasets
 
 
 # =    2  Loading a GEO Dataset  ===============================================
@@ -264,7 +265,7 @@ file.show("./data/SGD_features.README.txt")
 #     Note: the file as downloaded from SGD actually crashed RStudio due to an
 #           unbalanced quotation mark which caused R to try and read the whole
 #           of the subsequent file into a single string. This was caused by an
-#           alias gene name (B"). I have removed this abomination,
+#           alias gene name (B"). I have removed this abomination
 #           by editing the file. The version in the ./data directory can be
 #           read without issues.
 
@@ -570,6 +571,32 @@ for (i in 1:length(myBottomC)) {
 #   -  being able to write your own code gives you the freedom to experiment
 #        and explore. There is a learning curve - but the payoffs are
 #        significant.
+
+# =    7  Annotation data  =====================================================
+#
+# Loading feature data "by hand" as we've done above, is usually not necessary
+# since GEO provides rich annotations in the GPL platform files, which are
+# associated with its Gene Expression Sets files. In the code above,
+# we used getGEO("GSE3635", GSEMatrix = TRUE, getGPL = FALSE), and the GPL
+# annotations were not loaded. We could use getGPL = TRUE instead ...
+
+GSE3635annot <- getGEO("GSE3635", GSEMatrix = TRUE, getGPL = TRUE)
+GSE3635annot <- GSE3635annot[[1]]
+
+# ... and the feature data is then available in the GSE3635@featureData@data
+# slot:
+str(GSE3635annot@featureData@data)
+GSE3635annot@featureData@data[ 1:20 , ]
+
+# ... or we could have identified the GPL file for this set:
+GSE3635@annotation   # "GPL1914"
+
+# ... and downloaded it directly from NCBI:
+GPL1914 <- getGEO("GPL1914")
+str(GPL1914)
+
+# ... from which we can get the data - which is however NOT necessarily
+# matched to the rows of our expression dataset.
 
 
 # [END]
