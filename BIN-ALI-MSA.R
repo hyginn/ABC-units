@@ -238,7 +238,7 @@ for (i in seq_along(highScoringRanges$lengths)) {
 
 # We computed a T-Coffee alignment at the EBI. msa has no native import function
 # so we need to improvise, and it's a bit of a pain to do - but a good
-# illustration of startegies to convert data into any kind of object:
+# illustration of strategies to convert data into any kind of object:
 #   -  read an .aln file
 #   -  adjust the sequence names
 #   -  convert to msaAAMultipleAlignment object
@@ -452,7 +452,7 @@ legend("bottomright",
        cex = 0.7,
        bty = "n")
 
-# Your alignment is going to be differnte from mine, due to the inclusion of
+# Your alignment is going to be different from mine, due to the inclusion of
 # MYSPE - but what I see is that MUSCLE gives the highest score overall, and
 # achieves this with fewer indels then most, and the lowest number of gaps of
 # all algorithms.

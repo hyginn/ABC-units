@@ -16,6 +16,7 @@
 #
 # TODO:
 #          Confirm that SS residue numbers are indices
+#          Set task seed from student number
 #
 # == DO NOT SIMPLY  source()  THIS FILE! =======================================
 #
@@ -403,7 +404,7 @@ om <- c(360 + tor$omega[tor$omega < 0],
 hist(om, xlim=c(0,360))
 abline(v=180, col="red")
 
-# Note: a cis-peptide bond will have an omega torsion angle of around 0°
+# Note: a cis-peptide bond will have an omega torsion angle around 0°
 
 
 # =    5  H-bond lengths  ======================================================

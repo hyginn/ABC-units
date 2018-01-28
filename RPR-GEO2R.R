@@ -3,12 +3,14 @@
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the RPR_GEO2R unit.
 #
-# Version:  0.1
+# Version:  1.1
 #
-# Date:     2017  MM  DD
-# Author:   Boris Steipe (boris.steipe@utoronto.ca)
+# Date:     2017 09  -  2018 01
+# Author:   Boris Steipe <boris.steipe@utoronto.ca>
 #
 # Versions:
+#           1.1    Add section on GPL annotations
+#           1.0    Updates for BCH441 2017
 #           0.1    First code copied from 2016 material.
 #
 #
@@ -32,17 +34,18 @@
 #TOC> 
 #TOC>   Section  Title                                                Line
 #TOC> --------------------------------------------------------------------
-#TOC>   1        Preparations                                           50
-#TOC>   2        Loading a GEO Dataset                                  81
-#TOC>   3        Column wise analysis - time points                    151
-#TOC>   3.1      Task - Comparison of experiments                      157
-#TOC>   3.2      Grouped Samples                                       204
-#TOC>   4        Row-wise Analysis: Expression Profiles                239
-#TOC>   4.1      Task - Read a table of features                       274
-#TOC>   4.2      Selected Expression profiles                          322
-#TOC>   5        Differential Expression                               363
-#TOC>   5.1      Final task: Gene descriptions                         487
-#TOC>   6        Improving on Discovery by Differential Expression     492
+#TOC>   1        Preparations                                           53
+#TOC>   2        Loading a GEO Dataset                                  84
+#TOC>   3        Column wise analysis - time points                    154
+#TOC>   3.1      Task - Comparison of experiments                      160
+#TOC>   3.2      Grouped Samples                                       207
+#TOC>   4        Row-wise Analysis: Expression Profiles                242
+#TOC>   4.1      Task - Read a table of features                       277
+#TOC>   4.2      Selected Expression profiles                          325
+#TOC>   5        Differential Expression                               366
+#TOC>   5.1      Final task: Gene descriptions                         490
+#TOC>   6        Improving on Discovery by Differential Expression     495
+#TOC>   7        Annotation data                                       577
 #TOC> 
 #TOC> ==========================================================================
 
@@ -74,8 +77,8 @@ if (! require(GEOquery, quietly=TRUE)) {
 }
 # Package information:
 #  library(help = GEOquery)       # basic information
-#  browseVignettes("GEOquery")  # available vignettes
-#  data(package = "GEOquery")   # available datasets
+#  browseVignettes("GEOquery")    # available vignettes
+#  data(package = "GEOquery")      # available datasets
 
 
 # =    2  Loading a GEO Dataset  ===============================================
@@ -264,7 +267,7 @@ file.show("./data/SGD_features.README.txt")
 #     Note: the file as downloaded from SGD actually crashed RStudio due to an
 #           unbalanced quotation mark which caused R to try and read the whole
 #           of the subsequent file into a single string. This was caused by an
-#           alias gene name (B"). I have removed this abomination,
+#           alias gene name (B"). I have removed this abomination
 #           by editing the file. The version in the ./data directory can be
 #           read without issues.
 
@@ -570,6 +573,53 @@ for (i in 1:length(myBottomC)) {
 #   -  being able to write your own code gives you the freedom to experiment
 #        and explore. There is a learning curve - but the payoffs are
 #        significant.
+
+# =    7  Annotation data  =====================================================
+#
+# Loading feature data "by hand" as we've done above, is usually not necessary
+# since GEO provides rich annotations in the GPL platform files, which are
+# associated with its Gene Expression Sets files. In the code above,
+# we used getGEO("GSE3635", GSEMatrix = TRUE, getGPL = FALSE), and the GPL
+# annotations were not loaded. We could use getGPL = TRUE instead ...
+
+GSE3635annot <- getGEO("GSE3635", GSEMatrix = TRUE, getGPL = TRUE)
+GSE3635annot <- GSE3635annot[[1]]
+
+# ... and the feature data is then available in the GSE3635@featureData@data
+#     slot:
+str(GSE3635annot@featureData@data)
+GSE3635annot@featureData@data[ 1:20 , ]
+
+# ... from where you can access the columns you need, e.g. spotIDs and gene
+#     symbols:
+
+myAnnot <- GSE3635annot@featureData@data[ , c("SPOT_ID", "Gene")]
+str(myAnnot)
+
+# ... Note that this is a data frame, but - oy veh - the gene symbols are
+#     factors. Really, we need to fix this! To convert a factor into a string,
+#     we need to cast it to character.
+
+myAnnot$Gene <- as.character(myAnnot$Gene)
+
+# ... whereupon we can find things we might be looking for ...
+myAnnot[which(myAnnot$Gene == "MBP1"), ]
+
+# ... or identify rows that might give us trouble, such as probes that
+#     hybridize to more than one gene.
+
+
+# Alternatively, we could have identified the GPL file for this set:
+GSE3635@annotation   # "GPL1914"
+
+# ... and downloaded it directly from NCBI:
+GPL1914 <- getGEO("GPL1914")
+str(GPL1914)
+
+# ... from which we can get the data - which is however NOT necessarily
+# matched to the rows of our expression dataset. Note that here to: the majority
+# of data elements are factors and will likely have to be converted before
+# use.
 
 
 # [END]
