@@ -3,12 +3,13 @@
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the BIN-Data_integration unit.
 #
-# Version:  1.0
+# Version:  1.0.1
 #
-# Date:     2017  10  08
+# Date:     2018  10  30
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.0.1  Bugfix: UniProt ID Mapping service API change
 #           1.0    First live version
 #
 #
@@ -28,10 +29,10 @@
 
 #TOC> ==========================================================================
 #TOC> 
-#TOC>   Section  Title                       Line
-#TOC> -------------------------------------------
-#TOC>   1        Identifier mapping            45
-#TOC>   2        Cross-referencing tables     151
+#TOC>   Section  Title                             Line
+#TOC> -------------------------------------------------
+#TOC>   1        Identifier mapping                  40
+#TOC>   2        Cross-referencing tables           164
 #TOC> 
 #TOC> ==========================================================================
 
@@ -73,14 +74,14 @@ myQueryIDs <- "NP_010227 NP_00000 NP_011036"
 # the URL of the server and send a list of items labelled as "query" in the body
 # of the request. GET() and POST() are functions from httr.
 
-URL <- "http://www.uniprot.org/mapping/"
+URL <- "https://www.uniprot.org/mapping/"
 response <- POST(URL,
                  body = list(from = "P_REFSEQ_AC",   # Refseq Protein
                              to = "ACC",             # UniProt ID
                              format = "tab",
                              query = myQueryIDs))
 
-response
+cat(content(response))
 
 # We need to check the status code - if it is not 200, an error ocurred and we
 # can't process the result:
@@ -93,6 +94,22 @@ myMappedIDs <- read.delim(file = textConnection(content(response)),
                           sep = "\t",
                           stringsAsFactors = FALSE)
 myMappedIDs
+
+# We actually only need columns 1 and 3, and we can also change the names
+# to "From" and "To":
+
+myMappedIDs <- myMappedIDs[ , c(1,3)]
+colnames(myMappedIDs) <- c("From", "To")
+
+myMappedIDs
+
+# If this works as expected, you should see:
+#        From     To
+# 1 NP_010227 P39678
+# 2 NP_011036 P25302
+#
+# ... and note that there are only two entries, because nothing was returned
+# for the dummy "RefSeq ID" NP_00000
 
 # If the query can't be fulfilled because of a problem with the server, a
 # WebPage is returned. But the server status is also returned and we can check
@@ -114,7 +131,7 @@ myIDmap <- function (s, mapFrom = "P_REFSEQ_AC", mapTo = "ACC") {
   #    empty data frame if the mapping was unsuccessful. No rows are returned
   #    for IDs that are not mapped.
 
-  URL <- "http://www.uniprot.org/mapping/"
+  URL <- "https://www.uniprot.org/uploadlists/"
   response <- POST(URL,
                    body = list(from = mapFrom,
                                to = mapTo,
@@ -125,6 +142,8 @@ myIDmap <- function (s, mapFrom = "P_REFSEQ_AC", mapTo = "ACC") {
     myMap <- read.delim(file = textConnection(content(response)),
                         sep = "\t",
                         stringsAsFactors = FALSE)
+    myMap <- myMap[ , c(1,3)]
+    colnames(myMap) <- c("From", "To")
   } else {
     myMap <- data.frame()
     warning(paste("No uniProt ID mapping returned:",

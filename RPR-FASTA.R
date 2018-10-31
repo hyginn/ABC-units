@@ -12,7 +12,8 @@
 #           1.0    New unit.
 #
 #
-# TODO:
+# TODO: Make a simple solution first, then extend it to error checking, and
+#       to handle .mfa files.
 #
 #
 # == DO NOT SIMPLY  source()  THIS FILE! =======================================
@@ -22,17 +23,17 @@
 # going on. That's not how it works ...
 #
 # ==============================================================================
- 
+
 #TOC> ==========================================================================
-#TOC> 
+#TOC>
 #TOC>   Section  Title                 Line
 #TOC> -------------------------------------
 #TOC>   1        Reading FASTA           39
 #TOC>   2        Interpreting FASTA     227
 #TOC>   3        Writing FASTA          248
-#TOC> 
+#TOC>
 #TOC> ==========================================================================
- 
+
 
 
 
@@ -231,7 +232,7 @@ refAPSES[grep("P39678", refAPSES) + 1]  # grep() the string and add 1
 # when working with strings, we can use substr(<string>, <start>, <stop>) to
 # extract substrings, but more often we expand the string into a vector of
 # single characters with strsplit(<string>, ""). strsplit() returns a list,
-# to accommodate that <string> could be a vector of many elements, therafore
+# to accommodate that <string> could be a vector of many elements, therefore
 # we usually unlist() the result if we use it only on a single string.
 
 # Example: How many positive charged residues in "MBP1_SACCE"?
@@ -297,8 +298,8 @@ writeFASTA <- function(s, OUT = stdout(), width = 60) {
 
 }
 
-# Let's try this. We don't define OUT, so the result is written to the console
-# by default. Defualt width for sequence is 60 characters
+# Let's try this. If we don't specify OUT, the result is written to the console
+# by default. Default width for sequence is 60 characters
 
 writeFASTA(refAPSES)
 

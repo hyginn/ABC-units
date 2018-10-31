@@ -26,7 +26,7 @@
 
 
 #TOC> ==========================================================================
-#TOC> 
+#TOC>
 #TOC>   Section  Title                                     Line
 #TOC> ---------------------------------------------------------
 #TOC>   1        The Biostrings Package                      52
@@ -41,7 +41,7 @@
 #TOC>   5.1      Views                                      183
 #TOC>   5.2      Iranges                                    195
 #TOC>   5.3      StringSets                                 201
-#TOC> 
+#TOC>
 #TOC> ==========================================================================
 
 
@@ -182,7 +182,7 @@ toString(myDNAseq[4:15])
 
 # ==   5.1  Views  =============================================================
 
-# Biostring "Views" are objects that store mutliple substrings of one
+# Biostring "Views" are objects that store multiple substrings of one
 # Biostring object.
 
 (myView <- Views(myDNAseq, start = c(1, 19, 37), end = c(15, 30, 45)))

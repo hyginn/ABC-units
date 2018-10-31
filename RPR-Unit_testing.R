@@ -25,13 +25,13 @@
 
 
 #TOC> ==========================================================================
-#TOC> 
+#TOC>
 #TOC>   Section  Title                       Line
 #TOC> -------------------------------------------
 #TOC>   1        Unit Tests with testthat      43
 #TOC>   2        Organizing your tests        156
 #TOC>   3        Task solutions               181
-#TOC> 
+#TOC>
 #TOC> ==========================================================================
 
 
@@ -107,8 +107,7 @@ expect_error(log(v[1,2]))                # This appears oK, but ...
 expect_error(log(v[1,2]), "non-numeric") # ... it's actually a different error!
 
 # Producing unit tests simply means: we define a function, and then we check
-# whether all test pass. Consider a function that is loaded from your utilities
-# file:
+# whether all test pass. Consider a function that is loaded on startup:
 
 biCode
 

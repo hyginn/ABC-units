@@ -345,7 +345,7 @@ UniProtIDmap <- function (s, mapFrom = "P_REFSEQ_AC", mapTo = "ACC") {
   #    empty data frame if the mapping was unsuccessful. No rows are returned
   #    for IDs that are not mapped.
 
-  URL <- "http://www.uniprot.org/mapping/"
+  URL <- "https://www.uniprot.org/uploadlists/"
   response <- POST(URL,
                    body = list(from = mapFrom,
                                to = mapTo,
@@ -356,6 +356,8 @@ UniProtIDmap <- function (s, mapFrom = "P_REFSEQ_AC", mapTo = "ACC") {
     myMap <- read.delim(file = textConnection(content(response)),
                         sep = "\t",
                         stringsAsFactors = FALSE)
+    myMap <- myMap[ , c(1,3)]
+    colnames(myMap) <- c("From", "To")
   } else {
     myMap <- data.frame()
     warning(paste("No uniProt ID mapping returned:",

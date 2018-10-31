@@ -584,8 +584,8 @@ KLdiv(pmfL1, pmfL2)  # 0.1087
 # random samples according to the rL1 distribution, calculate the Kullback
 # Leibler divergence with countsL1, and compare the distribution we get with the
 # value we observed as the difference with discL2. Essentially, this tells us
-# the probability that countsL2 is actually a sample from the L1 function. Here we
-# go:
+# the probability that countsL2 is actually a sample from the L1 function.
+# Here we go:
 
 N <- 1000
 divs <- numeric(N)

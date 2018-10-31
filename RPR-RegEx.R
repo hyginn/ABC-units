@@ -63,8 +63,8 @@ IHKYRRIIREGTEMNIEEVDSSLDVILQTLIANNNKNKGAEQIITISNANSHA"
 nchar(s)
 # Must be 969
 
-# Fetch the Uniprot ID by retrieving the first string that appears between two
-# vertical bars in the header line.
+# Task: Fetch the Uniprot ID by retrieving the first string that appears between
+# two vertical bars ("pipes") in the header record.
 #
 
 # Develop the regular expression:
