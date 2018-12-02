@@ -79,7 +79,7 @@ if (!require(Rphylip, quietly=TRUE)) {
 # PROMLPATH <- "/Applications/phylip-3.695/exe/proml.app/Contents/MacOS"
 
 # ===  1.1.2  ... on Windows
-# On Windows you need to know where the rograms have been installed, and you
+# On Windows you need to know where the programs have been installed, and you
 # need to specify a path that is correct for the Windows OS. Find the folder
 # that is named "exe", and right-click to inspect its properties. The path
 # should be listed among them.

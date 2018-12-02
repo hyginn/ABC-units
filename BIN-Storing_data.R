@@ -180,9 +180,9 @@ autoincrement <- function(table) {
 autoincrement(philDB$person)
 
 # Once that is clear, let's remove the Zhuangzi entry and recreate it correctly.
-# Many ways to remove, here we use a logical expression to select matching record(s),
-# apply the results to subset the data frame, and overwrite the existing table
-# with the new one.
+# Many ways to remove, here we use a logical expression to select matching
+# record(s), apply the results to subset the data frame, and overwrite the
+# existing table with the new one.
 
 sel <- !(philDB$person$name == "Zhuangzi")   # select ...
 philDB$person <- philDB$person[sel, ]        # ... and replace
@@ -260,7 +260,7 @@ philDB$books$title
 sel <- numeric()   # initialize the vector
 for (ID in pID) {
   sel <- which(philDB$works$personID == ID)          # get all rows for which
-                                                     #   the condition is TRUE
+                                                     # the condition is TRUE
   cat(sprintf("%s: ", philDB$person$name[ID]))       # output the person
   cat(sprintf("\"%s\"  ", philDB$books$title[sel]))  # output the book
   cat("\n")

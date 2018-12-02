@@ -3,12 +3,13 @@
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the RPR-Scripting_data_downloads unit.
 #
-# Version:  1.0
+# Version:  1.0.1
 #
-# Date:     2017  10  05
+# Date:     2017  10  -  2018  12
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.0.1  Updates for slightly changed interfaces
 #           1.0    First ABC units version
 #           0.1    First code copied from 2016 material.
 #
@@ -26,13 +27,13 @@
 
 
 #TOC> ==========================================================================
-#TOC> 
+#TOC>
 #TOC>   Section  Title                                           Line
 #TOC> ---------------------------------------------------------------
 #TOC>   1        Constructing a POST command from a Web query      44
 #TOC>   1.1      Task - fetchPrositeFeatures() function           145
 #TOC>   2        Task solutions                                   153
-#TOC> 
+#TOC>
 #TOC> ==========================================================================
 
 
@@ -57,7 +58,7 @@ if (! require(httr, quietly=TRUE)) {
 
 UniProtID <- "P39678"
 
-URL <- "http://prosite.expasy.org/cgi-bin/prosite/PSScan.cgi"
+URL <- "https://prosite.expasy.org/cgi-bin/prosite/PSScan.cgi"
 
 response <- POST(URL,
                  body = list(meta = "opt1",
@@ -148,7 +149,7 @@ features
 # =    2  Task solutions  ======================================================
 
 
-# I have placed such a function into the dbUtilities script: look it up by
+# I have placed such a function into the ABC-dbUtilities.R script: look it up by
 # clicking on  dbFetchPrositeFeatures() in the Environment pane.
 
 # Test:

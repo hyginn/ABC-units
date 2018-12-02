@@ -251,7 +251,7 @@ dbFetchPrositeFeatures <- function(ID) {
   #                    psName char  PROSITE motif name
   # If the operation is not successful, a 0-length data frame is returned.
 
-  URL <- "http://prosite.expasy.org/cgi-bin/prosite/PSScan.cgi"
+  URL <- "https://prosite.expasy.org/cgi-bin/prosite/PSScan.cgi"
 
   response <- POST(URL,
                    body = list(meta = "opt1",
