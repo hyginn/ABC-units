@@ -1,5 +1,7 @@
 # Miscellaneous
 .Ds_store
+instructor/
+dev/
 
 # History files
 .Rhistory
