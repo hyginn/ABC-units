@@ -27,15 +27,15 @@
 
 #TOC> ==========================================================================
 #TOC> 
-#TOC>   Section  Title                                     Line
-#TOC> ---------------------------------------------------------
-#TOC>   1        Setup and data                              43
-#TOC>   2        Functional Edges in the Human Proteome      80
-#TOC>   2.1      Cliques                                    123
-#TOC>   2.2      Communities                                164
-#TOC>   2.3      Betweenness Centrality                     176
-#TOC>   3        biomaRt                                    220
-#TOC>   4        Task for submission                        291
+#TOC>   Section  Title                                           Line
+#TOC> ---------------------------------------------------------------
+#TOC>   1        Setup and data                                    43
+#TOC>   2        Functional Edges in the Human Proteome            80
+#TOC>   2.1        Cliques                                        123
+#TOC>   2.2        Communities                                    164
+#TOC>   2.3        Betweenness Centrality                         178
+#TOC>   3        biomaRt                                          224
+#TOC>   4        Task for submission                              295
 #TOC> 
 #TOC> ==========================================================================
 
@@ -163,8 +163,10 @@ par(oPar)
 
 # ==   2.2  Communities  =======================================================
 
-set.seed(112358)
+set.seed(112358)                       # set RNG seed for repeatable randomness
 gSTRclusters <- cluster_infomap(gSTR)
+set.seed(NULL)                         # reset the RNG
+
 modularity(gSTRclusters) # ... measures how separated the different membership
                          # types are from each other
 tMem <- table(membership(gSTRclusters))
@@ -205,9 +207,11 @@ head(sBC)
 
 # We are going to use these IDs to produce some output for a submitted task:
 # so I need you to personalize ENSPsel with the following
-# two lines of code:
-set.seed(<myStudentNumber>) # enter your student number here
+# three lines of code:
+
+set.seed(<myStudentNumber>)         # enter your student number here
 (ENSPsel <- sample(ENSPsel))
+set.seed(NULL)                      # reset the random number generator
 
 #  Next, to find what these proteins are...
 

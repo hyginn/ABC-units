@@ -3,12 +3,13 @@
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the RPR-Genetic_code_optimality unit.
 #
-# Version:  1.0.1
+# Version:  1.1
 #
-# Date:     2017  10  16
+# Date:     2017  10  -  2019  01
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.1      Update set.seed() usage
 #           1.0.1    Fixed two bugs discovered by Suan Chin Yeo.
 #           1.0      New material.
 #
@@ -26,20 +27,20 @@
 
 
 #TOC> ==========================================================================
-#TOC>
-#TOC>   Section  Title                                    Line
-#TOC> --------------------------------------------------------
-#TOC>   1        Designing a computational experiment       57
-#TOC>   2        Setting up the tools                       73
-#TOC>   2.1      Natural and alternative genetic codes      76
-#TOC>   2.2      Effect of mutations                       135
-#TOC>   2.2.1    reverse-translate                         146
-#TOC>   2.2.2    Randomly mutate                           171
-#TOC>   2.2.3    Forward- translate                        196
-#TOC>   2.2.4    measure effect                            214
-#TOC>   3        Run the experiment                        261
-#TOC>   4        Task solutions                            348
-#TOC>
+#TOC> 
+#TOC>   Section  Title                                          Line
+#TOC> --------------------------------------------------------------
+#TOC>   1        Designing a computational experiment             54
+#TOC>   2        Setting up the tools                             70
+#TOC>   2.1        Natural and alternative genetic codes          73
+#TOC>   2.2        Effect of mutations                           132
+#TOC>   2.2.1          reverse-translate                         143
+#TOC>   2.2.2          Randomly mutate                           168
+#TOC>   2.2.3          Forward- translate                        193
+#TOC>   2.2.4          measure effect                            211
+#TOC>   3        Run the experiment                              258
+#TOC>   4        Task solutions                                  351
+#TOC> 
 #TOC> ==========================================================================
 
 
@@ -139,7 +140,7 @@ swappedGC <- function(GC) {
 #   - we count the number of mutations and evaluate their severity.
 
 
-# ===  2.2.1  reverse-translate
+# ===   2.2.1  reverse-translate                    
 
 # To reverse-translate an amino acid vector, we randomly pick one of its
 # codons from a genetic code, and assemble all codons to a sequence.
@@ -164,7 +165,7 @@ traRev <- function(s, GC) {
 }
 
 
-# ===  2.2.2  Randomly mutate
+# ===   2.2.2  Randomly mutate                      
 
 # To mutate, we split a codon into it's three nucleotides, then randomly replace
 # one of the three with another nucleotide.
@@ -189,7 +190,7 @@ randMut <- function(vC) {
 
 
 
-# ===  2.2.3  Forward- translate
+# ===   2.2.3  Forward- translate                   
 
 traFor <- function(vC, GC) {
   # Parameters:
@@ -207,7 +208,7 @@ traFor <- function(vC, GC) {
   }
 
 
-# ===  2.2.4  measure effect
+# ===   2.2.4  measure effect                       
 
 # How do we evaluate the effect of the mutation? We'll take a simple ad hoc
 # approach: we divide amino acids into hydrophobic, hydrophilic, and neutral
@@ -269,18 +270,21 @@ myAA <- traFor(myDNA, GENETIC_CODE)
 # Mutate and evaluate
 set.seed(112358)
 x <- randMut(myDNA)
+set.seed(NULL)
 x <- traFor(x, GENETIC_CODE)
 evalMut(myAA, x)  # 166.4
 
 # Try this 200 times, and see how the values are distributed.
-set.seed(112358)
 N <- 200
 valUGC <- numeric(N)
+
+set.seed(112358)                   # set RNG seed for repeatable randomness
 for (i in 1:N) {
-  x <- randMut(myDNA)            # mutate
-  x <- traFor(x, GENETIC_CODE)   # translate
-  valUGC[i] <- evalMut(myAA, x)     # evaluate
+  x <- randMut(myDNA)              # mutate
+  x <- traFor(x, GENETIC_CODE)     # translate
+  valUGC[i] <- evalMut(myAA, x)    # evaluate
 }
+set.seed(NULL)                     # reset the RNG
 
 hist(valUGC,
      breaks = 15,
@@ -299,6 +303,7 @@ effectUGC <- mean(valUGC)  # 178.1
 set.seed(112358)
 # choose a new code
 GC <- randomGC(GENETIC_CODE)
+set.seed(NULL)
 
 # reverse translate hypothetical sequence according to the new code
 x <- traRev(myAA, GC)
@@ -311,9 +316,10 @@ evalMut(myAA, x)       # evaluate mutation effects: 298.5
 # Let's try with different genetic codes. 200 trials - but this time every trial
 # is with a different, synthetic genetic code.
 
-set.seed(1414214)
 N <- 200
 valXGC <- numeric(N)
+
+set.seed(1414214)                # set RNG seed for repeatable randomness
 for (i in 1:N) {
   GC <- randomGC(GENETIC_CODE)   # Choose code
   x <- traRev(myAA, GC)          # reverse translate
@@ -321,6 +327,7 @@ for (i in 1:N) {
   x <- traFor(x, GC)             # translate
   valXGC[i] <- evalMut(myAA, x)  # evaluate
 }
+set.seed(NULL)                   # reset the RNG
 
 hist(valXGC,
      col = "plum",
@@ -343,9 +350,10 @@ hist(valXGC,
 
 # =    4  Task solutions  ======================================================
 
-set.seed(2718282)
 N <- 200
 valSGC <- numeric(N)
+
+set.seed(2718282)                # set RNG seed for repeatable randomness
 for (i in 1:N) {
   GC <- swappedGC(GENETIC_CODE)  # Choose code
   x <- traRev(myAA, GC)          # reverse translate
@@ -353,6 +361,7 @@ for (i in 1:N) {
   x <- traFor(x, GC)             # translate
   valSGC[i] <- evalMut(myAA, x)  # evaluate
 }
+set.seed(NULL)                   # reset the RNG
 
 hist(valSGC,
      col = "#6688FF88",

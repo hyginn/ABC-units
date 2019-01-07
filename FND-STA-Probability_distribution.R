@@ -3,12 +3,13 @@
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the FND-STA-Probability_distribution unit.
 #
-# Version:  1.1
+# Version:  1.2
 #
-# Date:     2017  10
+# Date:     2017  10  -  2019  01
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.2    Update set.seed() usage
 #           1.1    Corrected empirical p-value
 #           1.0    First code live version
 #
@@ -26,22 +27,22 @@
 
 #TOC> ==========================================================================
 #TOC>
-#TOC>   Section  Title                                                   Line
-#TOC> -----------------------------------------------------------------------
-#TOC>   1        Introduction                                              49
-#TOC>   2        Three fundamental distributions                          112
-#TOC>   2.1      The Poisson Distribution                                 115
-#TOC>   2.2      The uniform distribution                                 168
-#TOC>   2.3      The Normal Distribution                                  188
-#TOC>   3        quantile-quantile comparison                             229
-#TOC>   3.1      qqnorm()                                                 239
-#TOC>   3.2      qqplot()                                                 299
-#TOC>   4        Quantifying the difference                               316
-#TOC>   4.1      Chi2 test for discrete distributions                     350
-#TOC>   4.2      Kullback-Leibler divergence                              441
-#TOC>   4.2.1    An example from tossing dice                             452
-#TOC>   4.2.2    An example from lognormal distributions                  574
-#TOC>   4.3      Kolmogorov-Smirnov test for continuous distributions     616
+#TOC>   Section  Title                                                     Line
+#TOC> -------------------------------------------------------------------------
+#TOC>   1        Introduction                                                50
+#TOC>   2        Three fundamental distributions                            113
+#TOC>   2.1        The Poisson Distribution                                 116
+#TOC>   2.2        The uniform distribution                                 170
+#TOC>   2.3        The Normal Distribution                                  190
+#TOC>   3        quantile-quantile comparison                               231
+#TOC>   3.1        qqnorm()                                                 241
+#TOC>   3.2        qqplot()                                                 307
+#TOC>   4        Quantifying the difference                                 324
+#TOC>   4.1        Chi2 test for discrete distributions                     359
+#TOC>   4.2        Kullback-Leibler divergence                              451
+#TOC>   4.2.1          An example from tossing dice                         462
+#TOC>   4.2.2          An example from lognormal distributions              585
+#TOC>   4.3        Kolmogorov-Smirnov test for continuous distributions     628
 #TOC>
 #TOC> ==========================================================================
 
@@ -151,6 +152,7 @@ set.seed(112358)
 for (i in 1:N) {
   x[i] <- sum(sample(genes, 250)) # sum of TFs in our sample in this trial
 }
+set.seed(NULL)
 
 (t <- table(x)/N)
 
@@ -241,8 +243,10 @@ hist(v, breaks = 20, col = "#F8DDFF")
 # The functions qqnorm() and qqline() perform this
 # comparison with the normal distribution.
 
-set.seed(1112358)
-x <- rnorm(100, mean=0, sd=1) # 100 normally distributed balues
+set.seed(112358)
+x <- rnorm(100, mean=0, sd=1) # 100 normally distributed values
+set.seed(NULL)
+
 qqnorm(x)
 qqline(x, col = "seagreen")
 
@@ -253,12 +257,15 @@ qqline(x, col = "seagreen")
 
 # Create a vector of sample means from the exponential distribution; use
 # only a few samples for the mean
-set.seed(112358)
 x <- rexp(12345)
 v <- numeric(999)
+
+set.seed(112358)
 for (i in 1:length(v)) {
   v[i] <- mean(sample(x, 12))
 }
+set.seed(NULL)
+
 qqnorm(v)
 qqline(v, col = "turquoise") # normal
 
@@ -288,13 +295,14 @@ rEVD <- numeric(9999)
 for (i in seq_along(rEVD)) {
   rEVD[i] <- max(rnorm(100))
 }
+set.seed(NULL)
+
 hist(rEVD, breaks = 20, col = "orchid")
 # Note the long tail on the right!
 
 qqnorm(rEVD)
-qqline(rEVD, col = "orchid") # normal
+qqline(rEVD, col = "orchid") # Definitely not "normal"!
 
-# Definitely not "normal"!
 
 # ==   3.2  qqplot()  ==========================================================
 
@@ -331,6 +339,7 @@ dl2 <- dlnorm(x - 0.25) # log-normal distribution, shifted right (a bit)
 dg1.2 <- dgamma(x, shape=1.2)   # three gamma distributions with...
 dg1.5 <- dgamma(x, shape=1.5)   # ...wider, and wider...
 dg1.9 <- dgamma(x, shape=1.9)   # ...peak
+set.seed(NULL)
 
 myCols <- c("black", "grey", "maroon", "turquoise", "steelblue")
 
@@ -361,6 +370,7 @@ rL2   <- rlnorm(N, meanlog = 0.25) # log-normal distribution, shifted right
 rG1.2 <- rgamma(N, shape=1.2)   # three gamma distributions with...
 rG1.5 <- rgamma(N, shape=1.5)   # ...wider, and wider...
 rG1.9 <- rgamma(N, shape=1.9)   # ...peak
+set.seed(NULL)
 
 maxX <- max(c(rL1, rL2, rG1.2, rG1.5, rG1.9))
 
@@ -449,7 +459,7 @@ chisq.test(countsL1, countsG1.9, simulate.p.value = TRUE, B = 10000)
 # be applied to discrete distributions. But we need to talk a bit about
 # converting counts to p.m.f.'s.
 
-# ===  4.2.1  An example from tossing dice
+# ===   4.2.1  An example from tossing dice
 
 #  The p.m.f of an honest die is (1:1/6, 2:1/6, 3:1/6, 4:1/6, 5:1/6, 6:1/6). But
 #  there is an issue when we convert sampled counts to frequencies, and estimate
@@ -459,6 +469,7 @@ chisq.test(countsL1, countsG1.9, simulate.p.value = TRUE, B = 10000)
 set.seed(47)
 N <- 20
 (counts <- table(sample(1:6, N, replace = TRUE)))
+set.seed(NULL)
 
 # We have not observed a "2"!
 #
@@ -571,7 +582,7 @@ abline(v = KLdiv(rep(1/6, 6), pmfPC(counts, 1:6)), col="firebrick")
 # somewhat but not drastically atypical.
 
 
-# ===  4.2.2  An example from lognormal distributions
+# ===   4.2.2  An example from lognormal distributions
 
 # We had compared a set of lognormal and gamma distributions above, now we
 # can use KL-divergence to quantify their similarity:
@@ -597,6 +608,7 @@ for (i in 1:N) {
   q <- pmfPC(y, nam = 1:10)  # convert to p.m.f. with pseudocounts
   divs[i] <- KLdiv(pmfL1, q)     # calculate Kullback-Leibler divergence
 }
+set.seed(NULL)
 
 hist(divs,
      col = "thistle",
@@ -605,7 +617,7 @@ hist(divs,
 abline(v = KLdiv(pmfL1, pmfL2), col="firebrick")
 
 # How many KL-divergences were less than the difference we observed?
-sum(divs < KLdiv(pmfL1, pmfL2)) #933
+sum(divs < KLdiv(pmfL1, pmfL2)) # 933
 
 # Therefore the empirical p-value that the samples came from the same
 # distribution is only 100 * ((N - 933) + 1) / (N + 1) (%) ... 6.8%. You see

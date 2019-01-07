@@ -28,15 +28,15 @@
 
 
 #TOC> ==========================================================================
-#TOC>
-#TOC>   Section  Title                        Line
-#TOC> --------------------------------------------
-#TOC>   1        Preparation and Tree Plot      43
-#TOC>   2        Tree Analysis                  82
-#TOC>   2.1      Rooting Trees                 141
-#TOC>   2.2      Rotating Clades               187
-#TOC>   2.3      Computing tree distances      234
-#TOC>
+#TOC> 
+#TOC>   Section  Title                              Line
+#TOC> --------------------------------------------------
+#TOC>   1        Preparation and Tree Plot            43
+#TOC>   2        Tree Analysis                        82
+#TOC>   2.1        Rooting Trees                     141
+#TOC>   2.2        Rotating Clades                   187
+#TOC>   2.3        Computing tree distances          234
+#TOC> 
 #TOC> ==========================================================================
 
 
@@ -269,13 +269,14 @@ rtree(n = length(apsTree2$tip.label),  # number of tips
                                        #   compare them anyway.
 
 # Let's compute some random trees this way, calculate the distances to
-# fungiTree, and then compare the values we get for apsTree2:
+# fungiTree, and then compare the values we get for apsTree2. The random
+# trees are provided by ape::rtree().
 
-set.seed(112358)
 N <- 10000  # takes about 15 seconds
 myTreeDistances <- matrix(numeric(N * 2), ncol = 2)
 colnames(myTreeDistances) <- c("symm", "path")
 
+set.seed(112358)
 for (i in 1:N) {
   xTree <- rtree(n = length(apsTree2$tip.label),
                  rooted = TRUE,
@@ -283,6 +284,7 @@ for (i in 1:N) {
                  br = NULL)
   myTreeDistances[i, ] <- treedist(fungiTree, xTree)
 }
+set.seed(NULL)                      # reset the random number generator
 
 table(myTreeDistances[, "symm"])
 

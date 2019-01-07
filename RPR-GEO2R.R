@@ -31,7 +31,7 @@
 
 
 #TOC> ==========================================================================
-#TOC> 
+#TOC>
 #TOC>   Section  Title                                                Line
 #TOC> --------------------------------------------------------------------
 #TOC>   1        Preparations                                           53
@@ -46,7 +46,7 @@
 #TOC>   5.1      Final task: Gene descriptions                         490
 #TOC>   6        Improving on Discovery by Differential Expression     495
 #TOC>   7        Annotation data                                       577
-#TOC> 
+#TOC>
 #TOC> ==========================================================================
 
 
@@ -489,7 +489,8 @@ for (name in toupper(myControls)) {
 
 # ==   5.1  Final task: Gene descriptions  =====================================
 
-#    Print the descriptions of the top ten differentially expressed genes.
+#    Print the descriptions of the top ten differentially expressed genes
+#    and comment on what they have in common (or not).
 
 
 # =    6  Improving on Discovery by Differential Expression  ===================
@@ -617,9 +618,9 @@ GPL1914 <- getGEO("GPL1914")
 str(GPL1914)
 
 # ... from which we can get the data - which is however NOT necessarily
-# matched to the rows of our expression dataset. Note that here to: the majority
-# of data elements are factors and will likely have to be converted before
-# use.
+# matched to the rows of our expression dataset. Note that here too: the
+# majority of data elements are factors and will likely have to be converted
+# before use.
 
 
 # [END]

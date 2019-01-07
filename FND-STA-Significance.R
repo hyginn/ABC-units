@@ -3,12 +3,13 @@
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the FND-STA-Significance unit.
 #
-# Version:  1.1
+# Version:  1.2
 #
-# Date:     2017  09  - 2017  10
+# Date:     2017  09  - 2019  01
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.2    Update set.seed() usage
 #           1.1    Corrected treatment of empirical p-value
 #           1.0    First contents
 #
@@ -25,16 +26,16 @@
 
 #TOC> ==========================================================================
 #TOC> 
-#TOC>   Section  Title                                        Line
-#TOC> ------------------------------------------------------------
-#TOC>   1        Significance and p-value                       42
-#TOC>   1.1      Significance levels                            53
-#TOC>   1.2      probability and p-value                        70
-#TOC>   1.2.1    p-value illustrated                           100
-#TOC>   2        One- or two-sided                             153
-#TOC>   3        Significance by integration                   193
-#TOC>   4        Significance by simulation or permutation     199
-#TOC>   5        Final tasks                                   302
+#TOC>   Section  Title                                              Line
+#TOC> ------------------------------------------------------------------
+#TOC>   1        Significance and p-value                             43
+#TOC>   1.1        Significance levels                                54
+#TOC>   1.2        probability and p-value                            71
+#TOC>   1.2.1          p-value illustrated                           103
+#TOC>   2        One- or two-sided                                   158
+#TOC>   3        Significance by integration                         198
+#TOC>   4        Significance by simulation or permutation           204
+#TOC>   5        Final tasks                                         312
 #TOC> 
 #TOC> ==========================================================================
 
@@ -75,6 +76,8 @@
 
 set.seed(sqrt(5))
 x <- rnorm(1)
+set.seed(NULL)
+
 print(x, digits = 22)
 # [1] -0.8969145466249813791748
 
@@ -97,13 +100,15 @@ print(x, digits = 22)
 # curve, as a fraction of the whole.
 
 
-# ===  1.2.1  p-value illustrated                      
+# ===   1.2.1  p-value illustrated                      
 
 # Let's illustrate. First we draw a million random values from our
 # standard, normal distribution:
 
-set.seed(112358)
-r <- rnorm(1000000)
+N <- 1e6                             # one million
+set.seed(112358)                     # set RNG seed for repeatable randomness
+r <- rnorm(N)                        # N values from a normal distribution
+set.seed(NULL)                       # reset the RNG
 
 # Let's see what the distribution looks like:
 
@@ -277,9 +282,14 @@ chSep <- function(v) {
 chSep(v)
 
 # Now we can produce a random permutation of v, and recalculate
-set.seed(pi)
-w <- sample(v, length(v)) # This shuffles the vector v. Memorize this
-                          # code paradigm. It is very useful.
+
+set.seed(pi)                       # set RNG seed for repeatable randomness
+w <- sample(v, length(v))          # This shuffles the vector v. Memorize this
+                                   # code paradigm. It is very useful.
+set.seed(NULL)                     # reset the RNG
+
+
+
 chSep(w)
 # 3.273 ... that's actually less than what we had before.
 

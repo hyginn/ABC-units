@@ -25,13 +25,14 @@
 #
 # ==============================================================================
 
+
 #TOC> ==========================================================================
 #TOC>
-#TOC>   Section  Title                   Line
-#TOC> ---------------------------------------
-#TOC>   1        Preparations              39
-#TOC>   2        Suitable MYSPE Species    51
-#TOC>   3        Adopt "MYSPE"             65
+#TOC>   Section  Title                           Line
+#TOC> -----------------------------------------------
+#TOC>   1        Preparations                      39
+#TOC>   2        Suitable MYSPE Species            51
+#TOC>   3        Adopt "MYSPE"                     65
 #TOC>
 #TOC> ==========================================================================
 
@@ -71,6 +72,7 @@ if (! exists("myStudentNumber")) {
 load("data/MYSPEspecies.RData")     # load the species names
 set.seed(myStudentNumber)           # seed the random number generator
 MYSPE <- sample(MYSPEspecies, 1)    # pick a species at random
+set.seed(NULL)                      # reset the random number generator
 # write the result to your personalized profile data so we can use the result in
 # other functions
 cat(sprintf("MYSPE <- \"%s\"\n", MYSPE), file = ".myProfile.R", append = TRUE)
@@ -80,7 +82,7 @@ biCode(MYSPE) # and what is it's "BiCode" ... ?
 
 # Task: Note down the species name and its five letter label on your Student
 # Wiki user page. Use this species whenever this or future assignments refer
-# to MYSPE. In code, we will automatically load it from your.myProfile.R file.
+# to MYSPE. In code, we will automatically load it from your .myProfile.R file.
 
 
 # [END]

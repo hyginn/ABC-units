@@ -3,12 +3,13 @@
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the FND-MAT-Graphs_and_networks unit.
 #
-# Version:  1.0
+# Version:  1.1
 #
-# Date:     2017  10  06
+# Date:     2017  10  -  2019  01
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.1    Update set.seed() usage
 #           1.0    First final version for learning units.
 #           0.1    First code copied from 2016 material.
 #
@@ -27,19 +28,19 @@
 
 #TOC> ==========================================================================
 #TOC> 
-#TOC>   Section  Title                                  Line
-#TOC> ------------------------------------------------------
-#TOC>   1        Review                                   52
-#TOC>   2        DEGREE DISTRIBUTIONS                    201
-#TOC>   2.1      Random graph                            207
-#TOC>   2.2      scale-free graph (Barabasi-Albert)      251
-#TOC>   2.3      Random geometric graph                  313
-#TOC>   3        A CLOSER LOOK AT THE igraph PACKAGE     433
-#TOC>   3.1      Basics                                  436
-#TOC>   3.2      Components                              508
-#TOC>   4        RANDOM GRAPHS AND GRAPH METRICS         527
-#TOC>   4.1      Diameter                                562
-#TOC>   5        GRAPH CLUSTERING                        630
+#TOC>   Section  Title                                        Line
+#TOC> ------------------------------------------------------------
+#TOC>   1        Review                                         48
+#TOC>   2        DEGREE DISTRIBUTIONS                          201
+#TOC>   2.1        Random graph                                207
+#TOC>   2.2        scale-free graph (Barabasi-Albert)          255
+#TOC>   2.3        Random geometric graph                      320
+#TOC>   3        A CLOSER LOOK AT THE igraph PACKAGE           442
+#TOC>   3.1        Basics                                      445
+#TOC>   3.2        Components                                  517
+#TOC>   4        RANDOM GRAPHS AND GRAPH METRICS               536
+#TOC>   4.1        Diameter                                    573
+#TOC>   5        GRAPH CLUSTERING                              641
 #TOC> 
 #TOC> ==========================================================================
 
@@ -57,7 +58,7 @@
 
 # To begin let's write a little function that will create random "gene" names;
 # there's no particular purpose to this other than to make our graphs look a
-# little more "biological ...
+# little more "biological" ...
 makeRandomGenenames <- function(N) {
   nam <- character()
   while (length(nam) < N) {
@@ -72,8 +73,9 @@ makeRandomGenenames <- function(N) {
 
 N <- 20
 
-set.seed(112358)
+set.seed(112358)                       # set RNG seed for repeatable randomness
 (Nnames <- makeRandomGenenames(N))
+set.seed(NULL)                         # reset the RNG
 
 # One way to represent graphs in a computer is as an "adjacency matrix". In this
 # matrix, each row and each column represents a node, and the cell at the
@@ -112,8 +114,9 @@ makeRandomAM <- function(nam, p = 0.1) {
   return(AM)
 }
 
-set.seed(112358)
+set.seed(112358)                       # set RNG seed for repeatable randomness
 (myRandAM <- makeRandomAM(Nnames, p = 0.09))
+set.seed(NULL)                         # reset the RNG
 
 
 # Listing the matrix is not very informative - we should plot this graph. The
@@ -131,8 +134,10 @@ if (! require(igraph, quietly=TRUE)) {
 
 
 myG <- graph_from_adjacency_matrix(myRandAM, mode = "undirected")
-set.seed(112358)
-myGxy <- layout_with_graphopt(myG, charge=0.0012)   # calculate layout coordinates
+
+set.seed(112358)                       # set RNG seed for repeatable randomness
+myGxy <- layout_with_graphopt(myG, charge=0.0012) # calculate layout coordinates
+set.seed(NULL)                         # reset the RNG
 
 
 # The igraph package adds its own function to the collection of plot()
@@ -201,13 +206,17 @@ axis(side = 1, at = 0:7)
 
 # ==   2.1  Random graph  ======================================================
 
+N <- 200
 
-set.seed(31415927)
-my200AM <- makeRandomAM(as.character(1:200), p = 0.015)
+set.seed(31415927)                     # set RNG seed for repeatable randomness
+my200AM <- makeRandomAM(as.character(1:N), p = 0.015)
+set.seed(NULL)                         # reset the RNG
+
 myG200 <- graph_from_adjacency_matrix(my200AM, mode = "undirected")
-myGxy <- layout_with_graphopt(myG200, charge=0.0001) # calculate layout coordinates
+myGxy <- layout_with_graphopt(myG200, charge=0.0001) # calculate layout
+                                                     # coordinates
 
-oPar <- par(mar= rep(0,4)) # Turn margins off
+oPar <- par(mar= rep(0,4))             # Turn margins off, save graphics state
 plot(myG200,
      layout = myGxy,
      rescale = FALSE,
@@ -216,7 +225,7 @@ plot(myG200,
      vertex.color=heat.colors(max(degree(myG200)+1))[degree(myG200)+1],
      vertex.size = 150 + (60 * degree(myG200)),
      vertex.label = NA)
-par(oPar)
+par(oPar)                              # restore graphics state
 
 # This graph has thirteen singletons and one large, connected component. Many
 # biological graphs look approximately like this.
@@ -251,12 +260,15 @@ plot(log10(as.numeric(names(freqRank)) + 1),
 # stands for "preferential attachment". Preferential attachment is one type of
 # process that will yield scale-free distributions.
 
-set.seed(31415927)
-GBA <- sample_pa(200, power = 0.8, directed = FALSE)
+N <- 200
+
+set.seed(31415927)                     # set RNG seed for repeatable randomness
+GBA <- sample_pa(N, power = 0.8, directed = FALSE)
+set.seed(NULL)                         # reset the RNG
 
 GBAxy <- layout_with_graphopt(GBA, charge=0.0001) # calculate layout coordinates
 
-oPar <- par(mar= rep(0,4)) # Turn margins off
+oPar <- par(mar= rep(0,4))             # Turn margins off, save graphics state
 plot(GBA,
      layout = GBAxy,
      rescale = FALSE,
@@ -265,7 +277,7 @@ plot(GBA,
      vertex.color=heat.colors(max(degree(GBA)+1))[degree(GBA)+1],
      vertex.size = 200 + (30 * degree(GBA)),
      vertex.label = NA)
-par(oPar)
+par(oPar)                              # restore grphics state
 
 # This is a very obviously different graph! Some biological networks have
 # features that look like that - but in my experience the hub nodes are usually
@@ -386,8 +398,10 @@ makeRandomGeometricAM <- function(nam, B = 25, Q = 0.001, t = 0.6) {
 #      xlab = "d", ylab = "p(edge)")
 
 # 200 node random geomteric graph
-set.seed(112358)
-rGAM <- makeRandomGeometricAM(as.character(1:200), t=0.4)
+N <- 200
+set.seed(112358)                       # set RNG seed for repeatable randomness
+rGAM <- makeRandomGeometricAM(as.character(1:N), t = 0.4)
+set.seed(NULL)                         # reset the RNG
 
 
 myGRG <- graph_from_adjacency_matrix(rGAM$mat, mode = "undirected")
@@ -539,20 +553,22 @@ names(c1)
 # considered to be more central. And that's also the way the force-directed
 # layout drawas them, obviously.
 
-set.seed(112358)
-myGxy <- layout_with_fr(myG)   # calculate layout coordinates
-oPar <- par(mar= rep(0,4)) # Turn margins off
+set.seed(112358)                       # set RNG seed for repeatable randomness
+myGxy <- layout_with_fr(myG)           # calculate layout coordinates
+set.seed(NULL)                         # reset the RNG
+
+oPar <- par(mar = rep(0, 4))           # turn margins off, save graphics state
 plot(myG,
      layout = myGxy,
      rescale = FALSE,
      xlim = c(min(myGxy[,1]) * 0.99, max(myGxy[,1]) * 1.01),
      ylim = c(min(myGxy[,2]) * 0.99, max(myGxy[,2]) * 1.01),
-     vertex.color=heat.colors(max(degree(myG)+1))[degree(myG)+1],
+     vertex.color=heat.colors(max(degree(myG) + 1))[degree(myG) + 1],
      vertex.size = 20 + (10 * degree(myG)),
      vertex.label = V(myG)$name,
      vertex.label.family = "sans",
      vertex.label.cex = 0.8)
-par(oPar)
+par(oPar)                              # restore graphics state
 
 # ==   4.1  Diameter  ==========================================================
 
