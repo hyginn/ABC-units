@@ -3,12 +3,14 @@
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the BIN-PHYLO-Tree_building unit.
 #
-# Version:  1.0
+# Version:  1.1
 #
 # Date:     2017  10.  31
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.1    Change from require() to requireNamespace(),
+#                      use <package>::<function>() idiom throughout,
 #           1.0    First 2017 version
 #           0.1    First code copied from 2016 material.
 #
@@ -27,17 +29,17 @@
 
 
 #TOC> ==========================================================================
-#TOC>
-#TOC>   Section  Title                                   Line
-#TOC> -------------------------------------------------------
-#TOC>   1        Calculating Trees                         43
-#TOC>   1.1      PROMLPATH ...                             64
-#TOC>   1.1.1    ... on the Mac                            69
-#TOC>   1.1.2    ... on Windows                            80
-#TOC>   1.1.3    ... on Linux                              94
-#TOC>   1.1.4    Confirming PROMLPATH                      99
-#TOC>   1.2      Building a maximum likelihood tree       108
-#TOC>
+#TOC> 
+#TOC>   Section  Title                                       Line
+#TOC> -----------------------------------------------------------
+#TOC>   1        Calculating Trees                             46
+#TOC>   1.1        PROMLPATH ...                               66
+#TOC>   1.1.1          ... on the Mac                          71
+#TOC>   1.1.2          ... on Windows                          82
+#TOC>   1.1.3          ... on Linux                            96
+#TOC>   1.1.4          Confirming PROMLPATH                   101
+#TOC>   1.2        Building a maximum likelihood tree         110
+#TOC> 
 #TOC> ==========================================================================
 
 
@@ -50,9 +52,8 @@
 # After you have installed Phylip on your computer, install the R package that
 # provides an interface to the Phylip functions.
 
-if (!require(Rphylip, quietly=TRUE)) {
+if (! requireNamespace("Rphylip", quietly = TRUE)) {
   install.packages("Rphylip")
-  library(Rphylip)
 }
 # Package information:
 #  library(help = Rphylip)       # basic information
@@ -67,7 +68,7 @@ if (!require(Rphylip, quietly=TRUE)) {
 # on your computer Phylip has been installed and define the path
 # to the proml program that calculates a maximum-likelihood tree.
 
-# ===  1.1.1  ... on the Mac
+# ===   1.1.1  ... on the Mac                    
 # On the Mac, the standard installation places a phylip folder
 # in the /Applications directory. That folder contains all the
 # individual phylip programs as <name>.app files. These are not
@@ -78,7 +79,7 @@ if (!require(Rphylip, quietly=TRUE)) {
 # directly to that subdirectory to find the program it needs:
 # PROMLPATH <- "/Applications/phylip-3.695/exe/proml.app/Contents/MacOS"
 
-# ===  1.1.2  ... on Windows
+# ===   1.1.2  ... on Windows                    
 # On Windows you need to know where the programs have been installed, and you
 # need to specify a path that is correct for the Windows OS. Find the folder
 # that is named "exe", and right-click to inspect its properties. The path
@@ -92,12 +93,12 @@ if (!require(Rphylip, quietly=TRUE)) {
 # I have heard that your path must not contain spaces, and it is prudent to
 # avoid other special characters as well.
 
-# ===  1.1.3  ... on Linux
+# ===   1.1.3  ... on Linux                      
 # If you are running Linux I trust you know what to do. It's probably
 # something like
 # PROMLPATH <- "/usr/local/phylip-3.695/bin"
 
-# ===  1.1.4  Confirming PROMLPATH
+# ===   1.1.4  Confirming PROMLPATH              
 # Confirm that the settings are right.
 PROMLPATH                # returns the path
 list.dirs(PROMLPATH)     # returns the directories in that path
@@ -110,7 +111,7 @@ list.files(PROMLPATH)    # lists the files [1] "proml"   "proml.command"
 # Now read the mfa file you have saved in the BIB-PHYLO-Data_preparation unit,
 # as a "proseq" object with the read.protein() function of the RPhylip package:
 
-apsIn <- read.protein("APSESphyloSet.mfa")
+apsIn <- Rphylip::read.protein("APSESphyloSet.mfa")
 
 # ... and you are ready to build a tree.
 
@@ -125,7 +126,7 @@ apsIn <- read.protein("APSESphyloSet.mfa")
 # process will take us about 5 to 10 minutes. Run this, and anjoy a good cup
 # of coffee while you are waiting.
 
-apsTree <- Rproml(apsIn, path=PROMLPATH)
+apsTree <- Rphylip::Rproml(apsIn, path=PROMLPATH)
 
 # A quick first look:
 

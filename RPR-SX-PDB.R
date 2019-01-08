@@ -3,12 +3,14 @@
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the RPR-SX-PDB unit.
 #
-# Version:  1.0
+# Version:  1.1
 #
-# Date:     2017  10  19
+# Date:     2017  10  -  2019  01
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.1    Change from require() to requireNamespace(),
+#                      use <package>::<function>() idiom throughout
 #           1.0    First live version, completely refactores 2016 code
 #                     with remarkable speed gains. Added section on x, y, z
 #                     (density) plots.
@@ -28,22 +30,22 @@
 
 
 #TOC> ==========================================================================
-#TOC>
-#TOC>   Section  Title                                Line
-#TOC> ----------------------------------------------------
-#TOC>   1        Introduction to the bio3D package      63
-#TOC>   2        A Ramachandran plot                   151
-#TOC>   3        Density plots                         227
-#TOC>   3.1      Density-based colours                 241
-#TOC>   3.2      Plotting with smoothScatter()         260
-#TOC>   3.3      Plotting hexbins                      275
-#TOC>   3.4      Plotting density contours             299
-#TOC>   3.4.1    ... as overlay on a colored grid      333
-#TOC>   3.4.2    ... as filled countour                350
-#TOC>   3.4.3    ... as a perspective plot             381
-#TOC>   4        cis-peptide bonds                     399
-#TOC>   5        H-bond lengths                        414
-#TOC>
+#TOC> 
+#TOC>   Section  Title                                      Line
+#TOC> ----------------------------------------------------------
+#TOC>   1        Introduction to the bio3D package            61
+#TOC>   2        A Ramachandran plot                         152
+#TOC>   3        Density plots                               228
+#TOC>   3.1        Density-based colours                     242
+#TOC>   3.2        Plotting with smoothScatter()             261
+#TOC>   3.3        Plotting hexbins                          276
+#TOC>   3.4        Plotting density contours                 304
+#TOC>   3.4.1          ... as overlay on a colored grid      337
+#TOC>   3.4.2          ... as filled countour                354
+#TOC>   3.4.3          ... as a perspective plot             385
+#TOC>   4        cis-peptide bonds                           403
+#TOC>   5        H-bond lengths                              418
+#TOC> 
 #TOC> ==========================================================================
 
 
@@ -59,9 +61,8 @@
 # =    1  Introduction to the bio3D package  ===================================
 
 
-if (! require(bio3d, quietly=TRUE)) {
+if (! requireNamespace("bio3d", quietly = TRUE)) {
   install.packages("bio3d")
-  library(bio3d)
 }
 # Package information:
 #  library(help = bio3d)       # basic information
@@ -89,8 +90,8 @@ file.show("./data/1BM8.pdb")
 #          Are all atoms of the N-terminal residue present?
 #          Are all atoms of the C-terminal residue present?
 
-apses <- read.pdb("1bm8")  # load a molecule directly from the PDB via the
-                           # Internet. (This is not your local version.)
+apses <- bio3d::read.pdb("1bm8")  # load a molecule directly from the PDB via
+                                  # the Internet.
 
 # check what we have:
 apses
@@ -121,10 +122,11 @@ apses$atom[apses$atom[,"resno"] == i, ]
 apses$seqres[1:10]  # the "A"s here identify chain "A"
 
 # Can we convert this to one letter code?
-aa321(apses$seqres[1:10])
+bio3d::aa321(apses$seqres[1:10])
 
 # Lets get the implicit sequence:
-aa321((apses$atom$resid[apses$calpha])[1:10])  # Do you understand this code?
+bio3d::aa321((apses$atom$resid[apses$calpha])[1:10])
+# Do you understand this code?
 
 # Do explicit and implicit sequence have the same length?
 length(apses$seqres)
@@ -140,7 +142,10 @@ apses$atom[sel, c("eleno", "elety", "resid", "chain", "resno", "insert")]
 # The introduction to bio3d tutorial at
 #   http://thegrantlab.org/bio3d/tutorials/structure-analysis
 # has the following example:
-plot.bio3d(apses$atom$b[apses$calpha], sse=apses, typ="l", ylab="B-factor")
+bio3d::plot.bio3d(apses$atom$b[apses$calpha],
+                  sse=apses,
+                  typ="l",
+                  ylab="B-factor")
 
 # Good for now. Let's do some real work.
 
@@ -149,7 +154,7 @@ plot.bio3d(apses$atom$b[apses$calpha], sse=apses, typ="l", ylab="B-factor")
 # Calculate a Ramachandran plot for the structure. The torsion.pdb() function
 # calculates all dihedral angles for backbone and sidechain bonds, NA where
 # the bond does not exist in an amino acid.
-tor <- torsion.pdb(apses)
+tor <- bio3d::torsion.pdb(apses)
 plot(tor$phi, tor$psi,
      xlim = c(-180, 180), ylim = c(-180, 180),
      main = "Ramachandran plot for 1BM8",
@@ -164,7 +169,7 @@ abline(v = 0, lwd = 0.5, col = "#00000044")
 # color the points for glycine residues differently. First, we
 # get a vector of glycine residue indices in the structure:
 
-mySeq <- pdbseq(apses)
+mySeq <- bio3d::pdbseq(apses)
 
 # Explore the result object and extract the indices of GLY resiues.
               mySeq == "G"
@@ -210,7 +215,7 @@ for (i in 1:nrow(dat)) {
   points(dat$phi[i], dat$psi[i], pch=21, cex=0.9, bg="#CC0000")
   text(dat$phi[i],
        dat$psi[i],
-       labels = sprintf("%s%d", aa321(dat$resid[i]), dat$resno[i]),
+       labels = sprintf("%s%d", bio3d::aa321(dat$resid[i]), dat$resno[i]),
        pos = 4,
        offset = 0.4,
        cex = 0.7)
@@ -272,9 +277,8 @@ abline(v = 0, lwd = 0.5, col = "#00000044")
 
 # If we wish to approximate values in a histogram-like fashion, we can use
 # hexbin()
-if (! require(hexbin, quietly=TRUE)) {
+if (! requireNamespace("hexbin", quietly = TRUE)) {
   install.packages("hexbin")
-  library(hexbin)
 }
 # Package information:
 #  library(help = hexbin)       # basic information
@@ -285,11 +289,16 @@ if (! require(hexbin, quietly=TRUE)) {
 myColorRamp <- colorRampPalette(c("#EEEEEE",
                                   "#3399CC",
                                   "#2266DD"))
-plot(hexbin(phi, psi, xbins = 10),
-     colramp = myColorRamp,
-     main = "phi-psi Density Bins for 1BM8",
-     xlab = expression(phi),
-     ylab = expression(psi))
+hexbin::gplot.hexbin(hexbin::hexbin(phi, psi, xbins = 10),
+                     colramp = myColorRamp,
+                     main = "phi-psi Density Bins for 1BM8",
+                     xlab = expression(phi),
+                     ylab = expression(psi))
+
+# Note:
+# Had we loaded hexbin with library(hexbin), the plot function would have
+# been dispatched by the plot() generic, and we could simply have written:
+#   plot(hexbin(phi, psi, xbins = 10), ...
 
 
 # ==   3.4  Plotting density contours  =========================================
@@ -305,19 +314,18 @@ plot(hexbin(phi, psi, xbins = 10),
 # distributions. But for 2D data like or phi-psi plots, we need a function from
 # the MASS package: kde2d()
 
-if (! require(MASS, quietly=TRUE)) {
+if (! requireNamespace("MASS", quietly = TRUE)) {
   install.packages("MASS")
-  library(MASS)
 }
 # Package information:
 #  library(help = MASS)       # basic information
 #  browseVignettes("MASS")    # available vignettes
 #  data(package = "MASS")     # available datasets
 
-?kde2d
-dPhiPsi <-kde2d(phi, psi,
-               n = 60,
-               lims = c(-180, 180, -180, 180))
+?MASS::kde2d
+dPhiPsi <-MASS::kde2d(phi, psi,
+                      n = 60,
+                      lims = c(-180, 180, -180, 180))
 
 str(dPhiPsi)
 # This is a list, with gridpoints in x and y, and the estimated densities in z.
@@ -326,7 +334,7 @@ str(dPhiPsi)
 contour(dPhiPsi)
 
 
-# ===  3.4.1  ... as overlay on a colored grid
+# ===   3.4.1  ... as overlay on a colored grid 
 
 image(dPhiPsi,
       col = myColorRamp(100),
@@ -343,7 +351,7 @@ abline(h = 0, lwd = 0.5, col = "#00000044")
 abline(v = 0, lwd = 0.5, col = "#00000044")
 
 
-# ===  3.4.2  ... as filled countour
+# ===   3.4.2  ... as filled countour           
 
 filled.contour(dPhiPsi,
                xlim = c(-180, 180), ylim = c(-180, 180),
@@ -374,7 +382,7 @@ filled.contour(dPhiPsi,
                     abline(v = 0, lwd = 0.5, col = "#00000044")
                   })
 
-# ===  3.4.3  ... as a perspective plot
+# ===   3.4.3  ... as a perspective plot        
 
 persp(dPhiPsi,
       xlab = "phi",
@@ -469,12 +477,12 @@ ssSelect <- function(PDB, myChain = "A", ssType, myElety) {
 
   # get id's from PDB
 
-  x <- atom.select(PDB,
-                   string = "protein",
-                   type = "ATOM",
-                   chain = myChain,
-                   resno = myResno,
-                   elety = myElety)
+  x <- bio3d::atom.select(PDB,
+                          string = "protein",
+                          type = "ATOM",
+                          chain = myChain,
+                          resno = myResno,
+                          elety = myElety)
 
   return(x$atom)
 }
@@ -506,7 +514,7 @@ pairDist <- function(PDB, a, b) {
 
   A <- PDB$atom[a, c("x", "y", "z")]
   B <- PDB$atom[b, c("x", "y", "z")]
-  dMat <- dist.xyz(A, B)
+  dMat <- bio3d::dist.xyz(A, B)
 
   }
   return(dMat)

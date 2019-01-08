@@ -3,12 +3,15 @@
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the RPR-Biostrings unit.
 #
-# Version:  1.0
+# Version:  1.1
 #
-# Date:     2017  10  20
+# Date:     2017  10  -  2019  01
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.1    Change from require() to requireNamespace(),
+#                      use <package>::<function>() idiom throughout,
+#                      use Biocmanager:: not biocLite()
 #           1.0    2017 Revisions
 #           0.1    First code copied from 2016 material.
 #
@@ -27,20 +30,20 @@
 
 #TOC> ==========================================================================
 #TOC>
-#TOC>   Section  Title                                     Line
-#TOC> ---------------------------------------------------------
-#TOC>   1        The Biostrings Package                      52
-#TOC>   2        Getting Data into Biostrings Objects        85
-#TOC>   3        Working with Biostrings Objects            106
-#TOC>   3.1      Properties                                 109
-#TOC>   3.2      Subsetting                                 146
-#TOC>   3.3      Operators                                  158
-#TOC>   3.4      Transformations                            165
-#TOC>   4        Getting Data out of Biostrings Objects     172
-#TOC>   5        More                                       181
-#TOC>   5.1      Views                                      183
-#TOC>   5.2      Iranges                                    195
-#TOC>   5.3      StringSets                                 201
+#TOC>   Section  Title                                           Line
+#TOC> ---------------------------------------------------------------
+#TOC>   1        The Biostrings Package                            55
+#TOC>   2        Getting Data into Biostrings Objects              86
+#TOC>   3        Working with Biostrings Objects                  108
+#TOC>   3.1        Properties                                     125
+#TOC>   3.2        Subsetting                                     163
+#TOC>   3.3        Operators                                      175
+#TOC>   3.4        Transformations                                182
+#TOC>   4        Getting Data out of Biostrings Objects           189
+#TOC>   5        More                                             198
+#TOC>   5.1        Views                                          200
+#TOC>   5.2        Iranges                                        214
+#TOC>   5.3        StringSets                                     220
 #TOC>
 #TOC> ==========================================================================
 
@@ -54,14 +57,12 @@
 
 # First, we install and load the Biostrings package from bioconductor
 
-if (! require(Biostrings, quietly=TRUE)) {
-  if (! exists("biocLite")) {
-    source("https://bioconductor.org/biocLite.R")
-  }
-  biocLite("Biostrings")
-  library(Biostrings)
+if (! requireNamespace("BiocManager", quietly = TRUE)) {
+  install.packages("BiocManager")
 }
-
+if (! requireNamespace("Biostrings", quietly = TRUE)) {
+  BiocManager::install("Biostrings")
+}
 # Examine the package information:
 library(help = Biostrings)       # basic information
 browseVignettes("Biostrings")    # available vignettes
@@ -72,72 +73,88 @@ data(package = "Biostrings")     # available datasets
 # of a "class" in R as a special kind of list), that can take on particular
 # flavours for RNA, DNA or amino acid sequence information.
 
-class(RNAString("AUG"))
-class(DNAString("ATG"))
-class(AAString("M"))
+class(Biostrings::RNAString("AUG"))
+class(Biostrings::DNAString("ATG"))
+class(Biostrings::AAString("M"))
 
 # An essential property of Biostrings objects is that they only allow letters
 # from the applicable IUPAC alphabet:
-RNAString("AUG")
-DNAString("AUG")  # Error! No "U" in IUPAC DNA codes
+Biostrings::RNAString("AUG")
+Biostrings::DNAString("AUG")  # Error! No "U" in IUPAC DNA codes
 
 
 # =    2  Getting Data into Biostrings Objects  ================================
 
 
 # Example: read FASTA. Extract sequence. Convert to DNAString object.
-x <- readLines("./data/S288C_YDL056W_MBP1_coding.fsa")
-x <- dbSanitizeSequence(x)
-myDNAseq <- DNAString(x)   # takes the nucleotide sequence and converts into a
-# object of class DNAstring
+rawSeq <- readLines("./data/S288C_YDL056W_MBP1_coding.fsa")
+rawSeq <- dbSanitizeSequence(rawSeq)
+biosDNAseq <- Biostrings::DNAString(rawSeq) # converts the nucleotide sequence
+                                            # into an object of class DNAstring
 
 # Multi FASTA files can be read directly as a "XStringSet) ...
-(myDNASet <- readDNAStringSet("./data/S288C_YDL056W_MBP1_coding.fsa"))
+rawMFAfile <- "./data/S288C_YDL056W_MBP1_coding.fsa"
+(biosDNASet <- Biostrings::readDNAStringSet(rawMFAfile))
 
 # ... and if you subset one sequence from the set, you get an XString object
 # back again.
-(Xseq <- myDNASet[[1]])
+(Xseq <- biosDNASet[[1]])
 
-myDNAseq == Xseq           # the comparison evaluates to TRUE ...
-identical(myDNAseq, Xseq)  # ... and indeed the objects are deemed identical.
+biosDNAseq == Xseq           # the comparison evaluates to TRUE ...
+identical(biosDNAseq, Xseq)  # ... and indeed the objects are deemed identical.
 
 
 
 # =    3  Working with Biostrings Objects  =====================================
 
+# Biostrings is a highly engineered package that is tightly integrated into
+# the Bioconductor world - unfortunately that brings with it a somewhat
+# undesirable level of computational overhead and dependencies. Using the
+# package as we normally do - i.e. calling required functions with their
+# explicit package prefix is therefore not advisable. There are generics
+# that won't be propery dispatched. If you only need a small number of
+# functions for a very specific context, you will probably get away with
+# Biostrings::<function>() - but even in the demonstration code of this script
+# not everything works out of the box. We'll therefore load the library,
+# but we'll (redundantly) use the prefix anyway so as to emphasize where
+# the functions come from.
+
+library(Biostrings)
+
 
 # ==   3.1  Properties  ========================================================
-str(myDNAseq)
-length(myDNAseq)  # This gives you the _number of nucleotides_!
-# By comparison ...
-length(x)         # ... is 1: one string only. To get the number of
-# characters in a string, you need nchar().
-nchar(x)          # However ...
-nchar(myDNAseq)   # ... also works.
+str(rawSeq)
+str(biosDNAseq)
 
-uniqueLetters(myDNAseq)
+length(rawSeq)       # ... is 1: one string only. To get the number of
+                     # characters in a string, you need nchar().
+length(biosDNAseq)   # but the length of a "Bstring" is the number of elements
+nchar(rawSeq)
+nchar(biosDNAseq)    # ... but nchar() works too.
+
+(uL <- Biostrings::uniqueLetters(biosDNAseq))
 
 # Count frequencies - with strings, you would strsplit() into a character
 # vector and then use table(). biost
-alphabetFrequency(myDNAseq)
+Biostrings::alphabetFrequency(biosDNAseq)
 
 # letterFrequency() works with a defined alphabet - such as what uniqueLetters()
 # returns.
-letterFrequency(myDNAseq, uniqueLetters(myDNAseq))
+Biostrings::letterFrequency(biosDNAseq, uL)
+sum(Biostrings::letterFrequency(biosDNAseq, c("G", "C"))) /
+  length(biosDNAseq) # GC contents
 
-sum(letterFrequency(myDNAseq, c("G", "C"))) / length(myDNAseq) # GC contents
+Biostrings::dinucleotideFrequency(biosDNAseq)
+barplot(sort(Biostrings::dinucleotideFrequency(biosDNAseq)), cex.names = 0.5)
 
-dinucleotideFrequency(myDNAseq)
-barplot(sort(dinucleotideFrequency(myDNAseq)), cex.names = 0.5)
-
-(triNuc <- trinucleotideFrequency(myDNAseq))
+(triNuc <- Biostrings::trinucleotideFrequency(biosDNAseq))
 barplot(sort(triNuc), col="#4499EE33")
 triNuc[triNuc == max(triNuc)]
 triNuc[triNuc == min(triNuc)]
 max(triNuc) / min(triNuc)  # AAA is more than 13 times as frequent as CGT
 
 # compare to a shuffled sequence:
-(triNuc <- trinucleotideFrequency(sample(myDNAseq)))
+(triNuc <- Biostrings::trinucleotideFrequency(sample(biosDNAseq)))
 barplot(sort(triNuc), col="#EEEE4433", add = TRUE)
 
 # Interpret this plot.
@@ -146,34 +163,34 @@ barplot(sort(triNuc), col="#EEEE4433", add = TRUE)
 # ==   3.2  Subsetting  ========================================================
 
 # Subsetting any XString object works as expected:
-myDNAseq[4:15]
+biosDNAseq[4:15]
 
-# ... well - maybe not expected, because x[4:15] would not work.
+# ... well - maybe not expected, because rawSeq[4:15] would not work.
 
 # Alternatively to the "[" operator, use the subseq() function - especially for
 # long sequences. This is far more efficient.
-subseq(myDNAseq, start = 1, end = 30)
+Biostrings::subseq(biosDNAseq, start = 1, end = 30)
 
 
 # ==   3.3  Operators  =========================================================
 
 # RNAstring() and DNAstring() objects compare U and T as equals!
-RNAString("AUGUCUAACCAAAUAUACUCAGCGAGAUAU") ==
-  DNAString("ATGTCTAACCAAATATACTCAGCGAGATAT")
+  Biostrings::RNAString("AUGUCUAACCAAAUAUACUCAGCGAGAUAU") ==
+  Biostrings::DNAString("ATGTCTAACCAAATATACTCAGCGAGATAT")
 
 
 # ==   3.4  Transformations  ===================================================
 
-myDNAseq[4:15]
-reverseComplement(myDNAseq[4:15])
-translate(myDNAseq[4:15])
+biosDNAseq[4:15]
+Biostrings::reverseComplement(biosDNAseq[4:15])
+Biostrings::translate(biosDNAseq[4:15])
 
 
 # =    4  Getting Data out of Biostrings Objects  ==============================
 
 # If you need a character object, use toString():
 
-toString(myDNAseq[4:15])
+Biostrings::toString(biosDNAseq[4:15])
 
 # save() and load() works like on all other R objects.
 
@@ -185,7 +202,9 @@ toString(myDNAseq[4:15])
 # Biostring "Views" are objects that store multiple substrings of one
 # Biostring object.
 
-(myView <- Views(myDNAseq, start = c(1, 19, 37), end = c(15, 30, 45)))
+(myView <- Biostrings::Views(biosDNAseq,
+                             start = c(1, 19, 37),
+                             end = c(15, 30, 45)))
 
 # Views are convenient to store feature annotations
 names(myView) <- c("Feature-A", "Feature-B", "Feature-C")
@@ -202,20 +221,20 @@ cat(sprintf("\n%s\t(%d)\t%s", names(myView), width(myView), myView ))
 
 # Biostring "StringSets" store multiple sequences.
 #
-ompA <- AAString("MKKTAIAIAVALAGFATVAQA")
+ompA <- Biostrings::AAString("MKKTAIAIAVALAGFATVAQA")
 sample(ompA) # sample can work directly on a Biostring object to shuffle it
 
-x[1] <- toString(ompA)
+x <- Biostrings::toString(ompA)
 for (i in 2:10) {
-  x[i] <- toString(sample(ompA))
+  x[i] <- Biostrings::toString(sample(ompA))
 }
-shuffledPeptideSet <- AAStringSet(x)
+shuffledPeptideSet <- Biostrings::AAStringSet(x)
 names(shuffledPeptideSet) <- c("ompA", paste("shuffle.", 1:9, sep=""))
 shuffledPeptideSet
 
 length(shuffledPeptideSet)
-width(shuffledPeptideSet)
-alphabetFrequency(shuffledPeptideSet)
+Biostrings::width(shuffledPeptideSet)
+Biostrings::alphabetFrequency(shuffledPeptideSet)
 
 
 # [END]

@@ -15,12 +15,14 @@
 #        Data: (3 mb) https://downloads.yeastgenome.org/curation/literature/go_slim_mapping.tab
 #
 #
-# Version:  1.0
+# Version:  1.1
 #
-# Date:     2017  10  06
+# Date:     2017  10  -  2019  01
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.1    Change from require() to requireNamespace(),
+#                      use <package>::<function>() idiom throughout
 #           1.0    First code copied from 2016 material.
 #
 # TODO:
@@ -28,16 +30,16 @@
 #
 # ==============================================================================
 
-if (! require(readr, quietly = TRUE)) {
+if (! requireNamespace("readr", quietly = TRUE)) {
   install.packages("readr")
-  library(readr)
 }
 
 
 # STRING functional interaction data
 
 # Read STRING Data (needs to be downloaded from database, see URL in Notes)
-STR <- read_delim("./data/4932.protein.links.full.v10.5.txt", delim = " ")
+STR <- readr::read_delim("./data/4932.protein.links.full.v10.5.txt",
+                         delim = " ")
 
 # Subset only IDs and combined_score column
 STR <- STR[ , c("protein1", "protein2", "combined_score")]
@@ -61,14 +63,14 @@ myIntxGenes <- unique(c(STR$protein1, STR$protein2))  # yeast systematic gene
 #
 # Read GOSlim data  (needs to be downloaded from database, see URL in Notes)
 
-Gsl <- read_tsv("./data/go_slim_mapping.tab",
-                col_names = c("ID",
-                              "name",
-                              "SGDId",
-                              "Ontology",
-                              "termName",
-                              "termID",
-                              "status"))
+Gsl <- readr::read_tsv("./data/go_slim_mapping.tab",
+                       col_names = c("ID",
+                                     "name",
+                                     "SGDId",
+                                     "Ontology",
+                                     "termName",
+                                     "termID",
+                                     "status"))
 
 # head(Gsl)
 #

@@ -3,12 +3,14 @@
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the RPR-Scripting_data_downloads unit.
 #
-# Version:  1.0
+# Version:  1.1
 #
 # Date:     2017  10  05
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.1    Change from require() to requireNamespace(),
+#                      use <package>::<function>() idiom throughout
 #           1.0    First ABC units version
 #           0.1    First code copied from 2016 material.
 #
@@ -27,11 +29,11 @@
 
 #TOC> ==========================================================================
 #TOC> 
-#TOC>   Section  Title                                 Line
-#TOC> -----------------------------------------------------
-#TOC>   1        Working with NCBI eUtils                44
-#TOC>   1.1      Task - fetchNCBItaxData() function     162
-#TOC>   2        Task solutions                         169
+#TOC>   Section  Title                                       Line
+#TOC> -----------------------------------------------------------
+#TOC>   1        Working with NCBI eUtils                      41
+#TOC>   1.1        Task - fetchNCBItaxData() function         144
+#TOC>   2        Task solutions                               151
 #TOC> 
 #TOC> ==========================================================================
 
@@ -40,26 +42,11 @@
 
 
 
-# To begin, we load some libraries with functions
-# we need...
-
-# ... the package httr, which sends and receives information via the http
-# protocol, just like a Web browser.
-if (! require(httr, quietly=TRUE)) {
-  install.packages("httr")
-  library(httr)
-}
-# Package information:
-#  library(help = httr)       # basic information
-#  browseVignettes("httr")    # available vignettes
-#  data(package = "httr")     # available datasets
-
-
-# ...plus the package xml2: NCBI's eUtils send information in XML format so we
-# need to be able to parse XML.
-if (! require(xml2, quietly=TRUE)) {
+# To begin, we load the xml2 package that contains functions
+# we need to receive and parse html data. NCBI's eUtils send information in
+# XML format so we need to be able to parse XML.
+if (! requireNamespace("xml2", quietly=TRUE)) {
   install.packages("xml2")
-  library(xml2)
 }
 # Package information:
 #  library(help = xml2)       # basic information
@@ -91,24 +78,23 @@ URL <- paste(eUtilsBase,
 # what the response should look like.
 URL
 
-# To fetch a response in R, we use the function GET() from the httr package
+# To fetch a response in R, we use the function read_xml()
 # with our URL as its argument.
-myXML <- read_xml(URL)
-myXML
+(myXML <- xml2::read_xml(URL))
 
 # This is XML. We can take the response apart into
 # its indvidual components with the as_list() function.
 
-as_list(myXML)
+xml2::as_list(myXML)
 
 # Note how the XML "tree" is represented as a list of
 # lists of lists ...
 # If we know exactly what elelement we are looking for,
 # we can extract it from this structure:
-as_list(myXML)[["IdList"]][["Id"]][[1]]
+xml2::as_list(myXML)[["eSearchResult"]][["IdList"]][["Id"]][[1]]
 
 # But this is not very robust, it would break with the
-# slightest change that the NCBI makes to their response
+# slightest change that the NCBI makes to their data format -
 # and the NCBI changes things A LOT!
 
 # Somewhat more robust is to specify the type of element
@@ -116,11 +102,12 @@ as_list(myXML)[["IdList"]][["Id"]][[1]]
 # element, and use the XPath XML parsing language to
 # retrieve it.
 
-xml_find_all(myXML, "//Id") # returns a "node set"
+xml2::xml_find_all(myXML, "//Id") # returns a "node set"
 
-xml_text(xml_find_all(myXML, "//Id")) # returns the contents of the node set
+xml2::xml_text(xml2::xml_find_all(myXML, "//Id")) # returns the contents
+                                                  # of the node set
 
-# We will need doing this a lot, so we write a function
+# We will need to do this more than once, so we write a function
 # for it...
 node2text <- function(doc, tag) {
   # an extractor function for the contents of elements
@@ -128,8 +115,8 @@ node2text <- function(doc, tag) {
   # Contents of all matching elements is returned in
   # a vector of strings.
   path <- paste0("//", tag)
-  nodes <- xml_find_all(doc, path)
-  return(xml_text(nodes))
+  nodes <- xml2::xml_find_all(doc, path)
+  return(xml2::xml_text(nodes))
 }
 
 # using node2text() ...
@@ -145,7 +132,7 @@ URL <- paste0(eUtilsBase,
               "&id=",
               GID,
               "&version=2.0")
-(myXML <- read_xml(URL))
+(myXML <- xml2::read_xml(URL))
 
 (taxID <- node2text(myXML, "TaxId"))
 (organism <- node2text(myXML, "Organism"))

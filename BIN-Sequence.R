@@ -3,12 +3,15 @@
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the BIN-Sequence unit.
 #
-# Version:  1.3
+# Version:  1.4
 #
 # Date:     2017  09  - 2019  01
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.4    Change from require() to requireNamespace(),
+#                      use <package>::<function>() idiom throughout,
+#                      use Biocmanager:: not biocLite()
 #           1.3    Update set.seed() usage
 #           1.2    Removed irrelevant task. How did that even get in there? smh
 #           1.1    Add chartr()
@@ -30,23 +33,23 @@
 #TOC> 
 #TOC>   Section  Title                                Line
 #TOC> ----------------------------------------------------
-#TOC>   1        Prepare                                60
-#TOC>   2        Storing Sequence                       78
-#TOC>   3        String properties                     107
-#TOC>   4        Substrings                            114
-#TOC>   5        Creating strings: sprintf()           135
-#TOC>   6        Changing strings                      170
-#TOC>   6.1.1          Changing case                   172
-#TOC>   6.1.2          Reverse                         177
-#TOC>   6.1.3          Change characters               181
-#TOC>   6.1.4          Substitute characters           209
-#TOC>   6.2        stringi and stringr                 229
-#TOC>   6.3        dbSanitizeSequence()                239
-#TOC>   7        Permuting and sampling                251
-#TOC>   7.1        Permutations                        258
-#TOC>   7.2        Sampling                            304
-#TOC>   7.2.1          Equiprobable characters         306
-#TOC>   7.2.2          Defined probability vector      348
+#TOC>   1        Prepare                                63
+#TOC>   2        Storing Sequence                       80
+#TOC>   3        String properties                     109
+#TOC>   4        Substrings                            116
+#TOC>   5        Creating strings: sprintf()           137
+#TOC>   6        Changing strings                      172
+#TOC>   6.1.1          Changing case                   174
+#TOC>   6.1.2          Reverse                         179
+#TOC>   6.1.3          Change characters               183
+#TOC>   6.1.4          Substitute characters           211
+#TOC>   6.2        stringi and stringr                 231
+#TOC>   6.3        dbSanitizeSequence()                241
+#TOC>   7        Permuting and sampling                253
+#TOC>   7.1        Permutations                        260
+#TOC>   7.2        Sampling                            306
+#TOC>   7.2.1          Equiprobable characters         308
+#TOC>   7.2.2          Defined probability vector      350
 #TOC> 
 #TOC> ==========================================================================
 
@@ -62,12 +65,11 @@
 # Much basic sequence handling is supported by the Bioconductor package
 # Biostrings.
 
-if (! require(Biostrings, quietly=TRUE)) {
-  if (! exists("biocLite")) {
-    source("https://bioconductor.org/biocLite.R")
-  }
-  biocLite("Biostrings")
-  library(Biostrings)
+if (! requireNamespace("BiocManager", quietly = TRUE)) {
+  install.packages("BiocManager")
+}
+if (! requireNamespace("Biostrings", quietly = TRUE)) {
+  BiocManager::install("Biostrings")
 }
 # Package information:
 #  library(help = Biostrings)       # basic information
@@ -86,7 +88,7 @@ if (! require(Biostrings, quietly=TRUE)) {
 
 # ... or as more complex objects with rich metadata e.g. as a Biostrings
 # DNAstring, RNAstring, AAString, etc.
-(a <- AAString("DIVMTQ"))
+(a <- Biostrings::AAString("DIVMTQ"))
 
 # ... and all of these representations can be interconverted:
 
@@ -314,6 +316,7 @@ N <- 100
 set.seed(16818)                        # set RNG seed for repeatable randomness
 v <- sample(nuc, N, replace = TRUE)
 set.seed(NULL)                         # reset the RNG
+
 (mySeq <- paste(v, collapse = ""))
 
 # What's the GC content?
@@ -323,9 +326,8 @@ sum(table(v)[c("G", "C")]) # 51 is close to expected
 # What's the number of CpG motifs? Easy to check with the stringi
 # stri_match_all() function
 
-if (! require(stringi, quietly=TRUE)) {
+if (! requireNamespace("stringi", quietly = TRUE)) {
   install.packages("stringi")
-  library(stringi)
 }
 # Package information:
 #  library(help = stringi)       # basic information

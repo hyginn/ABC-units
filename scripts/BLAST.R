@@ -7,11 +7,13 @@
 #          https://ncbi.github.io/blast-cloud/dev/api.html
 #
 #
-# Version: 3
-# Date:    2016 09 - 2017 11
+# Version: 3.1
+# Date:    2016 09 - 2019 01
 # Author:  Boris Steipe
 #
 # Versions:
+#    3.1   Change from require() to requireNamespace(),
+#          use <package>::<function>() idiom throughout
 #    3     parsing logic had not been fully implemented; Fixed.
 #    2.1   bugfix in BLAST(), bug was blanking non-split deflines;
 #          refactored parseBLASTalignment() to handle lists with multiple hits.
@@ -29,9 +31,8 @@
 # ==============================================================================
 
 
-if (! require(httr, quietly = TRUE)) {
+if (! requireNamespace(httr, quietly = TRUE)) {
   install.packages("httr")
-  library(httr)
 }
 
 
@@ -92,13 +93,13 @@ BLAST <- function(q,
       }
 
       # send it off ...
-      response <- GET(results$query)
-      if (http_status(response)$category != "Success" ) {
+      response <- httr::GET(results$query)
+      if (httr::http_status(response)$category != "Success" ) {
         stop(sprintf("PANIC: Can't send query. BLAST server status error: %s",
-                     http_status(response)$message))
+                     httr::http_status(response)$message))
       }
 
-      txt <- content(response, "text", encoding = "UTF-8")
+      txt <- httr::content(response, "text", encoding = "UTF-8")
 
       patt <- "RID = (\\w+)" # match the request id
       results$rid  <- regmatches(txt, regexec(patt,  txt))[[1]][2]
@@ -127,13 +128,13 @@ BLAST <- function(q,
 
     while (TRUE) {
       # Check whether the result is ready
-      response <- GET(checkStatus)
-      if (http_status(response)$category != "Success" ) {
+      response <- httr::GET(checkStatus)
+      if (httr::http_status(response)$category != "Success" ) {
         stop(sprintf("PANIC: Can't check status. BLAST server status error: %s",
-                     http_status(response)$message))
+                     httr::http_status(response)$message))
       }
 
-      txt <- content(response, "text", encoding = "UTF-8")
+      txt <- httr::content(response, "text", encoding = "UTF-8")
 
       if (length(grep("Status=WAITING",  txt)) > 0) {
         myTimeout <- myTimeout - EXTRAWAIT
@@ -184,13 +185,13 @@ BLAST <- function(q,
                       "&FORMAT_TYPE=Text",
                       sep = "")
 
-    response <- GET(retrieve)
-    if (http_status(response)$category != "Success" ) {
+    response <- httr::GET(retrieve)
+    if (httr::http_status(response)$category != "Success" ) {
       stop(sprintf("PANIC: Can't retrieve. BLAST server status error: %s",
-                   http_status(response)$message))
+                   httr::http_status(response)$message))
     }
 
-    txt <- content(response, "text", encoding = "UTF-8")
+    txt <- httr::content(response, "text", encoding = "UTF-8")
 
     # txt contains the whole set of results. Process:
 
@@ -357,7 +358,7 @@ parseBLASTalignment <- function(hit) {
 # ==== TESTS ===================================================================
 
 # define query:
-# q   <- paste("IYSARYSGVDVYEFIHSTGSIMKRKKDDWVNATHI", # Mbp1 APSES domain sequence
+# q   <- paste("IYSARYSGVDVYEFIHSTGSIMKRKKDDWVNATHI", # Mbp1 APSES domain
 #              "LKAANFAKAKRTRILEKEVLKETHEKVQGGFGKYQ",
 #              "GTWVPLNIAKQLAEKFSVYDQLKPLFDFTQTDGSASP",
 #              sep="")

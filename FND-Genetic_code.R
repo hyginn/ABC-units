@@ -3,12 +3,15 @@
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the FND-Genetic_code unit.
 #
-# Version:  1.0.1
+# Version:  1.1
 #
-# Date:     2017  10  12
+# Date:     2017  10  -  2019  01
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.1    Change from require() to requireNamespace(),
+#                      use <package>::<function>() idiom throughout,
+#                      use Biocmanager:: not biocLite()
 #           1.0.1  Comment on "incomplete final line" warning in FASTA
 #           1.0    First live version
 #
@@ -25,17 +28,17 @@
 
 
 #TOC> ==========================================================================
-#TOC>
-#TOC>   Section  Title                                      Line
-#TOC> ----------------------------------------------------------
-#TOC>   1        Storing the genetic code                     47
-#TOC>   1.1      Genetic code in Biostrings                   65
-#TOC>   2        Working with the genetic code                97
-#TOC>   2.1      Translate a sequence.                       126
-#TOC>   3        An alternative representation: 3D array     208
-#TOC>   3.1      Print a Genetic code table                  241
-#TOC>   4        Tasks                                       267
-#TOC>
+#TOC> 
+#TOC>   Section  Title                                            Line
+#TOC> ----------------------------------------------------------------
+#TOC>   1        Storing the genetic code                           45
+#TOC>   1.1        Genetic code in Biostrings                       63
+#TOC>   2        Working with the genetic code                      94
+#TOC>   2.1        Translate a sequence.                           129
+#TOC>   3        An alternative representation: 3D array           212
+#TOC>   3.1        Print a Genetic code table                      246
+#TOC>   4        Tasks                                             272
+#TOC> 
 #TOC> ==========================================================================
 
 
@@ -63,12 +66,11 @@ x["TAA"]
 # available in the Bioconductor "Biostrings" package:
 
 
-if (! require(Biostrings, quietly=TRUE)) {
-  if (! exists("biocLite")) {
-    source("https://bioconductor.org/biocLite.R")
-  }
-  biocLite("Biostrings")
-  library(Biostrings)
+if (! requireNamespace("BiocManager", quietly = TRUE)) {
+  install.packages("BiocManager")
+}
+if (! requireNamespace("Biostrings", quietly = TRUE)) {
+  BiocManager::install("Biostrings")
 }
 # Package information:
 #  library(help = Biostrings)       # basic information
@@ -77,45 +79,51 @@ if (! require(Biostrings, quietly=TRUE)) {
 
 
 # The standard genetic code vector
-GENETIC_CODE
+Biostrings::GENETIC_CODE
 
 # The table of genetic codes. This information corresponds to this page
 # at the NCBI:
 # https://www.ncbi.nlm.nih.gov/Taxonomy/taxonomyhome.html/index.cgi?chapter=tgencodes
-GENETIC_CODE_TABLE
+Biostrings::GENETIC_CODE_TABLE
 
 # Most of the alternative codes are mitochondrial codes. The id of the
 # Alternative Yeast Nuclear code is "12"
-getGeneticCode("12")  # Alternative Yeast Nuclear
+Biostrings::getGeneticCode("12")  # Alternative Yeast Nuclear
 
 
 # =    2  Working with the genetic code  =======================================
 
-# GENETIC_CODE is a "named vector"
+# We'll use Biostrings::GENETIC_CODE a lot in this script, so we'll assign it
+# to a "local" variable, rather than retrieving it from the package all the
+# time.
 
-str(GENETIC_CODE)
+genCode <- Biostrings::GENETIC_CODE
+
+# This is a named vector of characters ...
+
+str(genCode)
 
 # ... which also stores the alternative initiation codons TTG and CTG in
 # an attribute of the vector. (Alternative initiation codons sometimes are
 # used instead of ATG to intiate translation, if if not ATG they are translated
 # with fMet.)
 
-attr(GENETIC_CODE, "alt_init_codons")
+attr(genCode, "alt_init_codons")
 
 # But the key to use this vector is in the "names" which we use for subsetting
 # the list of amino acids in whatever way we need.
-names(GENETIC_CODE)
+names(genCode)
 
 # The translation of "TGG" ...
-GENETIC_CODE["TGG"]
+genCode["TGG"]
 
 # All stop codons
-names(GENETIC_CODE)[GENETIC_CODE == "*"]
+names(genCode)[genCode == "*"]
 
 # All start codons
-names(GENETIC_CODE)[GENETIC_CODE == "M"] # ... or
-c(names(GENETIC_CODE)[GENETIC_CODE == "M"],
-  attr(GENETIC_CODE, "alt_init_codons"))
+names(genCode)[genCode == "M"] # ... or
+c(names(genCode)[genCode == "M"],
+  attr(genCode, "alt_init_codons"))
 
 
 # ==   2.1  Translate a sequence.  =============================================
@@ -165,7 +173,7 @@ nchar(mbp1)/3
 # attributes that are useful for Biostrings. Thus we convert the sequence first
 # with DNAstring(), then split it up, then convert it into a plain
 # character vector.
-mbp1Codons <- as.character(codons(DNAString(mbp1)))
+mbp1Codons <- as.character(Biostrings::codons(Biostrings::DNAString(mbp1)))
 
 head(mbp1Codons)
 
@@ -173,7 +181,7 @@ head(mbp1Codons)
 
 mbp1AA <- character(834)
 for (i in seq_along(mbp1Codons)) {
-  mbp1AA[i] <- GENETIC_CODE[mbp1Codons[i]]
+  mbp1AA[i] <- genCode[mbp1Codons[i]]
 }
 
 head(mbp1Codons)
@@ -196,7 +204,8 @@ sort(table(mbp1AA), decreasing = TRUE)
 mbp1AA <- mbp1AA[-(length(mbp1AA))]
 tail(mbp1AA) # Note the stop is gone!
 
-# paste it together, collapsing the elements without separation-character
+# paste it together, collapsing the elements using an empty string as the
+# separation-character (i.e.: nothing)
 (Mbp1 <- paste(mbp1AA, sep = "", collapse = ""))
 
 
@@ -204,14 +213,15 @@ tail(mbp1AA) # Note the stop is gone!
 
 
 # We don't use 3D arrays often - usually just 2D tables and data frames, so
-# here is a good opportunity to review the syntax with a genetic code cube:
+# here is a good opportunity to review the syntax of 3D arrays with a
+# genetic code cube:
 
-# Initialize, using A C G T as the names of the elements in each dimension
+# Initialize, using A G C T as the names of the elements in each dimension
 cCube <- array(data     = character(64),
                dim      = c(4, 4, 4),
-               dimnames = list(c("A", "C", "G", "T"),
-                               c("A", "C", "G", "T"),
-                               c("A", "C", "G", "T")))
+               dimnames = list(c("A", "G", "C", "T"),
+                               c("A", "G", "C", "T"),
+                               c("A", "G", "C", "T")))
 
 # fill it with amino acid codes using three nested loops
 for (i in 1:4) {
@@ -222,7 +232,7 @@ for (i in 1:4) {
                        dimnames(cCube)[[3]][k],
                        sep = "",
                        collapse = "")
-      cCube[i, j, k] <- GENETIC_CODE[myCodon]
+      cCube[i, j, k] <- genCode[myCodon]
     }
   }
 }
@@ -290,25 +300,25 @@ for (i in nuc) {
 
 # Solution:
 
-          # Fetch the code
-          GENETIC_CODE_TABLE
-          GENETIC_CODE_TABLE$name[GENETIC_CODE_TABLE$id == "12"]
-          altYcode <- getGeneticCode("12")
+    # Fetch the code
+    Biostrings::GENETIC_CODE_TABLE
+    Biostrings::GENETIC_CODE_TABLE$name[Biostrings::GENETIC_CODE_TABLE$id=="12"]
+    altYcode <- Biostrings::getGeneticCode("12")
 
-          # what's the difference?
-          (delta <- which(GENETIC_CODE != altYcode))
+    # what's the difference?
+    (delta <- which(Biostrings::GENETIC_CODE != altYcode))
 
-          GENETIC_CODE[delta]
-          altYcode[delta]
+    Biostrings::GENETIC_CODE[delta]
+    altYcode[delta]
 
-          # translate
-          altYAA <- character(834)
-          for (i in seq_along(mbp1Codons)) {
-            altYAA[i] <- altYcode[mbp1Codons[i]]
-          }
+    # translate
+    altYAA <- character(834)
+    for (i in seq_along(mbp1Codons)) {
+      altYAA[i] <- altYcode[mbp1Codons[i]]
+    }
 
-          table(mbp1AA)
-          table(altYAA)
+    table(mbp1AA)
+    table(altYAA)
 
 # Task: The genetic code has significant redundacy, i.e. there are up to six
 #         codons that code for the same amino acid. Write code that lists how
@@ -319,7 +329,7 @@ for (i in nuc) {
 #
 #
 # Solution:
-table(table(GENETIC_CODE))
+table(table(Biostrings::GENETIC_CODE))
 
 
 # [END]

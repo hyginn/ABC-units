@@ -3,13 +3,17 @@
 # Purpose: A Bioinformatics Course:
 #              R code accompanying the BIN-SEQA-Comparison unit
 #
-# Version: 1.0
+# Version: 1.1
 #
-# Date:    2017  11  17
+# Date:    2017  11  -  2019  01
 # Author:  Boris Steipe (boris.steipe@utoronto.ca)
 #
-# V 1.0    First live version 2017
-# V 0.1    First code copied from BCH441_A03_makeYFOlist.R
+#           1.1    Change from require() to requireNamespace(),
+#                      use <package>::<function>() idiom throughout,
+#                      use Biocmanager:: not biocLite()
+# Versions:
+#           1.0    First live version 2017
+#           0.1    First code copied from BCH441_A03_makeYFOlist.R
 #
 # TODO:
 #
@@ -25,26 +29,25 @@
 
 
 #TOC> ==========================================================================
-#TOC>
-#TOC>   Section  Title                                Line
-#TOC> ----------------------------------------------------
-#TOC>   1        Preparation                            41
-#TOC>   2        Aggregate properties                   63
-#TOC>   3        Sequence Composition Enrichment       106
-#TOC>   3.1      Barplot, and side-by-side barplot     129
-#TOC>   3.2      Plotting ratios                       164
-#TOC>   3.3      Plotting log ratios                   180
-#TOC>   3.4      Sort by frequency                     195
-#TOC>   3.5      Color by amino acid type              210
-#TOC>
+#TOC> 
+#TOC>   Section  Title                                      Line
+#TOC> ----------------------------------------------------------
+#TOC>   1        Preparation                                  47
+#TOC>   2        Aggregate properties                         68
+#TOC>   3        Sequence Composition Enrichment             111
+#TOC>   3.1        Barplot, and side-by-side barplot         134
+#TOC>   3.2        Plotting ratios                           169
+#TOC>   3.3        Plotting log ratios                       185
+#TOC>   3.4        Sort by frequency                         200
+#TOC>   3.5        Color by amino acid type                  215
+#TOC> 
 #TOC> ==========================================================================
 
 
 # =    1  Preparation  =========================================================
 
-if (!require(seqinr, quietly=TRUE)) {
+if (! requireNamespace("seqinr", quietly = TRUE)) {
   install.packages("seqinr")
-  library(seqinr)
 }
 # Package information:
 #  library(help = seqinr)       # basic information
@@ -66,7 +69,7 @@ if (!require(seqinr, quietly=TRUE)) {
 
 
 # Let's try a simple function from seqinr: computing the pI of the sequence
-?computePI
+?seqinr::computePI
 
 # This takes as input a vector of upper-case AA codes
 
@@ -82,13 +85,13 @@ s <- unlist(s)             # strsplit() returns a list! Why?
 # the function s2c() to convert strings into
 # character vectors (and c2s to convert them back).
 
-s2c(mySeq)
+seqinr::s2c(mySeq)
 
 
-computePI(s2c(mySeq))  # isoelectric point
-pmw(s2c(mySeq))        # molecular weight
-AAstat(s2c(mySeq))     # This also plots the distribution of
-                       # values along the sequence
+seqinr::computePI(s2c(mySeq))  # isoelectric point
+seqinr::pmw(s2c(mySeq))        # molecular weight
+seqinr::AAstat(s2c(mySeq))     # This also plots the distribution of
+                               # values along the sequence
 
 # A true Labor of Love has gone into the
 # compilation of the "aaindex" data:
@@ -116,9 +119,9 @@ aaindex[[459]]$D
 # Let's construct an enrichment plot to compare average frequencies
 # with the amino acid counts in our sequence.
 
-(refData <- aaindex[[459]]$I)        # reference frequencies in %
-names(refData) <- a(names(refData))  # change names to single-letter
-                                     # code using seqinr's "a()" function
+(refData <- aaindex[[459]]$I)                # reference frequencies in %
+names(refData) <- seqinr::a(names(refData))  # change names to single-letter
+                                             # code using seqinr's "a()" function
 sum(refData)
 refData        # ... in %
 

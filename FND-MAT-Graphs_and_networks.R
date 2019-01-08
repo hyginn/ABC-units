@@ -3,12 +3,14 @@
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the FND-MAT-Graphs_and_networks unit.
 #
-# Version:  1.1
+# Version:  1.2
 #
 # Date:     2017  10  -  2019  01
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.2    Change from require() to requireNamespace(),
+#                      use <package>::<function>() idiom throughout
 #           1.1    Update set.seed() usage
 #           1.0    First final version for learning units.
 #           0.1    First code copied from 2016 material.
@@ -30,17 +32,17 @@
 #TOC> 
 #TOC>   Section  Title                                        Line
 #TOC> ------------------------------------------------------------
-#TOC>   1        Review                                         48
-#TOC>   2        DEGREE DISTRIBUTIONS                          201
-#TOC>   2.1        Random graph                                207
-#TOC>   2.2        scale-free graph (Barabasi-Albert)          255
-#TOC>   2.3        Random geometric graph                      320
-#TOC>   3        A CLOSER LOOK AT THE igraph PACKAGE           442
-#TOC>   3.1        Basics                                      445
-#TOC>   3.2        Components                                  517
-#TOC>   4        RANDOM GRAPHS AND GRAPH METRICS               536
-#TOC>   4.1        Diameter                                    573
-#TOC>   5        GRAPH CLUSTERING                              641
+#TOC>   1        Review                                         50
+#TOC>   2        DEGREE DISTRIBUTIONS                          204
+#TOC>   2.1        Random graph                                210
+#TOC>   2.2        scale-free graph (Barabasi-Albert)          258
+#TOC>   2.3        Random geometric graph                      323
+#TOC>   3        A CLOSER LOOK AT THE igraph PACKAGE           445
+#TOC>   3.1        Basics                                      448
+#TOC>   3.2        Components                                  520
+#TOC>   4        RANDOM GRAPHS AND GRAPH METRICS               539
+#TOC>   4.1        Diameter                                    576
+#TOC>   5        GRAPH CLUSTERING                              645
 #TOC> 
 #TOC> ==========================================================================
 
@@ -123,9 +125,8 @@ set.seed(NULL)                         # reset the RNG
 # standard package for work with graphs in r is "igraph". We'll go into more
 # details of the igraph package a bit later, for now we just use it to plot:
 
-if (! require(igraph, quietly=TRUE)) {
+if (! requireNamespace("igraph", quietly = TRUE)) {
   install.packages("igraph")
-  library(igraph)
 }
 # Package information:
 #  library(help = igraph)       # basic information
@@ -133,10 +134,12 @@ if (! require(igraph, quietly=TRUE)) {
 #  data(package = "igraph")     # available datasets
 
 
-myG <- graph_from_adjacency_matrix(myRandAM, mode = "undirected")
+myG <- igraph::graph_from_adjacency_matrix(myRandAM, mode = "undirected")
 
 set.seed(112358)                       # set RNG seed for repeatable randomness
-myGxy <- layout_with_graphopt(myG, charge=0.0012) # calculate layout coordinates
+                                       # calculate layout coordinates
+myGxy <- igraph::layout_with_graphopt(myG,
+                                      charge=0.0012)
 set.seed(NULL)                         # reset the RNG
 
 
@@ -157,9 +160,9 @@ plot(myG,
      rescale = FALSE,
      xlim = c(min(myGxy[,1]) * 0.99, max(myGxy[,1]) * 1.01),
      ylim = c(min(myGxy[,2]) * 0.99, max(myGxy[,2]) * 1.01),
-     vertex.color=heat.colors(max(degree(myG)+1))[degree(myG)+1],
-     vertex.size = 1600 + (300 * degree(myG)),
-     vertex.label = sprintf("%s(%i)", names(V(myG)), degree(myG)),
+     vertex.color=heat.colors(max(igraph::degree(myG)+1))[igraph::degree(myG)+1],
+     vertex.size = 1600 + (300 * igraph::degree(myG)),
+     vertex.label = sprintf("%s(%i)", names(igraph::V(myG)), igraph::degree(myG)),
      vertex.label.family = "sans",
      vertex.label.cex = 0.7)
 par(oPar)  # reset plot window
@@ -179,10 +182,10 @@ sum(myRandAM)
 rowSums(myRandAM) +  colSums(myRandAM) # check this against the plot!
 
 # The function degree() gives the same values
-degree(myG)
+igraph::degree(myG)
 
 # Let's  plot the degree distribution in a histogram:
-degG <- degree(myG)
+degG <- igraph::degree(myG)
 brk <- seq(min(degG)-0.5, max(degG)+0.5, by=1)  # define histogram breaks
 hist(degG, breaks=brk, col="#A5CCF5",
      xlim = c(-1,8), xaxt = "n",
@@ -212,9 +215,9 @@ set.seed(31415927)                     # set RNG seed for repeatable randomness
 my200AM <- makeRandomAM(as.character(1:N), p = 0.015)
 set.seed(NULL)                         # reset the RNG
 
-myG200 <- graph_from_adjacency_matrix(my200AM, mode = "undirected")
-myGxy <- layout_with_graphopt(myG200, charge=0.0001) # calculate layout
-                                                     # coordinates
+myG200 <- igraph::graph_from_adjacency_matrix(my200AM, mode = "undirected")
+myGxy <- igraph::layout_with_graphopt(myG200, charge=0.0001) # calculate layout
+                                                             # coordinates
 
 oPar <- par(mar= rep(0,4))             # Turn margins off, save graphics state
 plot(myG200,
@@ -222,8 +225,8 @@ plot(myG200,
      rescale = FALSE,
      xlim = c(min(myGxy[,1]) * 0.99, max(myGxy[,1]) * 1.01),
      ylim = c(min(myGxy[,2]) * 0.99, max(myGxy[,2]) * 1.01),
-     vertex.color=heat.colors(max(degree(myG200)+1))[degree(myG200)+1],
-     vertex.size = 150 + (60 * degree(myG200)),
+     vertex.color=heat.colors(max(igraph::degree(myG200)+1))[igraph::degree(myG200)+1],
+     vertex.size = 150 + (60 * igraph::degree(myG200)),
      vertex.label = NA)
 par(oPar)                              # restore graphics state
 
@@ -231,7 +234,7 @@ par(oPar)                              # restore graphics state
 # biological graphs look approximately like this.
 
 # Calculate degree distributions
-dg <- degree(myG200)
+dg <- igraph::degree(myG200)
 brk <- seq(min(dg)-0.5, max(dg)+0.5, by=1)
 hist(dg, breaks=brk, col="#A5F5CC",
      xlim = c(-1,11), xaxt = "n",
@@ -263,10 +266,10 @@ plot(log10(as.numeric(names(freqRank)) + 1),
 N <- 200
 
 set.seed(31415927)                     # set RNG seed for repeatable randomness
-GBA <- sample_pa(N, power = 0.8, directed = FALSE)
+GBA <- igraph::sample_pa(N, power = 0.8, directed = FALSE)
 set.seed(NULL)                         # reset the RNG
 
-GBAxy <- layout_with_graphopt(GBA, charge=0.0001) # calculate layout coordinates
+GBAxy <- igraph::layout_with_graphopt(GBA, charge=0.0001)
 
 oPar <- par(mar= rep(0,4))             # Turn margins off, save graphics state
 plot(GBA,
@@ -274,8 +277,8 @@ plot(GBA,
      rescale = FALSE,
      xlim = c(min(GBAxy[,1]) * 0.99, max(GBAxy[,1]) * 1.01),
      ylim = c(min(GBAxy[,2]) * 0.99, max(GBAxy[,2]) * 1.01),
-     vertex.color=heat.colors(max(degree(GBA)+1))[degree(GBA)+1],
-     vertex.size = 200 + (30 * degree(GBA)),
+     vertex.color=heat.colors(max(igraph::degree(GBA)+1))[igraph::degree(GBA)+1],
+     vertex.size = 200 + (30 * igraph::degree(GBA)),
      vertex.label = NA)
 par(oPar)                              # restore grphics state
 
@@ -287,7 +290,7 @@ par(oPar)                              # restore grphics state
 # singletons.
 
 # What's the degree distribution of this graph?
-(dg <- degree(GBA))
+(dg <- igraph::degree(GBA))
 brk <- seq(min(dg)-0.5, max(dg)+0.5, by=1)
 hist(dg, breaks=brk, col="#DCF5B5",
      xlim = c(0,max(dg)+1), xaxt = "n",
@@ -307,8 +310,8 @@ plot(log10(as.numeric(names(freqRank)) + 1),
 # Sort-of linear, but many of the higher ranked nodes have a frequency of only
 # one. That behaviour smooths out in larger graphs:
 #
-X <- sample_pa(100000, power = 0.8, directed = FALSE)  # 100,000 nodes
-freqRank <- table(degree(X))
+X <- igraph::sample_pa(1e5, power = 0.8, directed = FALSE)  # 100,000 nodes
+freqRank <- table(igraph::degree(X))
 plot(log10(as.numeric(names(freqRank)) + 1),
      log10(as.numeric(freqRank)), type = "b",
      xlab = "log(Rank)", ylab = "log(frequency)",
@@ -367,7 +370,7 @@ makeRandomGeometricAM <- function(nam, B = 25, Q = 0.001, t = 0.6) {
     for (iCol in (iRow+1):N) {
       # geometric distance ...
       d <- sqrt((AM$x[iRow] - AM$x[iCol])^2 +
-                  (AM$y[iRow] - AM$y[iCol])^2)  # Pythagoras
+                (AM$y[iRow] - AM$y[iCol])^2)  # Pythagoras
       # distance dependent probability
       p <- 1 - 1/((1 + (Q * (exp(-B * (d-t)))))^(1 / nu))
       if (runif(1) < p) {
@@ -404,7 +407,7 @@ rGAM <- makeRandomGeometricAM(as.character(1:N), t = 0.4)
 set.seed(NULL)                         # reset the RNG
 
 
-myGRG <- graph_from_adjacency_matrix(rGAM$mat, mode = "undirected")
+myGRG <- igraph::graph_from_adjacency_matrix(rGAM$mat, mode = "undirected")
 
 oPar <- par(mar= rep(0,4)) # Turn margins off
 plot(myGRG,
@@ -412,13 +415,13 @@ plot(myGRG,
      rescale = FALSE,
      xlim = c(min(rGAM$x) * 0.9, max(rGAM$x) * 1.1),
      ylim = c(min(rGAM$y) * 0.9, max(rGAM$y) * 1.1),
-     vertex.color=heat.colors(max(degree(myGRG)+1))[degree(myGRG)+1],
-     vertex.size = 0.1 + (0.2 * degree(myGRG)),
+     vertex.color=heat.colors(max(igraph::degree(myGRG)+1))[igraph::degree(myGRG)+1],
+     vertex.size = 0.1 + (0.2 * igraph::degree(myGRG)),
      vertex.label = NA)
 par(oPar)
 
 # degree distribution:
-(dg <- degree(myGRG))
+(dg <- igraph::degree(myGRG))
 brk <- seq(min(dg) - 0.5, max(dg) + 0.5, by = 1)
 hist(dg, breaks = brk, col = "#FCC6D2",
      xlim = c(0, 25), xaxt = "n",
@@ -450,7 +453,7 @@ summary(myG)
 
 # This output means: this is an IGRAPH graph, with U = UN-directed edges
 #  and N = named nodes, that has 20 nodes and 20 edges. For details, see
-?print.igraph
+?igraph::print.igraph
 
 mode(myG)
 class(myG)
@@ -463,11 +466,11 @@ class(myG)
 # recipes, called _games_ in this package.
 
 # Two basic functions retrieve nodes "Vertices", and "Edges":
-V(myG)
-E(myG)
+igraph::V(myG)
+igraph::E(myG)
 
 # additional properties can be retrieved from the Vertices ...
-V(myG)$name
+igraph::V(myG)$name
 
 
 # As with many R objects, loading the package provides special functions that
@@ -487,12 +490,12 @@ plot(myG)  # this is the result of default plot parameters
 # Plot with some customizing parameters
 oPar <- par(mar= rep(0,4)) # Turn margins off
 plot(myG,
-     layout = layout_with_fr(myG),
-     vertex.color=heat.colors(max(degree(myG)+1))[degree(myG)+1],
-     vertex.size = 9 + (2 * degree(myG)),
-     vertex.label.cex = 0.5 + (0.05 * degree(myG)),
+     layout = igraph::layout_with_fr(myG),
+     vertex.color=heat.colors(max(igraph::degree(myG)+1))[igraph::degree(myG)+1],
+     vertex.size = 9 + (2 * igraph::degree(myG)),
+     vertex.label.cex = 0.5 + (0.05 * igraph::degree(myG)),
      edge.width = 2,
-     vertex.label = V(myG)$name,
+     vertex.label = igraph::V(myG)$name,
      vertex.label.family = "sans",
      vertex.label.cex = 0.9)
 par(oPar)
@@ -500,12 +503,12 @@ par(oPar)
 # ... or with a different layout:
 oPar <- par(mar= rep(0,4)) # Turn margins off
 plot(myG,
-     layout = layout_in_circle(myG),
-     vertex.color=heat.colors(max(degree(myG)+1))[degree(myG)+1],
-     vertex.size = 9 + (2 * degree(myG)),
-     vertex.label.cex = 0.5 + (0.05 * degree(myG)),
+     layout = igraph::layout_in_circle(myG),
+     vertex.color=heat.colors(max(igraph::degree(myG)+1))[igraph::degree(myG)+1],
+     vertex.size = 9 + (2 * igraph::degree(myG)),
+     vertex.label.cex = 0.5 + (0.05 * igraph::degree(myG)),
      edge.width = 2,
-     vertex.label = V(myG)$name,
+     vertex.label = igraph::V(myG)$name,
      vertex.label.family = "sans",
      vertex.label.cex = 0.9)
 par(oPar)
@@ -518,18 +521,18 @@ par(oPar)
 
 # The igraph function components() tells us whether there are components of the
 # graph in which there is no path to other components.
-components(myG)
+igraph::components(myG)
 
 # In the _membership_ vector, nodes are annotated with the index of the
 # component they are part of. Sui7 is the only node of component 2, Cyj1 is in
 # the third component etc. This is perhaps more clear if we sort by component
 # index
-sort(components(myG)$membership, decreasing = TRUE)
+sort(igraph::components(myG)$membership, decreasing = TRUE)
 
 # Retrieving e.g. the members of the first component from the list can be done by subsetting:
 
-(sel <- components(myG)$membership == 1)  # boolean vector ..
-(c1 <- components(myG)$membership[sel])
+(sel <- igraph::components(myG)$membership == 1)  # boolean vector ..
+(c1 <- igraph::components(myG)$membership[sel])
 names(c1)
 
 
@@ -542,9 +545,9 @@ names(c1)
 # preferential-attachment ... but igraph has ways to simulate the basic ones
 # (and we could easily simulate our own). Look at the following help pages:
 
-?sample_gnm                # see also sample_gnp for the Erdös-Rényi models
-?sample_smallworld         # for the Watts & Strogatz model
-?sample_pa                 # for the Barabasi-Albert model
+?igraph::sample_gnm             # see also sample_gnp for the Erdös-Rényi models
+?igraph::sample_smallworld      # for the Watts & Strogatz model
+?igraph::sample_pa              # for the Barabasi-Albert model
 
 # But note that there are many more sample_ functions. Check out the docs!
 
@@ -554,7 +557,7 @@ names(c1)
 # layout drawas them, obviously.
 
 set.seed(112358)                       # set RNG seed for repeatable randomness
-myGxy <- layout_with_fr(myG)           # calculate layout coordinates
+myGxy <- igraph::layout_with_fr(myG)   # calculate layout coordinates
 set.seed(NULL)                         # reset the RNG
 
 oPar <- par(mar = rep(0, 4))           # turn margins off, save graphics state
@@ -563,30 +566,31 @@ plot(myG,
      rescale = FALSE,
      xlim = c(min(myGxy[,1]) * 0.99, max(myGxy[,1]) * 1.01),
      ylim = c(min(myGxy[,2]) * 0.99, max(myGxy[,2]) * 1.01),
-     vertex.color=heat.colors(max(degree(myG) + 1))[degree(myG) + 1],
-     vertex.size = 20 + (10 * degree(myG)),
-     vertex.label = V(myG)$name,
+     vertex.color=heat.colors(max(igraph::degree(myG)+1))[igraph::degree(myG)+1],
+     vertex.size = 20 + (10 * igraph::degree(myG)),
+     vertex.label = igraph::V(myG)$name,
      vertex.label.family = "sans",
      vertex.label.cex = 0.8)
 par(oPar)                              # restore graphics state
 
 # ==   4.1  Diameter  ==========================================================
 
-diameter(myG)  # The diameter of a graph is its maximum length shortest path.
+igraph::diameter(myG)  # The diameter of a graph is its maximum length
+                       # shortest path.
 
 # let's plot this path: here are the nodes ...
-get_diameter(myG)
+igraph::get_diameter(myG)
 
 # ... and we can get the x, y coordinates from iGxy by subsetting with the node
 # names. The we draw the diameter-path with a transparent, thick pink line:
-lines(myGxy[get_diameter(myG),], lwd=10, col="#ff63a788")
+lines(myGxy[igraph::get_diameter(myG),], lwd=10, col="#ff63a788")
 
 # == Centralization scores
 
-?centralize
+?igraph::centralize
 # replot our graph, and color by log_betweenness:
 
-bC <- centr_betw(myG)  # calculate betweenness centrality
+bC <- igraph::centr_betw(myG)  # calculate betweenness centrality
 nodeBetw <- bC$res
 nodeBetw <- round(log(nodeBetw +1)) + 1
 
@@ -597,8 +601,8 @@ plot(myG,
      xlim = c(min(myGxy[,1]) * 0.99, max(myGxy[,1]) * 1.01),
      ylim = c(min(myGxy[,2]) * 0.99, max(myGxy[,2]) * 1.01),
      vertex.color=heat.colors(max(nodeBetw))[nodeBetw],
-     vertex.size = 20 + (10 * degree(myG)),
-     vertex.label = V(myG)$name,
+     vertex.size = 20 + (10 * igraph::degree(myG)),
+     vertex.label = igraph::V(myG)$name,
      vertex.label.family = "sans",
      vertex.label.cex = 0.7)
 par(oPar)
@@ -613,7 +617,7 @@ par(oPar)
 #
 # Lets plot betweenness centrality for our random geometric graph:
 
-bCmyGRG <- centr_betw(myGRG)  # calculate betweenness centrality
+bCmyGRG <- igraph::centr_betw(myGRG)  # calculate betweenness centrality
 
 nodeBetw <- bCmyGRG$res
 nodeBetw <- round((log(nodeBetw +1))^2.5) + 1
@@ -630,9 +634,9 @@ plot(myGRG,
      vertex.label = NA)
 par(oPar)
 
-diameter(myGRG)
-lines(rGAM$x[get_diameter(myGRG)],
-      rGAM$y[get_diameter(myGRG)],
+igraph::diameter(myGRG)
+lines(rGAM$x[igraph::get_diameter(myGRG)],
+      rGAM$y[igraph::get_diameter(myGRG)],
       lwd = 10,
       col = "#ff335533")
 
@@ -648,11 +652,11 @@ lines(rGAM$x[get_diameter(myGRG)],
 # http://www.ncbi.nlm.nih.gov/pubmed/18216267 and htttp://www.mapequation.org
 
 
-myGRGclusters <- cluster_infomap(myGRG)
-modularity(myGRGclusters) # ... measures how separated the different membership
-                         # types are from each other
-membership(myGRGclusters) # which nodes are in what cluster?
-table(membership(myGRGclusters))  # how large are the clusters?
+myGRGclusters <- igraph::cluster_infomap(myGRG)
+igraph::modularity(myGRGclusters)  # ... measures how separated the different
+                                   # membership types are from each other
+igraph::membership(myGRGclusters)         # which nodes are in what cluster?
+table(igraph::membership(myGRGclusters))  # how large are the clusters?
 
 # The largest cluster has 48 members, the second largest has 25, etc.
 
@@ -661,7 +665,7 @@ table(membership(myGRGclusters))  # how large are the clusters?
 # their cluster membership:
 
 # first, make a vector with as many grey colors as we have communities ...
-commColors <- rep("#f1eef6", max(membership(myGRGclusters)))
+commColors <- rep("#f1eef6", max(igraph::membership(myGRGclusters)))
 # ... then overwrite the first five with "real colors" - something like rust,
 # lilac, pink, and mauve or so.
 commColors[1:5] <- c("#980043", "#dd1c77", "#df65b0", "#c994c7", "#d4b9da")
@@ -673,8 +677,8 @@ plot(myGRG,
      rescale = FALSE,
      xlim = c(min(rGAM$x) * 0.9, max(rGAM$x) * 1.1),
      ylim = c(min(rGAM$y) * 0.9, max(rGAM$y) * 1.1),
-     vertex.color=commColors[membership(myGRGclusters)],
-     vertex.size = 0.1 + (0.1 * degree(myGRG)),
+     vertex.color=commColors[igraph::membership(myGRGclusters)],
+     vertex.size = 0.1 + (0.1 * igraph::degree(myGRG)),
      vertex.label = NA)
 par(oPar)
 

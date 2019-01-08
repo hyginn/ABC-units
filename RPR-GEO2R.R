@@ -3,12 +3,15 @@
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the RPR_GEO2R unit.
 #
-# Version:  1.1
+# Version:  1.2
 #
-# Date:     2017 09  -  2018 01
+# Date:     2017 09  -  2019 01
 # Author:   Boris Steipe <boris.steipe@utoronto.ca>
 #
 # Versions:
+#           1.2    Change from require() to requireNamespace(),
+#                      use <package>::<function>() idiom throughout,
+#                      use Biocmanager:: not biocLite()
 #           1.1    Add section on GPL annotations
 #           1.0    Updates for BCH441 2017
 #           0.1    First code copied from 2016 material.
@@ -31,22 +34,22 @@
 
 
 #TOC> ==========================================================================
-#TOC>
-#TOC>   Section  Title                                                Line
-#TOC> --------------------------------------------------------------------
-#TOC>   1        Preparations                                           53
-#TOC>   2        Loading a GEO Dataset                                  84
-#TOC>   3        Column wise analysis - time points                    154
-#TOC>   3.1      Task - Comparison of experiments                      160
-#TOC>   3.2      Grouped Samples                                       207
-#TOC>   4        Row-wise Analysis: Expression Profiles                242
-#TOC>   4.1      Task - Read a table of features                       277
-#TOC>   4.2      Selected Expression profiles                          325
-#TOC>   5        Differential Expression                               366
-#TOC>   5.1      Final task: Gene descriptions                         490
-#TOC>   6        Improving on Discovery by Differential Expression     495
-#TOC>   7        Annotation data                                       577
-#TOC>
+#TOC> 
+#TOC>   Section  Title                                                      Line
+#TOC> --------------------------------------------------------------------------
+#TOC>   1        Preparations                                                 56
+#TOC>   2        Loading a GEO Dataset                                        82
+#TOC>   3        Column wise analysis - time points                          152
+#TOC>   3.1        Task - Comparison of experiments                          158
+#TOC>   3.2        Grouped Samples                                           205
+#TOC>   4        Row-wise Analysis: Expression Profiles                      240
+#TOC>   4.1        Task - Read a table of features                           275
+#TOC>   4.2        Selected Expression profiles                              323
+#TOC>   5        Differential Expression                                     364
+#TOC>   5.1        Final task: Gene descriptions                             504
+#TOC>   6        Improving on Discovery by Differential Expression           510
+#TOC>   7        Annotation data                                             594
+#TOC> 
 #TOC> ==========================================================================
 
 
@@ -55,12 +58,11 @@
 # To load and analyze GEO datasets we use a number of Bioconductor packages:
 
 
-if (! require(Biobase, quietly=TRUE)) {
-  if (! exists("biocLite")) {
-    source("https://bioconductor.org/biocLite.R")
-  }
-  biocLite("Biobase")
-  library(Biobase)
+if (! requireNamespace("BiocManager", quietly = TRUE)) {
+  install.packages("BiocManager")
+}
+if (! requireNamespace("Biobase", quietly = TRUE)) {
+  BiocManager::install("Biobase")
 }
 # Package information:
 #  library(help = Biobase)       # basic information
@@ -68,12 +70,8 @@ if (! require(Biobase, quietly=TRUE)) {
 #  data(package = "Biobase")     # available datasets
 
 
-if (! require(GEOquery, quietly=TRUE)) {
-  if (! exists("biocLite")) {
-    source("https://bioconductor.org/biocLite.R")
-  }
-  biocLite("GEOquery")
-  library(GEOquery)
+if (! requireNamespace("GEOquery", quietly = TRUE)) {
+  BiocManager::install("GEOquery")
 }
 # Package information:
 #  library(help = GEOquery)       # basic information
@@ -94,7 +92,7 @@ if (! require(GEOquery, quietly=TRUE)) {
 # I have experienced outages over several hours. If the command below does
 # not work for you, skip ahead to the fallback procedure.
 
-GSE3635 <- getGEO("GSE3635", GSEMatrix =TRUE, getGPL=FALSE)
+GSE3635 <- GEOquery::getGEO("GSE3635", GSEMatrix =TRUE, getGPL=FALSE)
 # Note: GEO2R scripts call the expression data set
 #       "gset" throughout ... in this script I give
 #       it the name "GSE3635" for clarity.
@@ -136,14 +134,14 @@ help("ExpressionSet-class")
 GSE3635
 
 # Access contents via methods:
-featureNames(GSE3635)[1:20]   # Rows. What are these features?
-sampleNames(GSE3635)[1:10]    # Columns. What are these columns?
+Biobase::featureNames(GSE3635)[1:20]   # Rows. What are these features?
+Biobase::sampleNames(GSE3635)[1:10]    # Columns. What are these columns?
 
 # Access contents by subsetting:
 ( tmp <- GSE3635[12:17, 1:6] )
 
 # Access data
-exprs(tmp)   # exprs() gives us the actual expression values.
+Biobase::exprs(tmp)   # exprs() gives us the actual expression values.
 
 
 #TASK> What are the data:
@@ -160,9 +158,9 @@ exprs(tmp)   # exprs() gives us the actual expression values.
 # ==   3.1  Task - Comparison of experiments  ==================================
 
 # Get an overview of the distribution of data values in individual columns
-summary(exprs(GSE3635)[ , 1])
-summary(exprs(GSE3635)[ , 4])
-summary(exprs(GSE3635)[ , 7])
+summary(Biobase::exprs(GSE3635)[ , 1])
+summary(Biobase::exprs(GSE3635)[ , 4])
+summary(Biobase::exprs(GSE3635)[ , 7])
 
 # as a boxplot
 cyclicPalette <- colorRampPalette(c("#00AAFF",
@@ -173,7 +171,7 @@ cyclicPalette <- colorRampPalette(c("#00AAFF",
                                     "#FFAA00",
                                     "#00AAFF"))
 tCols <- cyclicPalette(13)
-boxplot(exprs(GSE3635), col = tCols)
+boxplot(Biobase::exprs(GSE3635), col = tCols)
 
 
 #TASK>     Study this boxplot. What's going on? Are these expression values?
@@ -181,11 +179,11 @@ boxplot(exprs(GSE3635), col = tCols)
 
 
 # Lets plot the distributions of values in a more fine-grained manner:
-hT0  <- hist(exprs(GSE3635)[ ,  1], breaks = 100)
-hT3  <- hist(exprs(GSE3635)[ ,  4], breaks = 100)
-hT6  <- hist(exprs(GSE3635)[ ,  7], breaks = 100)
-hT9  <- hist(exprs(GSE3635)[ , 10], breaks = 100)
-hT12 <- hist(exprs(GSE3635)[ , 13], breaks = 100)
+hT0  <- hist(Biobase::exprs(GSE3635)[ ,  1], breaks = 100)
+hT3  <- hist(Biobase::exprs(GSE3635)[ ,  4], breaks = 100)
+hT6  <- hist(Biobase::exprs(GSE3635)[ ,  7], breaks = 100)
+hT9  <- hist(Biobase::exprs(GSE3635)[ , 10], breaks = 100)
+hT12 <- hist(Biobase::exprs(GSE3635)[ , 13], breaks = 100)
 
 
 plot(  hT0$mids,  hT0$counts,  type = "l", col =  tCols[1], xlim = c(-0.5, 0.5))
@@ -218,7 +216,7 @@ for (i in 1:nchar(gsms)) {
 sml <- paste("G", sml, sep="")  # set group names
 
 # order samples by group
-ex <- exprs(GSE3635)[ , order(sml)]
+ex <- Biobase::exprs(GSE3635)[ , order(sml)]
 sml <- sml[order(sml)]
 fl <- as.factor(sml)
 labels <- c("t0","t10","t20","t30","t40","t50") # these are the labels we
@@ -231,8 +229,8 @@ labels <- c("t0","t10","t20","t30","t40","t50") # these are the labels we
 GEOcols <- c("#dfeaf4", "#f4dfdf", "#f2cb98", "#dcdaa5",
              "#dff4e4", "#f4dff4",  "#AABBCC")
 dev.new(width = 4 + dim(GSE3635)[[2]] / 5, height = 6) # plot into a new window
-par(mar = c(2 + round(max(nchar(sampleNames(GSE3635))) / 2), 4, 2, 1))
-title <- paste ("GSE3635", '/', annotation(GSE3635),
+par(mar = c(2 + round(max(nchar(Biobase::sampleNames(GSE3635))) / 2), 4, 2, 1))
+title <- paste ("GSE3635", '/', Biobase::annotation(GSE3635),
                 " grouped samples", sep ='')
 boxplot(ex, boxwex = 0.6, notch = TRUE, main = title, outline=FALSE,
         las = 2, col = GEOcols[fl])
@@ -331,7 +329,7 @@ gName <- "MBP1"
 (iFeature <- which(SGD_features$name == gName))
 (iExprs   <- which(featureNames(GSE3635) == SGD_features$sysName[iFeature]))
 plot(seq(0, 120, by = 10),
-     exprs(GSE3635)[iExprs, ],
+     Biobase::exprs(GSE3635)[iExprs, ],
      main = paste("Expression profile for", gName),
      xlab = "time (min)",
      ylab = "expression",
@@ -368,12 +366,8 @@ SGD_features$description[iFeature]
 # GEO2R discovers the top differentially expressed  expressed genes by
 # using functions in the Bioconductor limma package.
 
-if (! require(limma, quietly=TRUE)) {
-  if (! exists("biocLite")) {
-    source("https://bioconductor.org/biocLite.R")
-  }
-  biocLite("limma")
-  library(limma)
+if (! requireNamespace("limma", quietly = TRUE)) {
+  BiocManager::install("limma")
 }
 # Package information:
 #  library(help = limma)       # basic information
@@ -391,6 +385,20 @@ if (! require(limma, quietly=TRUE)) {
 # 3. Find genes whose expression levels are significantly different across
 #     the groups
 # 4. Format results.
+
+# Biobase is a highly engineered package that is tightly integrated into
+# the Bioconductor world - unfortunately that brings with it a somewhat
+# undesirable level of computational overhead and dependencies. Using the
+# package as we normally do - i.e. calling required functions with their
+# explicit package prefix is therefore not advisable. There are generics
+# that won't be propery dispatched. If you only need a small number of
+# functions for a very specific context, you will probably get away with
+# Biobase::<function>() - but even in the demonstration code of this script
+# not everything works out of the box. We'll therefore load the library,
+# but we'll (redundantly) use the prefix anyway so as to emphasize where
+# the functions come from.
+
+library(Biobase)
 
 # We are recapitulating the experiment in which we assigned the 0, 10, 60 and
 # 70 minute samples to one group, the 30, 40, 90 and 100 minute samples to
@@ -415,15 +423,15 @@ myDesign
 
 # Now we can calculate the fit of all rows to a linear model that depends
 # on the two groups as specified in the design:
-myFit <- lmFit(mySet, myDesign)
+myFit <- limma::lmFit(mySet, myDesign)
 
 # Next we calculate the contrasts, given the fit ...
-myCont.matrix <- makeContrasts(A - B, levels = myDesign)
-myFit2 <- contrasts.fit(myFit, myCont.matrix)
+myCont.matrix <- limma::makeContrasts(A - B, levels = myDesign)
+myFit2 <- limma::contrasts.fit(myFit, myCont.matrix)
 
 # ... compute appropriate probabilites from a modified t-test
 #     (empirical Bayes) ...
-myFit2 <- eBayes(myFit2, 0.01)
+myFit2 <- limma::eBayes(myFit2, 0.01)
 
 # ... add the gene names to the fit - object ...
 myFit2$genes <- featureNames(mySet)
@@ -433,7 +441,10 @@ myFit2$genes <- featureNames(mySet)
 #     gave us only the top 250 genes, but we might as well do 1000, just so we
 #     can be reasonable sure that our gens of interest are included.
 N <- 1000
-myTable <- topTable(myFit2, adjust.method = "fdr", sort.by = "B", number = N)
+myTable <- limma::topTable(myFit2,
+                           adjust.method = "fdr",
+                           sort.by = "B",
+                           number = N)
 
 str(myTable)
 # The gene names are now in the $ID column
@@ -461,7 +472,7 @@ abline(h = 0, col = "#00000055")
 
 for (i in 1:10) {
   thisID <- myTable$ID[i]
-  points(seq(0, 120, by = 10), exprs(GSE3635)[thisID, ], type = "b")
+  points(seq(0, 120, by = 10), Biobase::exprs(GSE3635)[thisID, ], type = "b")
 }
 
 # Our guess that we might discover interesting genes be selecting groups A and B
@@ -480,7 +491,10 @@ for (i in 1:10) {
 myControls <- c("Cdc14", "Mbp1", "Swi6", "Swi4", "Whi5", "Cln1", "Cln2", "Cln3")
 for (name in toupper(myControls)) {
   thisID <- SGD_features$sysName[which(SGD_features$name == name)]
-  points(seq(0, 120, by=10), exprs(GSE3635)[thisID, ], type="b", col="#AA0000")
+  points(seq(0, 120, by=10),
+         Biobase::exprs(GSE3635)[thisID, ],
+         type="b",
+         col="#AA0000")
 }
 
 # Indeed, the discovered gene profiles look much "cleaner" than the real cycle
@@ -504,7 +518,7 @@ for (name in toupper(myControls)) {
 gName <- "CLN2"
 (iFeature <- which(SGD_features$name == gName))
 (iExprs   <- which(featureNames(GSE3635) == SGD_features$sysName[iFeature]))
-Cln2Profile <- exprs(GSE3635)[iExprs, ]
+Cln2Profile <- Biobase::exprs(GSE3635)[iExprs, ]
 plot(seq(0, 120, by = 10),
      Cln2Profile,
      ylim = c(-1, 1),
@@ -519,16 +533,16 @@ abline(v = 60, col = "#00000055")
 # Set up a vector of correlation values
 
 
-myCorrelations <- numeric(nrow(exprs(GSE3635)))
-names(myCorrelations) <- featureNames(GSE3635)
+myCorrelations <- numeric(nrow(Biobase::exprs(GSE3635)))
+names(myCorrelations) <- Biobase::featureNames(GSE3635)
 for (i in 1:length(myCorrelations)) {
-  myCorrelations[i] <- cor(Cln2Profile, exprs(GSE3635)[i, ])
+  myCorrelations[i] <- cor(Cln2Profile, Biobase::exprs(GSE3635)[i, ])
 }
 
 myTopC <- order(myCorrelations, decreasing = TRUE)[1:10]  # top ten
 
 # Number 1
-(ID <- featureNames(GSE3635)[myTopC[1]])
+(ID <- Biobase::featureNames(GSE3635)[myTopC[1]])
 
 # Get information
 SGD_features[which(SGD_features$sysName == ID), ]
@@ -537,12 +551,13 @@ SGD_features[which(SGD_features$sysName == ID), ]
 
 # Let's plot the rest
 for (i in 2:length(myTopC)) {
-  ID <- featureNames(GSE3635)[myTopC[i]]
+  ID <- Biobase::featureNames(GSE3635)[myTopC[i]]
   points(seq(0, 120, by = 10),
-       exprs(GSE3635)[ID, ],
+         Biobase::exprs(GSE3635)[ID, ],
        type = "b",
        col= "chartreuse")
-  print(SGD_features[which(SGD_features$sysName == ID), c("name", "description")])
+  print(SGD_features[which(SGD_features$sysName == ID),
+                     c("name", "description")])
 }
 
 # Note that all of these genes are highly correlated with a known cell cycle
@@ -554,12 +569,13 @@ for (i in 2:length(myTopC)) {
 # And we haven't even looked at the anticorrelated genes yet...
 myBottomC <- order(myCorrelations, decreasing = FALSE)[1:10]  # bottom ten
 for (i in 1:length(myBottomC)) {
-  ID <- featureNames(GSE3635)[myBottomC[i]]
+  ID <- Biobase::featureNames(GSE3635)[myBottomC[i]]
   points(seq(0, 120, by = 10),
-         exprs(GSE3635)[ID, ],
+         Biobase::exprs(GSE3635)[ID, ],
          type = "b",
          col= "coral")
-  print(SGD_features[which(SGD_features$sysName == ID), c("name", "description")])
+  print(SGD_features[which(SGD_features$sysName == ID),
+                     c("name", "description")])
 }
 # ... which are very interesting in their own right.
 
@@ -583,7 +599,7 @@ for (i in 1:length(myBottomC)) {
 # we used getGEO("GSE3635", GSEMatrix = TRUE, getGPL = FALSE), and the GPL
 # annotations were not loaded. We could use getGPL = TRUE instead ...
 
-GSE3635annot <- getGEO("GSE3635", GSEMatrix = TRUE, getGPL = TRUE)
+GSE3635annot <- GEOquery::getGEO("GSE3635", GSEMatrix = TRUE, getGPL = TRUE)
 GSE3635annot <- GSE3635annot[[1]]
 
 # ... and the feature data is then available in the GSE3635@featureData@data
@@ -597,13 +613,8 @@ GSE3635annot@featureData@data[ 1:20 , ]
 myAnnot <- GSE3635annot@featureData@data[ , c("SPOT_ID", "Gene")]
 str(myAnnot)
 
-# ... Note that this is a data frame, but - oy veh - the gene symbols are
-#     factors. Really, we need to fix this! To convert a factor into a string,
-#     we need to cast it to character.
-
-myAnnot$Gene <- as.character(myAnnot$Gene)
-
-# ... whereupon we can find things we might be looking for ...
+# ... Note that this is a data frame and it is easy to find things we
+#  might be looking for ...
 myAnnot[which(myAnnot$Gene == "MBP1"), ]
 
 # ... or identify rows that might give us trouble, such as probes that
@@ -614,13 +625,11 @@ myAnnot[which(myAnnot$Gene == "MBP1"), ]
 GSE3635@annotation   # "GPL1914"
 
 # ... and downloaded it directly from NCBI:
-GPL1914 <- getGEO("GPL1914")
+GPL1914 <- GEOquery::getGEO("GPL1914")
 str(GPL1914)
 
 # ... from which we can get the data - which is however NOT necessarily
-# matched to the rows of our expression dataset. Note that here too: the
-# majority of data elements are factors and will likely have to be converted
-# before use.
+# matched to the rows of our expression dataset.
 
 
 # [END]

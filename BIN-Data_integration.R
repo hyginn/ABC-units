@@ -3,12 +3,14 @@
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the BIN-Data_integration unit.
 #
-# Version:  1.0.1
+# Version:  1.1
 #
-# Date:     2018  10  30
+# Date:     2018  10  -  2019  01
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.1    Change from require() to requireNamespace(),
+#                      use <package>::<function>() idiom throughout
 #           1.0.1  Bugfix: UniProt ID Mapping service API change
 #           1.0    First live version
 #
@@ -31,8 +33,8 @@
 #TOC> 
 #TOC>   Section  Title                             Line
 #TOC> -------------------------------------------------
-#TOC>   1        Identifier mapping                  40
-#TOC>   2        Cross-referencing tables           164
+#TOC>   1        Identifier mapping                  42
+#TOC>   2        Cross-referencing tables           165
 #TOC> 
 #TOC> ==========================================================================
 
@@ -54,9 +56,8 @@
 
 # To begin, we load  httr, which supports sending and receiving data via the
 # http protocol, just like a Web browser.
-if (!require(httr, quietly=TRUE)) {
-  install.packages("httr")
-  library(httr)
+if (! requireNamespace("httpr", quietly=TRUE)) {
+  install.packages("httpr")
 }
 # Package information:
 #  library(help = httr)       # basic information
@@ -75,22 +76,22 @@ myQueryIDs <- "NP_010227 NP_00000 NP_011036"
 # of the request. GET() and POST() are functions from httr.
 
 URL <- "https://www.uniprot.org/mapping/"
-response <- POST(URL,
-                 body = list(from = "P_REFSEQ_AC",   # Refseq Protein
-                             to = "ACC",             # UniProt ID
-                             format = "tab",
-                             query = myQueryIDs))
+response <- httr::POST(URL,
+                       body = list(from = "P_REFSEQ_AC",   # Refseq Protein
+                                   to = "ACC",             # UniProt ID
+                                   format = "tab",
+                                   query = myQueryIDs))
 
-cat(content(response))
+cat(httr::content(response))
 
 # We need to check the status code - if it is not 200, an error ocurred and we
 # can't process the result:
-status_code(response)
+httr::status_code(response)
 
 # If the query is successful, tabbed text is returned. We can assign that to a
 # data frame. Note that we use textConnection() to read data directly from a char object, which can go in the spot where read.delim() expects a file-name argument.
 
-myMappedIDs <- read.delim(file = textConnection(content(response)),
+myMappedIDs <- read.delim(file = textConnection(httr::content(response)),
                           sep = "\t",
                           stringsAsFactors = FALSE)
 myMappedIDs
@@ -132,14 +133,14 @@ myIDmap <- function (s, mapFrom = "P_REFSEQ_AC", mapTo = "ACC") {
   #    for IDs that are not mapped.
 
   URL <- "https://www.uniprot.org/uploadlists/"
-  response <- POST(URL,
-                   body = list(from = mapFrom,
-                               to = mapTo,
-                               format = "tab",
-                               query = s))
+  response <- httr::POST(URL,
+                         body = list(from = mapFrom,
+                                     to = mapTo,
+                                     format = "tab",
+                                     query = s))
 
-  if (status_code(response) == 200) { # 200: oK
-    myMap <- read.delim(file = textConnection(content(response)),
+  if (httr::status_code(response) == 200) { # 200: oK
+    myMap <- read.delim(file = textConnection(httr::content(response)),
                         sep = "\t",
                         stringsAsFactors = FALSE)
     myMap <- myMap[ , c(1,3)]
@@ -148,7 +149,7 @@ myIDmap <- function (s, mapFrom = "P_REFSEQ_AC", mapTo = "ACC") {
     myMap <- data.frame()
     warning(paste("No uniProt ID mapping returned:",
                   "server sent status",
-                  status_code(response)))
+                  httr::status_code(response)))
   }
 
   return(myMap)
@@ -168,7 +169,8 @@ myIDmap("NP_010227 NP_011036 NP_012881 NP_013729 NP_012165")
 # Nomenclature commission. How do we map one set of identifiers to another one?
 
 # The function to use is match().
-# Here is a tiny set of identifiers taken from a much larger table to illustrate the principle:
+# Here is a tiny set of identifiers taken from a much larger table to
+# illustrate the principle:
 #
 
 myIDs <- data.frame(uID =   c("P38903", "P31383", "P47177", "P47096", "Q07747",

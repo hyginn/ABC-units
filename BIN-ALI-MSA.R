@@ -3,12 +3,14 @@
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the BIN-ALI-MSA unit.
 #
-# Version:  1.1
+# Version:  1.2
 #
-# Date:     2017  10
+# Date:     2017  10  -  2019  01
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.2    Change from require() to requireNamespace(),
+#                      use <package>::<function>() idiom throughout
 #           1.1    Added fetchMSAmotif()
 #           1.0    Fully refactored and rewritten for 2017
 #           0.1    First code copied from 2016 material.
@@ -27,25 +29,25 @@
 
 
 #TOC> ==========================================================================
-#TOC>
-#TOC>   Section  Title                                        Line
-#TOC> ------------------------------------------------------------
-#TOC>   1        Preparations                                   51
-#TOC>   2        Aligning full length MBP1 proteins             99
-#TOC>   2.1      Preparing Sequences                           110
-#TOC>   2.2      Compute the MSA                               135
-#TOC>   3        Analyzing an MSA                              156
-#TOC>   4        Comparing MSAs                                227
-#TOC>   4.1      Importing an alignment to msa                 236
-#TOC>   4.1.1    importing an .aln file                        245
-#TOC>   4.1.2    Creating an MsaAAMultipleAlignment object     276
-#TOC>   4.2      More alignments                               313
-#TOC>   4.3      Computing comparison metrics                  325
-#TOC>   5        Profile-Profile alignments                    462
-#TOC>   6        Sequence Logos                                539
-#TOC>   6.1      Subsetting an alignment by motif              548
-#TOC>   6.2      Plot a Sequence Logo                          591
-#TOC>
+#TOC> 
+#TOC>   Section  Title                                              Line
+#TOC> ------------------------------------------------------------------
+#TOC>   1        Preparations                                         54
+#TOC>   2        Aligning full length MBP1 proteins                   96
+#TOC>   2.1        Preparing Sequences                               107
+#TOC>   2.2        Compute the MSA                                   132
+#TOC>   3        Analyzing an MSA                                    153
+#TOC>   4        Comparing MSAs                                      224
+#TOC>   4.1        Importing an alignment to msa                     233
+#TOC>   4.1.1          importing an .aln file                        242
+#TOC>   4.1.2          Creating an MsaAAMultipleAlignment object     273
+#TOC>   4.2        More alignments                                   324
+#TOC>   4.3        Computing comparison metrics                      336
+#TOC>   5        Profile-Profile alignments                          473
+#TOC>   6        Sequence Logos                                      546
+#TOC>   6.1        Subsetting an alignment by motif                  555
+#TOC>   6.2        Plot a Sequence Logo                              604
+#TOC> 
 #TOC> ==========================================================================
 
 
@@ -59,28 +61,22 @@
 source("makeProteinDB.R")
 
 
-# Multiple sequence alignment algorithms are provided in
-# the Bioconductor msa package.
-
-if (! require(Biostrings, quietly=TRUE)) {
-  if (! exists("biocLite")) {
-    source("https://bioconductor.org/biocLite.R")
-  }
-  biocLite("Biostrings")
-  library(Biostrings)
+if (! requireNamespace("BiocManager", quietly=TRUE)) {
+  install.packages("BiocManager")
+}
+if (! requireNamespace("Biostrings", quietly=TRUE)) {
+  BiocManager::install("Biostrings")
 }
 # Package information:
 #  library(help = Biostrings)       # basic information
 #  browseVignettes("Biostrings")    # available vignettes
 #  data(package = "Biostrings")     # available datasets
 
+# Multiple sequence alignment algorithms are provided in
+# the Bioconductor msa package.
 
-if (! require(msa, quietly=TRUE)) {
-  if (! exists("biocLite")) {
-    source("https://bioconductor.org/biocLite.R")
-  }
-  biocLite("msa")
-  library(msa)
+if (! requireNamespace("msa", quietly=TRUE)) {
+  BiocManager::install("msa")
 }
 # Package information:
 #  library(help=msa)       # basic information
@@ -115,7 +111,7 @@ help(package = "msa")
 # of sequence.
 
 sel <- grep("MBP1", myDB$protein$name)
-MBP1set <- AAStringSet(myDB$protein$sequence[sel])
+MBP1set <- Biostrings::AAStringSet(myDB$protein$sequence[sel])
 
 # To help us make sense of the alignment we need to add the names for
 # the sequences. Names for a seqSet object are held in the ranges slot...
@@ -142,10 +138,10 @@ MBP1set
 
 
 # Let's run an alignment with "Muscle"
-(msaM <-  msaMuscle( MBP1set, order = "aligned"))
+(msaM <-  msa::msaMuscle( MBP1set, order = "aligned"))
 
 # ... or to see the whole thing (cf. ?MsaAAMultipleAlignment ... print method):
-print(msaM, show=c("alignment", "complete"), showConsensus=FALSE)
+msa::print(msaM, show=c("alignment", "complete"), showConsensus=FALSE)
 
 
 # You see that the alignment object has sequence strings with hyphens as
@@ -173,7 +169,7 @@ print(msaM, show=c("alignment", "complete"), showConsensus=FALSE)
 
 data("BLOSUM62")  # fetch the BLOSUM62 package from the Biostrings package
 
-msaMScores <- msaConservationScore(msaM, substitutionMatrix = BLOSUM62)
+msaMScores <- msa::msaConservationScore(msaM, substitutionMatrix = BLOSUM62)
 plot(msaMScores, type = "l", col = "#205C5E", xlab = "Alignment Position")
 
 # That plot shows the well-aligned regions (domains ?) of the sequence, but it
@@ -243,20 +239,20 @@ for (i in seq_along(highScoringRanges$lengths)) {
 #   -  adjust the sequence names
 #   -  convert to msaAAMultipleAlignment object
 
-# ===  4.1.1  importing an .aln file
+# ===   4.1.1  importing an .aln file                   
 
 # The seqinr package has a function to read CLUSTAL W formatted .aln files ...
-if (! require(seqinr, quietly=TRUE)) {
-  install.packages(seqinr)
-  library(seqinr)
+if (! requireNamespace("seqinr", quietly=TRUE)) {
+  install.packages("seqinr")
 }
 # Package information:
 #  library(help=seqinr)       # basic information
 #  browseVignettes("seqinr")  # available vignettes
 #  data(package = "seqinr")   # available datasets
 
-# read the donwloaded file
-tmp <- read.alignment("msaT.aln", format = "clustal")
+# read the T-coffee aligned file that you donwloaded from the EBI MSA tools
+# (cf. http://steipe.biochemistry.utoronto.ca/abc/index.php/BIN-ALI-MSA)
+tmp <- seqinr::read.alignment("msaT.aln", format = "clustal")
 
 # read.alignment() returns a list. $seq is a list of strings, one for each
 # complete alignment. However, they are converted to lower case.
@@ -274,16 +270,16 @@ for (i in seq_along(x)) {
   names(x)[i] <- myDB$protein$name[sel]     # get the name
 }
 
-# ===  4.1.2  Creating an MsaAAMultipleAlignment object
+# ===   4.1.2  Creating an MsaAAMultipleAlignment object
 
 # MsaAAMultipleAlignment objects are S4 objects that contain AAStringSet objects
 # in their @unmasked slot, and a few additional items. Rather then build the
-# object from scratch, we copy an axisting object, and overwrite the dta in its
+# object from scratch, we copy an existing object, and overwrite the data in its
 # slots with what we need. Our goal is pragmatic, we want an object that msa's
 # functions will accept as input.
 
 # First: convert our named char vector into an AAstringSet
-x <- AAStringSet(x)
+x <- Biostrings::AAStringSet(x)
 
 # Then: create a new MsaAAMultipleAlignment S4 object. The msa package has
 # defined what such an object should look like, with the SetClass() function. To
@@ -294,8 +290,22 @@ x <- AAStringSet(x)
 
 str(msaM)
 
+# There is a catch however in the way R makes such operations specific to
+# the packages they need them: the function that creates the class is
+# defined as a "generic", and when it is called, R looks in the package
+# namespace for a more specific function with precise instructions what
+# to do. However, we have not loaded the package namespace - we access all
+# of the functions directly with the msa:: prefix. This method breaks down
+# when generic functions are involved. I.e. - we could make it work, but
+# the amount of code we need then is unreasonable. The straightforward
+# way is to load the package. We can still use the prefix notation for
+# its functions, just to emphasize where the function comes from. But since
+# the namespace then exists, we ensure that generics are properly dispatched.
+
+library(msa)  # load the msa package namespace
+
 msaT <- new("MsaAAMultipleAlignment", # create new MsaAAMultipleAlignment object
-            unmasked = x,             # "unmasked" slot takes an AASringSet
+            unmasked = x,             # "unmasked" slot takes an AAStringSet
             version = "T-Coffee",     # "version" slot takes a string
             params = list(),          # "params" takes a list(), we leave the
                                       #   list empty, but we could add the
@@ -309,18 +319,18 @@ str(msaT)
 msaT # Now we have fabricated an msaAAMultipleAlignment object, and we can
      # use the msa package functions on it
 
-msaTScores <- msaConservationScore(msaT, substitutionMatrix = BLOSUM62)
+msaTScores <- msa::msaConservationScore(msaT, substitutionMatrix = BLOSUM62)
 
 # ==   4.2  More alignments  ===================================================
 
 # Next, we calculate alignments with msa's two other alignment options:
 # CLUSTAL Omega
-(msaO <- msaClustalOmega( MBP1set, order = "aligned"))
-msaOScores <- msaConservationScore(msaO, substitutionMatrix = BLOSUM62)
+(msaO <- msa::msaClustalOmega( MBP1set, order = "aligned"))
+msaOScores <- msa::msaConservationScore(msaO, substitutionMatrix = BLOSUM62)
 
 # CLUSTAL W
-(msaW <- msaClustalW( MBP1set, order = "aligned"))
-msaWScores <- msaConservationScore(msaW, substitutionMatrix = BLOSUM62)
+(msaW <- msa::msaClustalW( MBP1set, order = "aligned"))
+msaWScores <- msa::msaConservationScore(msaW, substitutionMatrix = BLOSUM62)
 
 
 # ==   4.3  Computing comparison metrics  ======================================
@@ -454,7 +464,7 @@ legend("bottomright",
 
 # Your alignment is going to be different from mine, due to the inclusion of
 # MYSPE - but what I see is that MUSCLE gives the highest score overall, and
-# achieves this with fewer indels then most, and the lowest number of gaps of
+# achieves this with fewer indels than most, and the lowest number of gaps of
 # all algorithms.
 
 # To actually compare regions of alignments, we need to align alignments.
@@ -470,12 +480,8 @@ legend("bottomright",
 # to compare two MSAs with each other, by aligning them. The algorithm is
 # provided by the DECIPHER package.
 
-if (! require(DECIPHER, quietly=TRUE)) {
-  if (! exists("biocLite")) {
-    source("https://bioconductor.org/biocLite.R")
-  }
-  biocLite("DECIPHER")
-  library(DECIPHER)
+if (! requireNamespace("DECIPHER", quietly=TRUE)) {
+  BiocManager::install("DECIPHER")
 }
 # Package information:
 #  library(help = DECIPHER)       # basic information
@@ -484,14 +490,14 @@ if (! require(DECIPHER, quietly=TRUE)) {
 
 # AlignProfiles() takes two AAStringSets as input. Let's compare the MUSCLE and
 # CLUSTAL W alignments: we could do this directly ...
-AlignProfiles(msaW@unmasked, msaM@unmasked)
+DECIPHER::AlignProfiles(msaW@unmasked, msaM@unmasked)
 
 # But for ease of comparison, we'll reorder the sequences of the CLUSTAL W
 # alignment into the same order as the MUSCLE alignment:
 m <- as.character(msaM)
 w <- as.character(msaW)[names(m)]
 
-(ppa <- AlignProfiles(AAStringSet(w), AAStringSet(m)))
+(ppa <- DECIPHER::AlignProfiles(msa::AAStringSet(w), msa::AAStringSet(m)))
 
 # Conveniently, AlignProfiles() returns an AAStringSet, so we can use our
 # writeALN function to show it. Here is an arbitrary block, from somewhere in
@@ -533,8 +539,8 @@ writeALN(ppa2, range = c(800, 960))
 # Again, go explore, and get a sense of what's going on. You may find that
 # CLUSTAL W has a tendency to insert short gaps all over the alignment, whereas
 # MUSCLE keeps indels in blocks. CLUSTAL's behaviour is exactly what I would
-# expect from an algorithm that builds alignments from pairwise local
-# alignments, without global refinement.
+# expect from an algorithm that builds alignments incrementally from pairwise
+# local alignments, without global refinement.
 
 
 # =    6  Sequence Logos  ======================================================
@@ -602,16 +608,15 @@ writeALN(fetchMSAmotif(msaM, wing))
 # ggseqlogo written by by Omar Waghi, a former UofT BCB student who is now at
 # the EBI.
 
-if (! require(ggseqlogo, quietly=TRUE)) {
+if (! requireNamspace("ggseqlogo", quietly=TRUE)) {
   install.packages(("ggseqlogo"))
-  library(ggseqlogo)
 }
 # Package information:
 #  library(help=ggseqlogo)       # basic information
 #  browseVignettes("ggseqlogo")  # available vignettes
 #  data(package = "ggseqlogo")   # available datasets
 
-ggseqlogo(as.character(motifAli))
+ggseqlogo::ggseqlogo(as.character(motifAli))
 
 
 

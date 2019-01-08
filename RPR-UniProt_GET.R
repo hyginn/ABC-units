@@ -3,12 +3,14 @@
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the RPR-Scripting_data_downloads unit.
 #
-# Version:  1.0
+# Version:  1.1
 #
-# Date:     2017  10  05
+# Date:     2017  10  -  2019  01
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.1    Change from require() to requireNamespace(),
+#                      use <package>::<function>() idiom throughout
 #           1.0    First ABC units version
 #           0.1    First code copied from 2016 material.
 #
@@ -27,11 +29,11 @@
 
 #TOC> ==========================================================================
 #TOC> 
-#TOC>   Section  Title                                Line
-#TOC> ----------------------------------------------------
-#TOC>   1        UniProt files via GET                  44
-#TOC>   1.1      Task - fetchUniProtSeq() function     107
-#TOC>   2        Task solutions                        114
+#TOC>   Section  Title                                      Line
+#TOC> ----------------------------------------------------------
+#TOC>   1        UniProt files via GET                        41
+#TOC>   1.1        Task - fetchUniProtSeq() function         103
+#TOC>   2        Task solutions                              110
 #TOC> 
 #TOC> ==========================================================================
 
@@ -48,9 +50,8 @@
 # a Web browser. Since this is a short and simple request, the GET verb is the
 # right tool:
 
-if (! require(httr, quietly=TRUE)) {
+if (! requireNamespace("httr", quietly = TRUE)) {
   install.packages("httr")
-  library(httr)
 }
 # Package information:
 #  library(help = httr)       # basic information
@@ -69,7 +70,7 @@ UniProtID <- "P39678"
 (URL <- sprintf("http://www.uniprot.org/uniprot/%s.fasta", UniProtID))
 
 # the GET() function from httr will get the data.
-response <- GET(URL)
+response <- httr::GET(URL)
 
 str(response) # the response object is a bit complex ...
 as.character(response) # ... but it is easy to pull out the data.
@@ -82,21 +83,21 @@ dbSanitizeSequence(x)
 # Simple.
 # But what happens if there is an error, e.g. the uniprot ID does not exist?
 
-response <- GET("http://www.uniprot.org/uniprot/X000000.fasta")
+response <- httr::GET("http://www.uniprot.org/uniprot/X000000.fasta")
 as.character(response)
 # this is a large HTML page that tells us the URL was not found. So we need to
-# check for errors.  The Right way to do this is to evaluate the staus code that
+# check for errors.  The Right Way to do this is to evaluate the staus code that
 # every Web server returns for every transaction.
 #
-status_code(response)  # 404 == Page Not Found
+httr::status_code(response)  # 404 == Page Not Found
 
 # There are many possible codes, but the only code we will be happy with
 # is 200 - oK.
 # (cf. https://en.wikipedia.org/wiki/List_of_HTTP_status_codes )
 
 URL <- sprintf("http://www.uniprot.org/uniprot/%s.fasta", UniProtID)
-response <- GET(URL)
-status_code(response)
+response <- httr::GET(URL)
+httr::status_code(response)
 
 
 # ==   1.1  Task - fetchUniProtSeq() function  =================================

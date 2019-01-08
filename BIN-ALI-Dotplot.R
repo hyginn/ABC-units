@@ -3,12 +3,14 @@
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the BIN-ALI-Dotplot unit.
 #
-# Version:  0.1
+# Version:  0.2
 #
-# Date:     2017  08  28
+# Date:     2019  01  07
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           0.2    Change from require() to requireNamespace(),
+#                      use <package>::<function>() idiom throughout
 #           0.1    First code copied from 2016 material.
 #
 #
@@ -23,24 +25,37 @@
 #
 # ==============================================================================
 
-# = 1 ___Section___
 
-# First, we install and load the Biostrings package.
-if (!require(Biostrings, quietly=TRUE)) {
-  if (! exists("biocLite")) {
-    source("https://bioconductor.org/biocLite.R")
-  }
-  biocLite("Biostrings")
-  library(Biostrings)
+#TOC> ==========================================================================
+#TOC> 
+#TOC>   Section  Title                  Line
+#TOC> --------------------------------------
+#TOC>   1        ___Section___            39
+#TOC>   2        Tasks                   187
+#TOC> 
+#TOC> ==========================================================================
+
+
+# =    1  ___Section___  =======================================================
+
+if (!requireNamespace("BiocManager", quietly=TRUE)) {
+  install.packages("BiocManager")
 }
+if (!requireNamespace("Biostrings", quietly=TRUE)) {
+  BiocManager::install("Biostrings")
+}
+# Package information:
 #  library(help = Biostrings)       # basic information
 #  browseVignettes("Biostrings")    # available vignettes
 #  data(package = "Biostrings")     # available datasets
 
+if (!requireNamespace("seqinr", quietly=TRUE)) {
+  install.packages("seqinr")
+}
 
 
 # Let's load BLOSUM62
-data(BLOSUM62)
+data(BLOSUM62, package = "Biostrings")
 
 # Now let's craft code for a dotplot. That's surprisingly simple. We build a
 # matrix that has as many rows as one sequence, as many columns as another. Then
@@ -51,10 +66,10 @@ data(BLOSUM62)
 
 # First we fetch our sequences and split them into single characters.
 sel <- myDB$protein$name == "MBP1_SACCE"
-MBP1_SACCE <- s2c(myDB$protein$sequence[sel])
+MBP1_SACCE <- seqinr::s2c(myDB$protein$sequence[sel])
 
 sel <- myDB$protein$name == paste("MBP1_", biCode(MYSPE), sep = "")
-MBP1_MYSPE <- s2c(myDB$protein$sequence[sel])
+MBP1_MYSPE <- seqinr::s2c(myDB$protein$sequence[sel])
 
 # Check that we have two character vectors of the expected length.
 str(MBP1_SACCE)
@@ -136,7 +151,7 @@ axis(4, at = c(1, seq(10, len, by=10)))
 # utilities file and called it dotPlot2(). Why not dotPlot() ... that's because
 # there already is a dotplot function in the seqinr package:
 
-dotPlot(MBP1_SACCE, MBP1_MYSPE)                                 # seqinr
+seqinr::dotPlot(MBP1_SACCE, MBP1_MYSPE)                           # seqinr
 dotPlot2(MBP1_SACCE, MBP1_MYSPE, xlab = "SACCE", ylab = "MYSPE")  # Our's
 
 # Which one do you prefer? You can probably see the block patterns that arise
@@ -169,7 +184,7 @@ dotPlot2(MBP1_SACCE, MBP1_MYSPE, xlab = "SACCE", ylab = "MYSPE", f = myFilter)
 
 
 
-# = 1 Tasks
+# =    2  Tasks  ===============================================================
 
 
 

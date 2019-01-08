@@ -3,12 +3,14 @@
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the BIN-ALI-Similarity unit.
 #
-# Version:  1.0
+# Version:  1.1
 #
-# Date:     2017  10  20
+# Date:     2017  10  -  2019  01
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.1    Change from require() to requireNamespace(),
+#                      use <package>::<function>() idiom throughout
 #           1.0    Refactored for 2017; add aaindex, ternary plot.
 #           0.1    First code copied from 2016 material.
 #
@@ -27,11 +29,11 @@
 
 #TOC> ==========================================================================
 #TOC> 
-#TOC>   Section  Title                    Line
-#TOC> ----------------------------------------
-#TOC>   1        Amino Acid Properties      43
-#TOC>   2        Mutation Data matrix      163
-#TOC>   3        Background score          205
+#TOC>   Section  Title                          Line
+#TOC> ----------------------------------------------
+#TOC>   1        Amino Acid Properties            41
+#TOC>   2        Mutation Data matrix            158
+#TOC>   3        Background score                199
 #TOC> 
 #TOC> ==========================================================================
 
@@ -41,9 +43,8 @@
 # A large collection of amino acid property tables is available via the seqinr
 # package:
 
-if (!require(seqinr)) {
+if (! requireNamespace("seqinr", quietly=TRUE)) {
   install.packages("seqinr")
-  library(seqinr)
 }
 # Package information:
 #  library(help = seqinr)       # basic information
@@ -127,9 +128,8 @@ text(Y$I, K$I, names(Y$I))
 # plots are in general unintuitive and hard to interpret. One alternative is a
 # so-called "ternary plot":
 
-if (!require(ggtern)) {
+if (! requireNamespace("ggtern", quietly=TRUE)) {
   install.packages("ggtern")
-  library(ggtern)
 }
 # Package information:
 #  library(help = ggtern)       # basic information
@@ -145,12 +145,11 @@ myDat <- data.frame("phi" = 0.9*(((Y$I-min(Y$I))/(max(Y$I)-min(Y$I))))+0.05,
                     stringsAsFactors = FALSE)
 rownames(myDat) <- names(Y$I)
 
-ggtern(data = myDat,
-       aes(x = vol,
-           y = phi,
-           z = pK,
-           label = rownames(myDat))) +
-  geom_text()
+ggtern::ggtern(data = myDat,
+               ggplot2::aes(x = vol,
+                   y = phi,
+                   z = pK,
+                   label = rownames(myDat))) + ggplot2::geom_text()
 
 # This results in a mapping of amino acids relative to each other that is
 # similar to the Venn diagram you have seen in the notes.
@@ -162,12 +161,11 @@ ggtern(data = myDat,
 
 # The Biostrings package contains the most common mutation data matrices.
 
-if (!require(Biostrings, quietly=TRUE)) {
-  if (! exists("biocLite")) {
-    source("https://bioconductor.org/biocLite.R")
-  }
-  biocLite("Biostrings")
-  library(Biostrings)
+if (! requireNamespace("BiocManager", quietly=TRUE)) {
+  install.packages("BiocManager")
+}
+if (! requireNamespace("Biostrings", quietly=TRUE)) {
+  BiocManager::install("Biostrings")
 }
 # Package information:
 #  library(help=Biostrings)       # basic information
@@ -200,7 +198,9 @@ BLOSUM62["W", "R"]
 
 # =    3  Background score  ====================================================
 
-# The mutation data matrix is designed to give high scores to homologous sequences, low scores to non-homologous sequences. What score on average should we expect for a random sequence?
+# The mutation data matrix is designed to give high scores to homologous
+# sequences, low scores to non-homologous sequences. What score on average
+# should we expect for a random sequence?
 
 # If we sample amino acid pairs at random, we will get a score that is the
 # average of the individual pairscores in the matrix. Omitting the ambiguity
@@ -219,12 +219,12 @@ sum(BLOSUM62[1:20, 1:20])/400
 # PDB ID 3FG7 - a villin headpiece structure with a large amount of
 # low-complexity amino acid sequence ...
 
-aa3FG7 <- readAAStringSet("./data/3FG7.fa")[[1]]
+aa3FG7 <- Biostrings::readAAStringSet("./data/3FG7.fa")[[1]]
 
 # ... and the FASTA file for the E. coli OmpG outer membrane porin (PDB: 2F1C)
 # with an exceptionally high percentage of hydrophobic residues.
 
-aa2F1C <- readAAStringSet("./data/2F1C.fa")[[1]]
+aa2F1C <- Biostrings::readAAStringSet("./data/2F1C.fa")[[1]]
 
 # Here is a function that takes two sequences and
 # returns their average pairscore.

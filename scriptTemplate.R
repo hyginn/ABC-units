@@ -22,17 +22,18 @@ setwd("<your/project/directory>")
 
 
 # ====  PACKAGES  ==============================================================
-# Load all required packages.
+# Check that required packages have been installed. Install if needed.
 
-if (! require(seqinr, quietly=TRUE)) {
+if (! requireNamespace("seqinr", quietly=TRUE)) {
   install.packages("seqinr")
-  library(seqinr)
 }
 # Package information:
 #  library(help = seqinr)       # basic information
 #  browseVignettes("seqinr")    # available vignettes
 #  data(package = "seqinr")     # available datasets
 
+# Note: use package functions with the :: operator - eg.
+# seqinr::aaa("K")
 
 
 

@@ -3,12 +3,15 @@
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the RPR-Genetic_code_optimality unit.
 #
-# Version:  1.1
+# Version:  1.2
 #
 # Date:     2017  10  -  2019  01
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.2    Change from require() to requireNamespace(),
+#                      use <package>::<function>() idiom throughout,
+#                      use Biocmanager:: not biocLite()
 #           1.1      Update set.seed() usage
 #           1.0.1    Fixed two bugs discovered by Suan Chin Yeo.
 #           1.0      New material.
@@ -30,16 +33,16 @@
 #TOC> 
 #TOC>   Section  Title                                          Line
 #TOC> --------------------------------------------------------------
-#TOC>   1        Designing a computational experiment             54
-#TOC>   2        Setting up the tools                             70
-#TOC>   2.1        Natural and alternative genetic codes          73
-#TOC>   2.2        Effect of mutations                           132
-#TOC>   2.2.1          reverse-translate                         143
-#TOC>   2.2.2          Randomly mutate                           168
-#TOC>   2.2.3          Forward- translate                        193
-#TOC>   2.2.4          measure effect                            211
-#TOC>   3        Run the experiment                              258
-#TOC>   4        Task solutions                                  351
+#TOC>   1        Designing a computational experiment             57
+#TOC>   2        Setting up the tools                             73
+#TOC>   2.1        Natural and alternative genetic codes          76
+#TOC>   2.2        Effect of mutations                           134
+#TOC>   2.2.1          reverse-translate                         145
+#TOC>   2.2.2          Randomly mutate                           170
+#TOC>   2.2.3          Forward- translate                        195
+#TOC>   2.2.4          measure effect                            213
+#TOC>   3        Run the experiment                              260
+#TOC>   4        Task solutions                                  356
 #TOC> 
 #TOC> ==========================================================================
 
@@ -73,12 +76,11 @@
 # ==   2.1  Natural and alternative genetic codes  =============================
 
 # Load genetic code tables from the Biostrings package
-if (! require(Biostrings, quietly=TRUE)) {
-  if (! exists("biocLite")) {
-    source("https://bioconductor.org/biocLite.R")
-  }
-  biocLite("Biostrings")
-  library(Biostrings)
+if (! requireNamespace("BiocManager", quietly = TRUE)) {
+  install.packages("BiocManager")
+}
+if (! requireNamespace("Biostrings", quietly = TRUE)) {
+  BiocManager::install("Biostrings")
 }
 # Package information:
 #  library(help = Biostrings)       # basic information
@@ -257,52 +259,55 @@ evalMut <- function(nat, mut) {
 
 # =    3  Run the experiment  ==================================================
 
+# Fetch the standard Genetic code from Biostrings::
+
+stdCode <- Biostrings::GENETIC_CODE
 
 # Fetch the nucleotide sequence for MBP1:
 
 myDNA <- readLines("./data/S288C_YDL056W_MBP1_coding.fsa")[-1]
 myDNA <- paste0(myDNA, collapse = "")
-myDNA <- as.character(codons(DNAString(myDNA)))
+myDNA <- as.character(Biostrings::codons(Biostrings::DNAString(myDNA)))
 myDNA <- myDNA[-length(myDNA)]  # drop the stop codon
 
-myAA <- traFor(myDNA, GENETIC_CODE)
+myAA <- traFor(myDNA, stdCode)
 
 # Mutate and evaluate
 set.seed(112358)
 x <- randMut(myDNA)
 set.seed(NULL)
-x <- traFor(x, GENETIC_CODE)
+x <- traFor(x, stdCode)
 evalMut(myAA, x)  # 166.4
 
 # Try this 200 times, and see how the values are distributed.
 N <- 200
-valUGC <- numeric(N)
+valSTDC <- numeric(N)
 
 set.seed(112358)                   # set RNG seed for repeatable randomness
 for (i in 1:N) {
   x <- randMut(myDNA)              # mutate
-  x <- traFor(x, GENETIC_CODE)     # translate
-  valUGC[i] <- evalMut(myAA, x)    # evaluate
+  x <- traFor(x, stdCode)     # translate
+  valSTDC[i] <- evalMut(myAA, x)    # evaluate
 }
 set.seed(NULL)                     # reset the RNG
 
-hist(valUGC,
+hist(valSTDC,
      breaks = 15,
      col = "palegoldenrod",
      xlim = c(0, 400),
      ylim = c(0, N/4),
-     main = "Universal vs. Synthetic Genetic Code",
+     main = "Standard vs. Synthetic Genetic Code",
      xlab = "Mutation penalty")
 
 # This looks like a normal distribution. Let's assume the effect of mutations
-# under the universal genetic code is the mean of this distribution:
-effectUGC <- mean(valUGC)  # 178.1
+# under the standard genetic code is the mean of this distribution:
+effectSTDC <- mean(valSTDC)  # 178.1
 
 # Now we can look at the effects of alternate genetic codes:
 
 set.seed(112358)
 # choose a new code
-GC <- randomGC(GENETIC_CODE)
+GC <- randomGC(stdCode)
 set.seed(NULL)
 
 # reverse translate hypothetical sequence according to the new code
@@ -321,7 +326,7 @@ valXGC <- numeric(N)
 
 set.seed(1414214)                # set RNG seed for repeatable randomness
 for (i in 1:N) {
-  GC <- randomGC(GENETIC_CODE)   # Choose code
+  GC <- randomGC(stdCode)   # Choose code
   x <- traRev(myAA, GC)          # reverse translate
   x <- randMut(x)                # mutate
   x <- traFor(x, GC)             # translate
@@ -355,7 +360,7 @@ valSGC <- numeric(N)
 
 set.seed(2718282)                # set RNG seed for repeatable randomness
 for (i in 1:N) {
-  GC <- swappedGC(GENETIC_CODE)  # Choose code
+  GC <- swappedGC(stdCode)  # Choose code
   x <- traRev(myAA, GC)          # reverse translate
   x <- randMut(x)                # mutate
   x <- traFor(x, GC)             # translate

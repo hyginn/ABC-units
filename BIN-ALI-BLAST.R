@@ -3,12 +3,14 @@
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the BIN-ALI-BLAST unit.
 #
-# Version:  1.1
+# Version:  1.2
 #
-# Date:     2017  10  23
+# Date:     2017  10  -  2019  01
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.2    Change from require() to requireNamespace(),
+#                      use <package>::<function>() idiom throughout
 #           1.1    Fixed parsing logic.
 #           1.0    First live version 2017.
 #           0.1    First code copied from 2016 material.
@@ -27,31 +29,17 @@
 
 
 #TOC> ==========================================================================
-#TOC>
-#TOC>   Section  Title                         Line
-#TOC> ---------------------------------------------
-#TOC>   1        Preparations                    41
-#TOC>   2        Defining the APSES domain       54
-#TOC>   3        Executing the BLAST search      76
-#TOC>   4        Analysing results               98
-#TOC>
+#TOC> 
+#TOC>   Section  Title                               Line
+#TOC> ---------------------------------------------------
+#TOC>   1        Defining the APSES domain             42
+#TOC>   2        Executing the BLAST search            64
+#TOC>   3        Analysing results                     86
+#TOC> 
 #TOC> ==========================================================================
 
 
-# =    1  Preparations  ========================================================
-
-if (!require(Biostrings, quietly=TRUE)) {
-  source("https://bioconductor.org/biocLite.R")
-  biocLite("Biostrings")
-  library(Biostrings)
-}
-# Package information:
-#  library(help = Biostrings)       # basic information
-#  browseVignettes("Biostrings")    # available vignettes
-#  data(package = "Biostrings")     # available datasets
-
-
-# =    2  Defining the APSES domain  ===========================================
+# =    1  Defining the APSES domain  ===========================================
 
 # Load your protein database
 source("makeProteinDB.R")
@@ -73,7 +61,7 @@ source("makeProteinDB.R")
 # BLAST search.
 
 
-# =    3  Executing the BLAST search  ==========================================
+# =    2  Executing the BLAST search  ==========================================
 
 # The ./scripts/BLAST.R code defines two functions to access the BLAST interface
 # through its Web API, and to parse results. Have a look at the script, then
@@ -91,11 +79,11 @@ BLASTresults <- BLAST(apses,                       # MYSPE APSES domain sequence
                      limits = "txid559292[ORGN]")  # S. cerevisiae S288c
 
 
-length(BLASTresults$hits)  # There should be at least one hit there. Ask for advice
-                           # in case this step fails.
+length(BLASTresults$hits)  # There should be at least one hit there. Ask for
+                           # advice in case this step fails.
 
 
-# =    4  Analysing results  ===================================================
+# =    3  Analysing results  ===================================================
 
 (topHit <- BLASTresults$hits[[1]])   # Get the top hit
 

@@ -3,14 +3,16 @@
 # Purpose:  Create a list of genome sequenced fungi with protein annotations and
 #               Mbp1 homologues.
 #
-# Version: 1.1.2
+# Version: 1.2
 #
-# Date:    2016 09 - 2017 09
+# Date:    2016  09  -  2019  01
 # Author:  Boris Steipe (boris.steipe@utoronto.ca)
 #
-# V 1.1.2  Moved BLAST.R to ./scripts directory
-# V 1.1    Update 2017
-# V 1.0    First code 2016
+# Versions
+#          1.2    Change from require() to requireNamespace()
+#          1.1.2  Moved BLAST.R to ./scripts directory
+#          1.1    Update 2017
+#          1.0    First code 2016
 #
 # TODO:
 #
@@ -31,26 +33,24 @@
 # the respective intermediate results.
 #
 
+
 #TOC> ==========================================================================
-#TOC>
-#TOC>   Section  Title                               Line
-#TOC> ---------------------------------------------------
-#TOC>   1        The strategy                          54
-#TOC>   2        GOLD species                          66
-#TOC>   2.1      Initialize                            71
-#TOC>   2.2      Import                                77
-#TOC>   2.3      Unique species                       129
-#TOC>   3        BLAST species                        171
-#TOC>   3.1      find homologous proteins             178
-#TOC>   3.2      Identify species in "hits"           202
-#TOC>   4        Intersect GOLD and BLAST species     247
-#TOC>   5        Cleanup and finish                   265
-#TOC>
+#TOC> 
+#TOC>   Section  Title                                     Line
+#TOC> ---------------------------------------------------------
+#TOC>   1        The strategy                                55
+#TOC>   2        GOLD species                                67
+#TOC>   2.1        Initialize                                72
+#TOC>   2.2        Import                                    79
+#TOC>   2.3        Unique species                           131
+#TOC>   3        BLAST species                              173
+#TOC>   3.1        find homologous proteins                 180
+#TOC>   3.2        Identify species in "hits"               204
+#TOC>   4        Intersect GOLD and BLAST species           249
+#TOC>   5        Cleanup and finish                         267
+#TOC> 
 #TOC> ==========================================================================
 
-
-#TOC>
-#TOC>
 
 # =    1  The strategy  ========================================================
 
@@ -70,9 +70,10 @@
 #  (https://gold.jgi.doe.gov/). Use the data that is hosted at the NCBI.
 
 # ==   2.1  Initialize  ========================================================
-if (! require(httr)) { # httr provides interfaces to Webservers on the Internet
-    install.packages("httr")
-    library(httr)
+
+# httr provides interfaces to Webservers on the Internet
+if (! requireNamespace("httr", quietly = TRUE)) {
+  install.packages("httr")
 }
 
 # ==   2.2  Import  ============================================================

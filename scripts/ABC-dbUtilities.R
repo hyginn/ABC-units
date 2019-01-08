@@ -9,21 +9,18 @@
 # ====== PACKAGES ==============================================================
 
 
-if (! require(jsonlite, quietly = TRUE)) {
+if (! requireNamespace("jsonlite", quietly = TRUE)) {
   install.packages("jsonlite")
-  library(jsonlite)
 }
 
 
-if (! require(httr, quietly = TRUE)) {
+if (! requireNamespace("httr", quietly = TRUE)) {
   install.packages("httr")
-  library(httr)
 }
 
 
-if (! require(xml2, quietly = TRUE)) {
+if (! requireNamespace("xml2", quietly = TRUE)) {
   install.packages("xml2")
-  library(xml2)
 }
 
 
@@ -226,10 +223,10 @@ dbFetchUniProtSeq <- function(ID) {
 
   URL <- sprintf("http://www.uniprot.org/uniprot/%s.fasta", ID)
 
-  response <- GET(URL)
+  response <- httr::GET(URL)
 
   mySeq <- character()
-  if (status_code(response) == 200) {
+  if (httr::status_code(response) == 200) {
     x <- as.character(response)
     x <- strsplit(x, "\n")
     mySeq <- dbSanitizeSequence(x)
@@ -253,17 +250,17 @@ dbFetchPrositeFeatures <- function(ID) {
 
   URL <- "https://prosite.expasy.org/cgi-bin/prosite/PSScan.cgi"
 
-  response <- POST(URL,
-                   body = list(meta = "opt1",
-                               meta1_protein = "opt1",
-                               seq = ID,
-                               skip = "on",
-                               output = "tabular"))
+  response <- httr::POST(URL,
+                         body = list(meta = "opt1",
+                                     meta1_protein = "opt1",
+                                     seq = ID,
+                                     skip = "on",
+                                     output = "tabular"))
 
   myFeatures <- data.frame()
-  if (status_code(response) == 200) {
+  if (httr::status_code(response) == 200) {
 
-    lines <- unlist(strsplit(content(response, "text"), "\\n"))
+    lines <- unlist(strsplit(httr::content(response, "text"), "\\n"))
 
     patt <- sprintf("\\|%s\\|", UniProtID)
     lines <- lines[grep(patt, lines)]
@@ -289,8 +286,8 @@ node2text <- function(doc, tag) {
   # Contents of all matching elements is returned in
   # a vector of strings.
   path <- paste0("//", tag)
-  nodes <- xml_find_all(doc, path)
-  return(xml_text(nodes))
+  nodes <- xml2::xml_find_all(doc, path)
+  return(xml2::xml_text(nodes))
 }
 
 
@@ -309,7 +306,7 @@ dbFetchNCBItaxData <- function(ID) {
                "db=protein",
                "&term=", ID,
                sep="")
-  myXML <- read_xml(URL)
+  myXML <- xml2::read_xml(URL)
   GID <- node2text(myXML, "Id")
 
   URL <- paste0(eUtilsBase,
@@ -318,7 +315,7 @@ dbFetchNCBItaxData <- function(ID) {
                 "&id=",
                 GID,
                 "&version=2.0")
-  myXML <- read_xml(URL)
+  myXML <- xml2::read_xml(URL)
 
   x <- as.integer(node2text(myXML, "TaxId"))
   y <- node2text(myXML, "Organism")
@@ -346,14 +343,14 @@ UniProtIDmap <- function (s, mapFrom = "P_REFSEQ_AC", mapTo = "ACC") {
   #    for IDs that are not mapped.
 
   URL <- "https://www.uniprot.org/uploadlists/"
-  response <- POST(URL,
-                   body = list(from = mapFrom,
-                               to = mapTo,
-                               format = "tab",
-                               query = s))
+  response <- httr::POST(URL,
+                         body = list(from = mapFrom,
+                                     to = mapTo,
+                                     format = "tab",
+                                     query = s))
 
-  if (status_code(response) == 200) { # 200: oK
-    myMap <- read.delim(file = textConnection(content(response)),
+  if (httr::status_code(response) == 200) { # 200: oK
+    myMap <- read.delim(file = textConnection(httr::content(response)),
                         sep = "\t",
                         stringsAsFactors = FALSE)
     myMap <- myMap[ , c(1,3)]
@@ -362,12 +359,23 @@ UniProtIDmap <- function (s, mapFrom = "P_REFSEQ_AC", mapTo = "ACC") {
     myMap <- data.frame()
     warning(paste("No uniProt ID mapping returned:",
                   "server sent status",
-                  status_code(response)))
+                  httr::status_code(response)))
   }
 
   return(myMap)
 }
 
+
+# ====== TESTS =================================================================
+
+if (FALSE) {
+  if (! requireNamespace("testthat", quietly = TRUE)) {
+    install.packages("testthat")
+  }
+
+  # ToDo: test everything here
+
+}
 
 
 # [END]

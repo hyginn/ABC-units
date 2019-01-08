@@ -3,12 +3,15 @@
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the BIN-FUNC_Semantic_similarity unit.
 #
-# Version:  1.0
+# Version:  1.1
 #
-# Date:     2017  11  12
+# Date:     2017  11  -  2019  01
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.1    Change from require() to requireNamespace(),
+#                      use <package>::<function>() idiom throughout,
+#                      use Biocmanager:: not biocLite()
 #           1.0    New code.
 #
 #
@@ -25,64 +28,70 @@
 
 
 #TOC> ==========================================================================
-#TOC>
-#TOC>   Section  Title                                          Line
-#TOC> --------------------------------------------------------------
-#TOC>   1        Preparations: Packages, AnnotationDB, Setup      39
-#TOC>   2        Fetch GO Annotations                             89
-#TOC>   3        Semantic Similarities                            98
-#TOC>   4        GO Term Enrichment in Gene Sets                 116
-#TOC>
+#TOC> 
+#TOC>   Section  Title                                                Line
+#TOC> --------------------------------------------------------------------
+#TOC>   1        Preparations: Packages, AnnotationDB, Setup            42
+#TOC>   2        Fetch GO Annotations                                   98
+#TOC>   3        Semantic Similarities                                 107
+#TOC>   4        GO Term Enrichment in Gene Sets                       125
+#TOC> 
 #TOC> ==========================================================================
 
 
 # =    1  Preparations: Packages, AnnotationDB, Setup  =========================
 
+if (! requireNamespace("BiocManager", quietly = TRUE)) {
+  install.packages("BiocManager")
+}
 
 # GOSim is an R-package in the Bioconductor project.
-if (! require(GOSim, quietly=TRUE)) {
-  if (! exists("biocLite")) {
-    source("https://bioconductor.org/biocLite.R")
-  }
-  biocLite("GOSim")
-  library(GOSim)
+if (! requireNamespace("GOSim", quietly = TRUE)) {
+  BiocManager::install("GOSim")
 }
 # Package information:
 #  library(help = GOSim)       # basic information
 #  browseVignettes("GOSim")    # available vignettes
 #  data(package = "GOSim")     # available datasets
 
+# GOSim makes extensive assumptions about loaded packages, and many base
+# methods are masked. We will thus use library(GOSim) to load it
+# in its entirety and with all packages it depends on. We will still use
+# the <package>::<function>() syntax in the code below, but this now serves
+# more of a didactic purpose, rather than actual syntax requirements.
+
+library(GOSim)
 
 # GOSim loads human annotations by default. We load yeast annotations instead...
-if (!require(org.Sc.sgd.db, quietly=TRUE)) {
-  if (! exists("biocLite")) {
-    source("https://bioconductor.org/biocLite.R")
-  }
-  biocLite("org.Sc.sgd.db")
-  library(org.Sc.sgd.db)
+if (! requireNamespace("org.Sc.sgd.db", quietly = TRUE)) {
+  BiocManager::install("org.Sc.sgd.db")
 }
+
+# Bioconductor annotation packages won't work stably unless we actually load
+# them:
+library(org.Sc.sgd.db)
 
 # org.Sc.sgd.db is a Bioconductor annotation database curated by SGD. Such
 # databases exist for all model organisms. It's a kind of a fancy data frame
 # from which we can get annotations by rows (genes) with the keys() funtion ...
-keys(org.Sc.sgd.db)[1500:1510]
+AnnotationDbi::keys(org.Sc.sgd.db)[1500:1510]
 
 # ... and the types of available annotations with the columns() function
-columns(org.Sc.sgd.db)
+AnnotationDbi::columns(org.Sc.sgd.db)
 
 # Note that one of the columns is "GO" ... and we load that into the
 # datastructures used by GOSim:
 
 # Choose GOterms to use
-setEvidenceLevel(evidences="all",
-                 organism=org.Sc.sgdORGANISM,
-                 gomap=org.Sc.sgdGO)
+GOSim::setEvidenceLevel(evidences = "all",
+                        organism = org.Sc.sgdORGANISM,
+                        gomap = org.Sc.sgdGO)
 
 # Use Biological Process ontology
-setOntology("BP", loadIC=FALSE)
+GOSim::setOntology("BP", loadIC = FALSE)
 
 # confirm that we loaded the correct ontology
-head(get("gomap", envir=GOSimEnv))
+head(get("gomap", envir = GOSimEnv))
 
 
 
@@ -92,7 +101,7 @@ head(get("gomap", envir=GOSimEnv))
 # All keys being used here are yeast systematic names.
 
 # Get one set of annotations
-getGOInfo(c("YDL056W"))  # Mbp1
+GOSim::getGOInfo(c("YDL056W"))  # Mbp1
 
 
 # =    3  Semantic Similarities  ===============================================
@@ -104,31 +113,31 @@ getGOInfo(c("YDL056W"))  # Mbp1
 # There are _many_ different metrics of term similarity implemented
 # in this package.
 
-                                                     # Mbp1 and...
-getGeneSim("YDL056W", "YLR182W", similarity = "OA")  # Swi6 - MCB complex
-getGeneSim("YDL056W", "YER111C", similarity = "OA")  # Swi4 - collaborators
-getGeneSim("YDL056W", "YBR160W", similarity = "OA")  # Cdc28 - mediator
-getGeneSim("YDL056W", "YGR108W", similarity = "OA")  # Clb1 - antagonist
-getGeneSim("YDL056W", "YLR079W", similarity = "OA")  # Sic1 - antagonist
-getGeneSim("YDL056W", "YJL130C", similarity = "OA")  # Pgk1 - Gluconeogenesis
+                                                         # Mbp1 and...
+GOSim::getGeneSim("YDL056W","YLR182W",similarity = "OA") # Swi6 - MCB complex
+GOSim::getGeneSim("YDL056W","YER111C",similarity = "OA") # Swi4 - collaborators
+GOSim::getGeneSim("YDL056W","YBR160W",similarity = "OA") # Cdc28 - mediator
+GOSim::getGeneSim("YDL056W","YGR108W",similarity = "OA") # Clb1 - antagonist
+GOSim::getGeneSim("YDL056W","YLR079W",similarity = "OA") # Sic1 - antagonist
+GOSim::getGeneSim("YDL056W","YJL130C",similarity = "OA") # Pgk1 - Gluconeogenesis
 
 
 # =    4  GO Term Enrichment in Gene Sets  =====================================
 
 
-# Calculating GO term enrichment in gene sets is done with the topGO package.
-if (! require(topGO, quietly=TRUE)) {
-  if (! exists("biocLite")) {
-    source("https://bioconductor.org/biocLite.R")
-  }
-  biocLite("topGO")
-  library(topGO)
+# Calculating GO term enrichment in gene sets is done with the Bioconductor
+# topGO package.
+if (! requireNamespace("topGO", quietly = TRUE)) {
+  BiocManager::install("topGO")
 }
 # Package information:
 #  library(help = topGO)       # basic information
 #  browseVignettes("topGO")    # available vignettes
 #  data(package = "topGO")     # available datasets
 
+# Once again - assumptions are made by GOsim that require us to load the
+# topGO package wholesale:
+library(topGO)
 
 # Let's define a gene set: GOterm enrichment for G1/S switch activators:
 mySet <- c("YFR028C", # Cdc14
@@ -141,7 +150,7 @@ mySet <- c("YFR028C", # Cdc14
            "YPL256C", # Cln2
            "YAL040C") # Cln3
 
-allGenes <- keys(org.Sc.sgd.db)
+allGenes <- AnnotationDbi::keys(org.Sc.sgd.db)
 allGenes <- allGenes[grep("^Y", allGenes)]  # This is the context against which
                                             # we define enrichment
 
@@ -164,9 +173,9 @@ setdiff(fullSet, mySet)   # These are annotated to that term but not in mySet.
 
 # What are these genes?
 # Select annotations from the annotation database:
-select(org.Sc.sgd.db,
-       keys = setdiff(fullSet, mySet),
-       columns = c("COMMON", "DESCRIPTION"))
+AnnotationDbi::select(org.Sc.sgd.db,
+                      keys = setdiff(fullSet, mySet),
+                      columns = c("COMMON", "DESCRIPTION"))
 
 # Note that these annotations are partially redundant to several different
 # aliases of the same three genes.

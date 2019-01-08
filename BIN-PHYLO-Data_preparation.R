@@ -3,12 +3,15 @@
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the BIN-PHYLO-Data_preparation unit.
 #
-# Version:  1.0
+# Version:  1.1
 #
-# Date:     2017  10  31
+# Date:     2017  10  -  2019  01
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.1    Change from require() to requireNamespace(),
+#                      use <package>::<function>() idiom throughout,
+#                      use Biocmanager:: not biocLite()
 #           1.0    First 2017 version
 #           0.1    First code copied from 2016 material.
 #
@@ -26,15 +29,15 @@
 
 
 #TOC> ==========================================================================
-#TOC>
-#TOC>   Section  Title                               Line
-#TOC> ---------------------------------------------------
-#TOC>   1        Preparations                          41
-#TOC>   2        Fetching sequences                    78
-#TOC>   3        Multiple Sequence Alignment          119
-#TOC>   4        Reviewing and Editing Alignments     138
-#TOC>   4.1      Masking workflow                     154
-#TOC>
+#TOC> 
+#TOC>   Section  Title                                     Line
+#TOC> ---------------------------------------------------------
+#TOC>   1        Preparations                                44
+#TOC>   2        Fetching sequences                          76
+#TOC>   3        Multiple Sequence Alignment                117
+#TOC>   4        Reviewing and Editing Alignments           136
+#TOC>   4.1        Masking workflow                         152
+#TOC> 
 #TOC> ==========================================================================
 
 
@@ -49,12 +52,11 @@ source("makeProteinDB.R")
 
 # Load packages we need
 
-if (! require(Biostrings, quietly=TRUE)) {
-  if (! exists("biocLite")) {
-    source("https://bioconductor.org/biocLite.R")
-  }
-  biocLite("Biostrings")
-  library(Biostrings)
+if (! requireNamespace("BiocManager", quietly = TRUE)) {
+  install.packages("BiocManager")
+}
+if (! requireNamespace("Biostrings", quietly = TRUE)) {
+  BiocManager::install("Biostrings")
 }
 # Package information:
 #  library(help = Biostrings)       # basic information
@@ -62,12 +64,8 @@ if (! require(Biostrings, quietly=TRUE)) {
 #  data(package = "Biostrings")     # available datasets
 
 
-if (! require(msa, quietly=TRUE)) {
-  if (! exists("biocLite")) {
-    source("https://bioconductor.org/biocLite.R")
-  }
-  biocLite("msa")
-  library(msa)
+if (! requireNamespace("msa", quietly = TRUE)) {
+  BiocManager::install("msa")
 }
 # Package information:
 #  library(help = msa)       # basic information
@@ -123,8 +121,8 @@ tail(APSI)
 # the MSA algorithms in Biostrings.
 #
 
-APSESSet <- AAStringSet(APSI)
-APSESMsa <- msaMuscle(APSESSet, order = "aligned")
+APSESSet <- Biostrings::AAStringSet(APSI)
+APSESMsa <- msa::msaMuscle(APSESSet, order = "aligned")
 
 # Nb. msaMuscle() sometimes fails - reproducibly, but I am not sure why. If
 # that happens in your case, just use msaClustalOmega() instead.

@@ -3,12 +3,14 @@
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the BIN-ALI-Optimal_sequence_alignment unit.
 #
-# Version:  1.4
+# Version:  1.5
 #
-# Date:     2017  09   -   2017  11
+# Date:     2017  09   -   2019  01
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.5    Change from require() to requireNamespace(),
+#                    use <package>::<function>() idiom throughout
 #           1.4    Pull s2c() from seqinr package, rather then loading the
 #                    entire library.
 #           1.3    Updated confirmation task with correct logic
@@ -32,29 +34,32 @@
 
 
 #TOC> ==========================================================================
-#TOC>
-#TOC>   Section  Title                                                Line
-#TOC> --------------------------------------------------------------------
-#TOC>   1        Prepare                                                52
-#TOC>   2        Biostrings Pairwise Alignment                          66
-#TOC>   2.1      Optimal global alignment                               84
-#TOC>   2.2      Optimal local alignment                               147
-#TOC>   3        APSES Domain annotation by alignment                  171
-#TOC>   4        Update your database script                           252
-#TOC>   4.1      Preparing an annotation file ...                      258
-#TOC>   4.1.1    If you HAVE NOT done the BIN-FUNC-Annotation unit     260
-#TOC>   4.1.2    If you HAVE done the BIN-FUNC-Annotation unit         303
-#TOC>   4.2      Execute and Validate                                  327
-#TOC>
+#TOC> 
+#TOC>   Section  Title                                                      Line
+#TOC> --------------------------------------------------------------------------
+#TOC>   1        Prepare                                                      54
+#TOC>   2        Biostrings Pairwise Alignment                                71
+#TOC>   2.1        Optimal global alignment                                   89
+#TOC>   2.2        Optimal local alignment                                   152
+#TOC>   3        APSES Domain annotation by alignment                        176
+#TOC>   4        Update your database script                                 257
+#TOC>   4.1        Preparing an annotation file ...                          263
+#TOC>   4.1.1          If you HAVE NOT done the BIN-FUNC-Annotation unit     265
+#TOC>   4.1.2          If you HAVE done the BIN-FUNC-Annotation unit         308
+#TOC>   4.2        Execute and Validate                                      332
+#TOC> 
 #TOC> ==========================================================================
 
 
 # =    1  Prepare  =============================================================
 
-# To simplify code, we pull the function s2c(x) from the seqinr package,
-# rather than using the lengthier idiom unlist(strsplit(x, "").
-# This assumes that the seqinr package has been installed previously.
-s2c <- seqinr::s2c
+if (! requireNamespace("seqinr", quietly=TRUE)) {
+  install.packages("seqinr")
+}
+# You can get package information with the following commands:
+# library(help = seqinr)       # basic information
+# browseVignettes("seqinr")    # available vignettes
+# data(package = "seqinr")     # available datasets
 
 
 # You need to recreate the protein database that you have constructed in the
@@ -66,13 +71,13 @@ source("makeProteinDB.R")
 # =    2  Biostrings Pairwise Alignment  =======================================
 
 
-if (!require(Biostrings, quietly=TRUE)) {
-  if (! exists("biocLite")) {
-    source("https://bioconductor.org/biocLite.R")
-  }
-  biocLite("Biostrings")
-  library(Biostrings)
+if (!requireNamespace("BiocManager", quietly=TRUE)) {
+  install.packages("BiocManager")
 }
+if (!requireNamespace("Biostrings", quietly=TRUE)) {
+  BiocManager::install("Biostrings")
+}
+# Package information:
 #  library(help = Biostrings)       # basic information
 #  browseVignettes("Biostrings")    # available vignettes
 #  data(package = "Biostrings")     # available datasets
@@ -88,15 +93,15 @@ if (!require(Biostrings, quietly=TRUE)) {
 
 # First: make AAString objects ...
 sel <- myDB$protein$name == "MBP1_SACCE"
-aaMBP1_SACCE <- AAString(myDB$protein$sequence[sel])
+aaMBP1_SACCE <- Biostrings::AAString(myDB$protein$sequence[sel])
 
 sel <- myDB$protein$name == paste("MBP1_", biCode(MYSPE), sep = "")
-aaMBP1_MYSPE <-   AAString(myDB$protein$sequence[sel])
+aaMBP1_MYSPE <-   Biostrings::AAString(myDB$protein$sequence[sel])
 
 ?pairwiseAlignment
 # ... and align.
 # Global optimal alignment with end-gap penalties is default.
-ali1 <-  pairwiseAlignment(
+ali1 <-  Biostrings::pairwiseAlignment(
   aaMBP1_SACCE,
   aaMBP1_MYSPE,
   substitutionMatrix = "BLOSUM62",
@@ -108,7 +113,7 @@ str(ali1)  # ... it's complicated
 # This is a Biostrings alignment object. But we can use Biostrings functions to
 # tame it:
 ali1
-writePairwiseAlignments(ali1)   # That should look familiar
+Biostrings::writePairwiseAlignments(ali1)   # That should look familiar
 
 # And we can make the internal structure work for us  (@ is for classes as
 # $ is for lists ...)
@@ -137,9 +142,9 @@ sum(s2c(as.character(ali1@pattern)) ==
 percentID <- function(al) {
   # returns the percent-identity of a Biostrings alignment object
   return(100 *
-           sum(seqinr::s2c(as.character(al@pattern)) ==
-               seqinr::s2c(as.character(al@subject))) /
-           nchar(al@pattern))
+         sum(seqinr::s2c(as.character(al@pattern)) ==
+             seqinr::s2c(as.character(al@subject))) /
+         nchar(al@pattern))
 }
 
 percentID(ali1)
@@ -147,7 +152,7 @@ percentID(ali1)
 # ==   2.2  Optimal local alignment  ===========================================
 
 # Compare with local optimal alignment (like EMBOSS Water)
-ali2 <-  pairwiseAlignment(
+ali2 <-  Biostrings::pairwiseAlignment(
   aaMBP1_SACCE,
   aaMBP1_MYSPE,
   type = "local",
@@ -155,9 +160,9 @@ ali2 <-  pairwiseAlignment(
   gapOpening = 50,
   gapExtension = 10)
 
-writePairwiseAlignments(ali2)   # This has probably only aligned the N-terminal
-                                # DNA binding domain - but that one has quite
-                                # high sequence identity:
+Biostrings::writePairwiseAlignments(ali2)
+# This has probably only aligned the N-terminal DNA binding domain - but that
+# one has quite high sequence identity:
 percentID(ali2)
 
 # == TASK: ==
@@ -209,14 +214,14 @@ myDB$annotation[myDB$annotation$ID == proID &
 # the sequence, and used the start and end coordinates to extract a substring.
 
 # Let's convert this to an AAstring and assign it:
-aaMB1_SACCE_APSES <- AAString(apses)
+aaMB1_SACCE_APSES <- Biostrings::AAString(apses)
 
 # Now let's align these two sequences of very different length without end-gap
 # penalties using the "overlap" type. "overlap" turns the
 # end-gap penalties off and that is crucially important since
 # the sequences have very different length.
 
-aliApses <-  pairwiseAlignment(
+aliApses <-  Biostrings::pairwiseAlignment(
   aaMB1_SACCE_APSES,
   aaMBP1_MYSPE,
   type = "overlap",
@@ -228,7 +233,7 @@ aliApses <-  pairwiseAlignment(
 # homologous, and have (almost) no indels. The entire "pattern"
 # sequence from QIYSAR ... to ... KPLFDF  should be matched
 # with the "query". Is this correct?
-writePairwiseAlignments(aliApses)
+Biostrings::writePairwiseAlignments(aliApses)
 
 # If this is correct, you can extract the matched sequence from
 # the alignment object. The syntax is a bit different from what
@@ -257,7 +262,7 @@ aliApses@subject@range@start + aliApses@subject@range@width - 1
 
 # ==   4.1  Preparing an annotation file ...  ==================================
 #
-# ===  4.1.1  If you HAVE NOT done the BIN-FUNC-Annotation unit
+# ===   4.1.1  If you HAVE NOT done the BIN-FUNC-Annotation unit
 #
 #
 #   You DON'T already have a file called "<MYSPE>-Annotations.json" in the
@@ -300,7 +305,7 @@ aliApses@subject@range@start + aliApses@subject@range@width - 1
 # Then SKIP the next section.
 #
 #
-# ===  4.1.2  If you HAVE done the BIN-FUNC-Annotation unit
+# ===   4.1.2  If you HAVE done the BIN-FUNC-Annotation unit    
 #
 #
 #   You DO already have a file called "<MYSPE>-Annotations.json" in the

@@ -3,12 +3,13 @@
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the RPR-Unit_testing unit.
 #
-# Version:  1.0
+# Version:  1.1
 #
-# Date:     2017  10  15
+# Date:     2017  10  -  2019  01
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.1    Change from require() to requireNamespace()
 #           1.0    New code
 #
 #
@@ -25,13 +26,14 @@
 
 
 #TOC> ==========================================================================
-#TOC>
-#TOC>   Section  Title                       Line
-#TOC> -------------------------------------------
-#TOC>   1        Unit Tests with testthat      43
-#TOC>   2        Organizing your tests        156
-#TOC>   3        Task solutions               181
-#TOC>
+#TOC> 
+#TOC>   Section  Title                             Line
+#TOC> -------------------------------------------------
+#TOC>   1        Unit Tests with testthat            40
+#TOC>   2        Organizing your tests              159
+#TOC>   2.1        Testing scripts                  183
+#TOC>   3        Task solutions                     198
+#TOC> 
 #TOC> ==========================================================================
 
 
@@ -39,14 +41,21 @@
 
 # The testthat package supports writing and executing unit tests in many ways.
 
-if (! require(testthat, quietly=TRUE)) {
+if (! requireNamespace("testthat", quietly = TRUE)) {
   install.packages("testthat")
-  library(testthat)
 }
 # Package information:
 #  library(help = testthat)       # basic information
 #  browseVignettes("testthat")    # available vignettes
 #  data(package = "testthat")     # available datasets
+
+# testthat is one of those packages that we either use A LOT in a script,
+# or not at all. Therfore it's more reasonable to depart from our usual
+# <package>::<function>() idiom, and load the entire library. In fact, if
+# we author packages, it is common practice to load testthat in the part
+# of the package that automates testing.
+
+library(testthat)
 
 # An atomic test consists of an expectation about the bahaviour of a function or
 # the existence of an object. testthat provides a number of useful expectations:
@@ -170,6 +179,20 @@ test_file("./tests/test_biCode.R")
 
 # .. or execute all the test files in the directory:
 test_dir("./tests")
+
+# ==   2.1  Testing scripts  ===================================================
+
+# Scripts need special consideration since we do not necessarily source() them
+# entirely. Therefore automated testing is not reasonable. What you can do
+# instead is to place a conditional block at the end of your script, that
+# never gets executed - then you can manually execute the code in the block
+# whenever you wish to test your functions. For example:
+
+if (FALSE) {
+  # ... your tests go here
+
+}
+
 
 
 # =    3  Task solutions  ======================================================

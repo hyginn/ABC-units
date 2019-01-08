@@ -3,12 +3,15 @@
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the BIN-PHYLO-Tree_analysis unit.
 #
-# Version:  1.0.2
+# Version:  1.1
 #
-# Date:     2017  10  31
+# Date:     2017  10  -  2019  01
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.1    Change from require() to requireNamespace(),
+#                      use <package>::<function>() idiom throughout,
+#                      use Biocmanager:: not biocLite()
 #           1.0.2  Typo in variable name, style changes
 #           1.0.1  Wrong section heading
 #           1.0    First 2017 version
@@ -31,11 +34,11 @@
 #TOC> 
 #TOC>   Section  Title                              Line
 #TOC> --------------------------------------------------
-#TOC>   1        Preparation and Tree Plot            43
-#TOC>   2        Tree Analysis                        82
-#TOC>   2.1        Rooting Trees                     141
-#TOC>   2.2        Rotating Clades                   187
-#TOC>   2.3        Computing tree distances          234
+#TOC>   1        Preparation and Tree Plot            46
+#TOC>   2        Tree Analysis                        86
+#TOC>   2.1        Rooting Trees                     145
+#TOC>   2.2        Rotating Clades                   190
+#TOC>   2.3        Computing tree distances          241
 #TOC> 
 #TOC> ==========================================================================
 
@@ -43,19 +46,17 @@
 # =    1  Preparation and Tree Plot  ===========================================
 
 
-if (!require(Rphylip, quietly=TRUE)) {
-  install.packages("Rphylip")
-  library(Rphylip)
+if (! requireNamespace("ape", quietly = TRUE)) {
+  install.packages("ape")
 }
 # Package information:
-#  library(help = Rphylip)       # basic information
-#  browseVignettes("Rphylip")    # available vignettes
-#  data(package = "Rphylip")     # available datasets
-
+#  library(help = ape)       # basic information
+#  browseVignettes("ape")    # available vignettes
+#  data(package = "ape")     # available datasets
 
 
 # Read the species tree that you have created at the phyloT Website:
-fungiTree <- read.tree("fungiTree.txt")
+fungiTree <- ape::read.tree("fungiTree.txt")
 
 plot(fungiTree)
 
@@ -73,7 +74,10 @@ for (i in seq_along(fungiTree$tip.label)) {
 
 # Plot the tree
 plot(fungiTree, cex = 1.0, root.edge = TRUE, no.margin = TRUE)
-nodelabels(text = fungiTree$node.label, cex = 0.6, adj = 0.2, bg = "#D4F2DA")
+ape::nodelabels(text = fungiTree$node.label,
+                cex = 0.6,
+                adj = 0.2,
+                bg = "#D4F2DA")
 # Note that you can use the arrow buttons in the menu above the plot to scroll
 # back to plots you have created earlier - so you can reference back to the
 # species tree.
@@ -91,10 +95,10 @@ nodelabels(text = fungiTree$node.label, cex = 0.6, adj = 0.2, bg = "#D4F2DA")
 # trees in Newick format and visualize them elsewhere.
 
 # The "phylo" class object is one of R's "S3" objects and methods to plot and
-# print it have been defined with the Rphylip package, and the package ape that
-# Rphylip has loaded. You can simply call plot(<your-tree>) and R knows what to
-# do with <your-tree> and how to plot it. The underlying function is
-# plot.phylo(), and documentation for its many options can by found by typing:
+# print it have been defined with the Rphylip package, and in ape. You can
+# simply call plot(<your-tree>) and R knows what to do with <your-tree> and how
+# to plot it. The underlying function is plot.phylo(), and documentation for its
+# many options can by found by typing:
 
 ?plot.phylo
 
@@ -125,40 +129,39 @@ apsTree$edge.length
 
 # show the node / edge and tip labels on a plot
 plot(apsTree)
-nodelabels()
-edgelabels()
-tiplabels()
+ape::nodelabels()
+ape::edgelabels()
+ape::tiplabels()
 
 # show the number of nodes, edges and tips
-Nnode(apsTree)
-Nedge(apsTree)
-Ntip(apsTree)
+ape::Nnode(apsTree)
+ape::Nedge(apsTree)
+ape::Ntip(apsTree)
 
 
 # Finally, write the tree to console in Newick format
-write.tree(apsTree)
+ape::write.tree(apsTree)
 
 # ==   2.1  Rooting Trees  =====================================================
 
 # In order to analyse the tree, it is helpful to root it first and reorder its
 # clades. Contrary to documentation, Rproml() returns an unrooted tree.
 
-is.rooted(apsTree)
+ape::is.rooted(apsTree)
 
-# You can root the tree with the command root() from the "ape" package. ape is
-# automatically installed and loaded with Rphylip.
+# You can root the tree with the command root() from the "ape" package.
 
 plot(apsTree)
 
 # add labels for internal nodes and tips
-nodelabels(cex = 0.5, frame = "circle")
-tiplabels(cex = 0.5, frame = "rect")
+ape::nodelabels(cex = 0.5, frame = "circle")
+ape::tiplabels(cex = 0.5, frame = "rect")
 
 # The outgroup of the tree is tip "11" in my sample tree, it may be a different
 # number in yours. Substitute the correct node number below for "outgroup".
-apsTree <- root(apsTree, outgroup = 11, resolve.root = TRUE)
+apsTree <- ape::root(apsTree, outgroup = 11, resolve.root = TRUE)
 plot(apsTree)
-is.rooted(apsTree)
+ape::is.rooted(apsTree)
 
 # This tree _looks_ unchanged, beacuse when the root trifurcation was resolved,
 # an edge of length zero was added to connect the MRCA (Most Recent Common
@@ -172,7 +175,7 @@ apsTree$edge.length
 # overlap.
 apsTree$edge.length[1] <- 0.1
 plot(apsTree, cex = 0.7)
-nodelabels(text = "MRCA", node = 12, cex = 0.5, adj = 0.1, bg = "#ff8866")
+ape::nodelabels(text = "MRCA", node = 12, cex = 0.5, adj = 0.1, bg = "#ff8866")
 
 
 # This procedure does however not assign an actual length to a root edge, and
@@ -181,7 +184,7 @@ nodelabels(text = "MRCA", node = 12, cex = 0.5, adj = 0.1, bg = "#ff8866")
 
 apsTree$root.edge <- mean(apsTree$edge.length) * 1.5
 plot(apsTree, cex = 0.7, root.edge = TRUE)
-nodelabels(text = "MRCA", node = 12, cex = 0.5, adj = 0.8, bg = "#ff8866")
+ape::nodelabels(text = "MRCA", node = 12, cex = 0.5, adj = 0.8, bg = "#ff8866")
 
 
 # ==   2.2  Rotating Clades  ===================================================
@@ -192,9 +195,9 @@ nodelabels(text = "MRCA", node = 12, cex = 0.5, adj = 0.8, bg = "#ff8866")
 # We can either rotate around individual internal nodes ...
 layout(matrix(1:2, 1, 2))
 plot(apsTree, no.margin = TRUE, root.edge = TRUE)
-nodelabels(node = 17, cex = 0.7, bg = "#ff8866")
-plot(rotate(apsTree, node = 17), no.margin = TRUE, root.edge = TRUE)
-nodelabels(node = 17, cex = 0.7, bg = "#88ff66")
+ape::nodelabels(node = 13, cex = 0.7, bg = "#ff8866")
+plot(ape::rotate(apsTree, node = 13), no.margin = TRUE, root.edge = TRUE)
+ape::nodelabels(node = 13, cex = 0.7, bg = "#88ff66")
 # Note that the species at the bottom of the clade descending from node
 # 17 is now plotted at the top.
 layout(matrix(1), widths = 1.0, heights = 1.0)
@@ -211,11 +214,15 @@ nOrg <- length(apsTree$tip.label)
 layout(matrix(1:2, 1, 2))
 plot(fungiTree,
      no.margin = TRUE, root.edge = TRUE)
-nodelabels(text = fungiTree$node.label, cex = 0.5, adj = 0.2, bg = "#D4F2DA")
+ape::nodelabels(text = fungiTree$node.label,
+                cex = 0.5,
+                adj = 0.2,
+                bg = "#D4F2DA")
 
-plot(rotateConstr(apsTree, apsTree$tip.label[nOrg:1]),
-     no.margin = TRUE, root.edge = TRUE)
-add.scale.bar(length = 0.5)
+plot(ape::rotateConstr(apsTree, apsTree$tip.label[nOrg:1]),
+     no.margin = TRUE,
+     root.edge = TRUE)
+ape::add.scale.bar(length = 0.5)
 layout(matrix(1), widths = 1.0, heights = 1.0)
 
 # Task: Study the two trees and consider their similarities and differences.
@@ -236,9 +243,8 @@ layout(matrix(1), widths = 1.0, heights = 1.0)
 
 # Many superb phylogeny tools are contributed by the phangorn package.
 
-if (!require(phangorn, quietly=TRUE)) {
+if (! requireNamespace("phangorn", quietly = TRUE)) {
   install.packages("phangorn")
-  library(phangorn)
 }
 # Package information:
 #  library(help = phangorn)       # basic information
@@ -253,20 +259,20 @@ apsTree2$tip.label <- gsub("(MBP1_)|(KILA_)", "", apsTree2$tip.label)
 # phangorn provides several functions to compute tree-differences (and there
 # is a _whole_ lot of theory on how to compare trees). treedist() returns the
 # "symmetric difference"
-treedist(fungiTree, apsTree2, check.labels = TRUE)
+phangorn::treedist(fungiTree, apsTree2, check.labels = TRUE)
 
 # Numbers. What do they mean? How much more similar is our apsTree to the
 # (presumably) ground truth of fungiTree than a random tree would be?
-# The ape package (which was loaded with RPhylip) provides the function rtree()
+# The ape package provides the function rtree()
 # to compute random trees.
 
-rtree(n = length(apsTree2$tip.label),  # number of tips
-      rooted = TRUE,                   # we rooted the tree above,
-                                       #  and fungiTree is rooted anyway
-      tip.label = apsTree2$tip.label,  # use the apsTree2 labels
-      br = NULL)                       # don't generate branch lengths since
-                                       #   fungiTree has none, so we can't
-                                       #   compare them anyway.
+ape::rtree(n = length(apsTree2$tip.label), # number of tips
+          rooted = TRUE,                   # we rooted the tree above,
+                                           #  and fungiTree is rooted anyway
+          tip.label = apsTree2$tip.label,  # use the apsTree2 labels
+          br = NULL)                       # don't generate branch lengths since
+                                           #   fungiTree has none, so we can't
+                                           #   compare them anyway.
 
 # Let's compute some random trees this way, calculate the distances to
 # fungiTree, and then compare the values we get for apsTree2. The random
@@ -278,17 +284,17 @@ colnames(myTreeDistances) <- c("symm", "path")
 
 set.seed(112358)
 for (i in 1:N) {
-  xTree <- rtree(n = length(apsTree2$tip.label),
-                 rooted = TRUE,
-                 tip.label = apsTree2$tip.label,
-                 br = NULL)
-  myTreeDistances[i, ] <- treedist(fungiTree, xTree)
+  xTree <- ape::rtree(n = length(apsTree2$tip.label),
+                      rooted = TRUE,
+                      tip.label = apsTree2$tip.label,
+                      br = NULL)
+  myTreeDistances[i, ] <- phangorn::treedist(fungiTree, xTree)
 }
 set.seed(NULL)                      # reset the random number generator
 
 table(myTreeDistances[, "symm"])
 
-(symmObs <- treedist(fungiTree, apsTree2)[1])
+(symmObs <- phangorn::treedist(fungiTree, apsTree2)[1])
 
 # Random events less-or-equal to observation, divided by total number of
 # events gives us the empirical p-value.
@@ -298,7 +304,7 @@ cat(sprintf("\nEmpirical p-value for symmetric diff. of observed tree is %1.4f\n
 hist(myTreeDistances[, "path"],
      col = "aliceblue",
      main = "Distances of random Trees to fungiTree")
-(pathObs <- treedist(fungiTree, apsTree2)[2])
+(pathObs <- phangorn::treedist(fungiTree, apsTree2)[2])
 abline(v = pathObs, col = "chartreuse")
 
 # Random events less-or-equal to observation, divided by total number of

@@ -3,12 +3,14 @@
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the RPR-Scripting_data_downloads unit.
 #
-# Version:  1.0.1
+# Version:  1.1
 #
-# Date:     2017  10  -  2018  12
+# Date:     2017  10  -  2019  01
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.1    Change from require() to requireNamespace(),
+#                      use <package>::<function>() idiom throughout,
 #           1.0.1  Updates for slightly changed interfaces
 #           1.0    First ABC units version
 #           0.1    First code copied from 2016 material.
@@ -27,22 +29,21 @@
 
 
 #TOC> ==========================================================================
-#TOC>
-#TOC>   Section  Title                                           Line
-#TOC> ---------------------------------------------------------------
-#TOC>   1        Constructing a POST command from a Web query      44
-#TOC>   1.1      Task - fetchPrositeFeatures() function           145
-#TOC>   2        Task solutions                                   153
-#TOC>
+#TOC> 
+#TOC>   Section  Title                                                 Line
+#TOC> ---------------------------------------------------------------------
+#TOC>   1        Constructing a POST command from a Web query            42
+#TOC>   1.1        Task - fetchPrositeFeatures() function               142
+#TOC>   2        Task solutions                                         150
+#TOC> 
 #TOC> ==========================================================================
 
 
 # =    1  Constructing a POST command from a Web query  ========================
 
 
-if (! require(httr, quietly=TRUE)) {
+if (! requireNamespace("httr", quietly = TRUE)) {
   install.packages("httr")
-  library(httr)
 }
 # Package information:
 #  library(help = httr)       # basic information
@@ -60,24 +61,24 @@ UniProtID <- "P39678"
 
 URL <- "https://prosite.expasy.org/cgi-bin/prosite/PSScan.cgi"
 
-response <- POST(URL,
-                 body = list(meta = "opt1",
-                             meta1_protein = "opt1",
-                             seq = UniProtID,
-                             skip = "on",
-                             output = "tabular"))
+response <- httr::POST(URL,
+                       body = list(meta = "opt1",
+                                   meta1_protein = "opt1",
+                                   seq = UniProtID,
+                                   skip = "on",
+                                   output = "tabular"))
 
 # Send off this request, and you should have a response in a few
 # seconds. Let's check the status first:
 
-status_code(response)  # If this is not 200, something went wrong and it
-                       # makes no sense to continue. If this persists, ask
-                       # on the mailing list what to do.
+httr::status_code(response)  # If this is not 200, something went wrong and it
+                             # makes no sense to continue. If this persists, ask
+                             # on the mailing list what to do.
 
 
 # The text contents of the response is available with the
 # content() function:
-content(response, "text")
+httr::content(response, "text")
 
 # ... should show you the same as the page contents that
 # you have seen in the browser. The date we need Now we need to extract
@@ -86,7 +87,7 @@ content(response, "text")
 # individual lines, since each of our data elements is on
 # its own line. We simply split on the "\\n" newline character.
 
-lines <- unlist(strsplit(content(response, "text"), "\\n"))
+lines <- unlist(strsplit(httr::content(response, "text"), "\\n"))
 head(lines)
 
 # Now we define a query pattern for the lines we want:

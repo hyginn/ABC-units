@@ -27,30 +27,30 @@
 
 
 #TOC> ==========================================================================
-#TOC>
-#TOC>   Section  Title                                             Line
-#TOC> -----------------------------------------------------------------
-#TOC>   1        A Relational Datamodel in R: review                 62
-#TOC>   1.1      Building a sample database structure               102
-#TOC>   1.1.1    completing the database                            213
-#TOC>   1.2      Querying the database                              248
-#TOC>   1.3      Task: submit for credit (part 1/2)                 277
-#TOC>   2        Implementing the protein datamodel                 289
-#TOC>   2.1      JSON formatted source data                         315
-#TOC>   2.2      "Sanitizing" sequence data                         355
-#TOC>   2.3      Create a protein table for our data model          375
-#TOC>   2.3.1    Initialize the database                            377
-#TOC>   2.3.2    Add data                                           389
-#TOC>   2.4      Complete the database                              409
-#TOC>   2.4.1    Examples of navigating the database                436
-#TOC>   2.5      Updating the database                              468
-#TOC>   3        Add your own data                                  480
-#TOC>   3.1      Find a protein                                     488
-#TOC>   3.2      Put the information into JSON files                517
-#TOC>   3.3      Create an R script to create your own database     540
-#TOC>   3.3.1    Check and validate                                 560
-#TOC>   3.4      Task: submit for credit (part 2/2)                 601
-#TOC>
+#TOC> 
+#TOC>   Section  Title                                                   Line
+#TOC> -----------------------------------------------------------------------
+#TOC>   1        A Relational Datamodel in R: review                       57
+#TOC>   1.1        Building a sample database structure                    97
+#TOC>   1.1.1          completing the database                            208
+#TOC>   1.2        Querying the database                                  243
+#TOC>   1.3        Task: submit for credit (part 1/2)                     272
+#TOC>   2        Implementing the protein datamodel                       284
+#TOC>   2.1        JSON formatted source data                             310
+#TOC>   2.2        "Sanitizing" sequence data                             350
+#TOC>   2.3        Create a protein table for our data model              370
+#TOC>   2.3.1          Initialize the database                            372
+#TOC>   2.3.2          Add data                                           384
+#TOC>   2.4        Complete the database                                  404
+#TOC>   2.4.1          Examples of navigating the database                431
+#TOC>   2.5        Updating the database                                  463
+#TOC>   3        Add your own data                                        475
+#TOC>   3.1        Find a protein                                         483
+#TOC>   3.2        Put the information into JSON files                    512
+#TOC>   3.3        Create an R script to create your own database         535
+#TOC>   3.3.1          Check and validate                                 555
+#TOC>   3.4        Task: submit for credit (part 2/2)                     596
+#TOC> 
 #TOC> ==========================================================================
 
 
@@ -205,7 +205,7 @@ str(philDB)
 # go back, re-read, play with it, and ask for help. This is essential.
 
 
-# ===  1.1.1  completing the database
+# ===   1.1.1  completing the database                       
 
 
 # Next I'll add one more person, and create the other two tables:
@@ -328,11 +328,11 @@ file.show("./data/MBP1_SACCE.json")
 #     sanitize the sequence at some point. But since we need to do that
 #     anyway, it is easier to see the whole sequence if we store it in chunks.
 
-# Let's load the "jsonlite" package and have a look at how it reads this data.
+# Let's make sure the "jsonlite" package exists on your computer, then we'll
+# explore how it reads this data.
 
-if (! require(jsonlite, quietly=TRUE)) {
+if (! requireNamespace("jsonlite", quietly = TRUE)) {
   install.packages("jsonlite")
-  library(jsonlite)
 }
 # Package information:
 #  library(help = jsonlite)       # basic information
@@ -340,7 +340,7 @@ if (! require(jsonlite, quietly=TRUE)) {
 #  data(package = "jsonlite")     # available datasets
 
 
-x <- fromJSON("./data/MBP1_SACCE.json")
+x <- jsonlite::fromJSON("./data/MBP1_SACCE.json")
 str(x)
 
 x$name
@@ -369,7 +369,7 @@ dbSanitizeSequence(x)
 
 # ==   2.3  Create a protein table for our data model  =========================
 
-# ===  2.3.1  Initialize the database
+# ===   2.3.1  Initialize the database                       
 
 
 # The function dbInit contains all the code to return a list of empty
@@ -381,7 +381,7 @@ myDB <- dbInit()
 str(myDB)
 
 
-# ===  2.3.2  Add data
+# ===   2.3.2  Add data                                      
 
 
 # fromJSON() returns a dataframe that we can readily process to add data
@@ -389,7 +389,7 @@ str(myDB)
 
 dbAddProtein
 
-myDB <- dbAddProtein(myDB, fromJSON("./data/MBP1_SACCE.json"))
+myDB <- dbAddProtein(myDB, jsonlite::fromJSON("./data/MBP1_SACCE.json"))
 str(myDB)
 
 # Lets check that the 833 amino acids of the yeast MBP1 sequence have
@@ -428,7 +428,7 @@ source("./scripts/ABC-createRefDB.R")
 str(myDB)
 
 
-# ===  2.4.1  Examples of navigating the database
+# ===   2.4.1  Examples of navigating the database           
 
 
 # You can look at the contents of the tables in the usual way we access
@@ -552,7 +552,7 @@ myDB$taxonomy$species[sel]
 # in any of the JSON files. Later you will add more information ...
 
 
-# ===  3.3.1  Check and validate
+# ===   3.3.1  Check and validate                            
 
 
 # Is your protein named according to the pattern "MBP1_MYSPE"? It should be.
