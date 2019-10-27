@@ -335,7 +335,7 @@ if (! requireNamespace("stringi", quietly = TRUE)) {
 #  data(package = "stringi")     # available datasets
 
 
-(x <- stri::stri_match_all(mySeq, regex = "CG"))
+(x <- stringi::stri_match_all(mySeq, regex = "CG"))
 length(unlist(x))
 
 # Now you could compare that number with yeast DNA sequences, and determine
