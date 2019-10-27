@@ -177,7 +177,7 @@ toupper(tolower(s))
 
 
 # ===   6.1.2  Reverse                    
-reverse(s)
+Biostrings::reverse(s)
 
 
 # ===   6.1.3  Change characters          
