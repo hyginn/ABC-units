@@ -16,12 +16,15 @@
 
 myDB <- dbInit()
 
-myDB <- dbAddProtein(    myDB, fromJSON("./data/MBP1_SACCE.json"))
-myDB <- dbAddProtein(    myDB, fromJSON("./data/refMBP1Proteins.json"))
-myDB <- dbAddProtein(    myDB, fromJSON("./data/refAPSES_PSI-BLAST.json"))
-myDB <- dbAddTaxonomy(   myDB, fromJSON("./data/refTaxonomy.json"))
-myDB <- dbAddFeature(    myDB, fromJSON("./data/refFeatures.json"))
-myDB <- dbAddAnnotation( myDB, fromJSON("./data/refAnnotations.json"))
+myDB <- dbAddProtein(myDB, jsonlite::fromJSON("./data/MBP1_SACCE.json"))
+myDB <- dbAddProtein(myDB, jsonlite::fromJSON("./data/refMBP1Proteins.json"))
+myDB <- dbAddProtein(myDB, jsonlite::fromJSON("./data/refAPSES_PSI-BLAST.json"))
+
+myDB <- dbAddTaxonomy(myDB, jsonlite::fromJSON("./data/refTaxonomy.json"))
+
+myDB <- dbAddFeature(myDB, jsonlite::fromJSON("./data/refFeatures.json"))
+
+myDB <- dbAddAnnotation( myDB, jsonlite::fromJSON("./data/refAnnotations.json"))
 
 
 # [END]
