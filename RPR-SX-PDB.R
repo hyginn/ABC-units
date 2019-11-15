@@ -3,12 +3,13 @@
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the RPR-SX-PDB unit.
 #
-# Version:  1.1
+# Version:  1.2
 #
-# Date:     2017  10  -  2019  01
+# Date:     2017  10  -  2019  11
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.2    Maintenance
 #           1.1    Change from require() to requireNamespace(),
 #                      use <package>::<function>() idiom throughout
 #           1.0    First live version, completely refactores 2016 code
@@ -30,22 +31,22 @@
 
 
 #TOC> ==========================================================================
-#TOC> 
+#TOC>
 #TOC>   Section  Title                                      Line
 #TOC> ----------------------------------------------------------
-#TOC>   1        Introduction to the bio3D package            61
-#TOC>   2        A Ramachandran plot                         152
-#TOC>   3        Density plots                               228
-#TOC>   3.1        Density-based colours                     242
-#TOC>   3.2        Plotting with smoothScatter()             261
-#TOC>   3.3        Plotting hexbins                          276
-#TOC>   3.4        Plotting density contours                 304
-#TOC>   3.4.1          ... as overlay on a colored grid      337
-#TOC>   3.4.2          ... as filled countour                354
-#TOC>   3.4.3          ... as a perspective plot             385
-#TOC>   4        cis-peptide bonds                           403
-#TOC>   5        H-bond lengths                              418
-#TOC> 
+#TOC>   1        Introduction to the bio3D package            62
+#TOC>   2        A Ramachandran plot                         153
+#TOC>   3        Density plots                               229
+#TOC>   3.1        Density-based colours                     243
+#TOC>   3.2        Plotting with smoothScatter()             262
+#TOC>   3.3        Plotting hexbins                          277
+#TOC>   3.4        Plotting density contours                 305
+#TOC>   3.4.1          ... as overlay on a coloured grid     338
+#TOC>   3.4.2          ... as filled countour                355
+#TOC>   3.4.3          ... as a perspective plot             386
+#TOC>   4        cis-peptide bonds                           404
+#TOC>   5        H-bond lengths                              419
+#TOC>
 #TOC> ==========================================================================
 
 
@@ -166,7 +167,7 @@ abline(v = 0, lwd = 0.5, col = "#00000044")
 # quadrant of the plot. This combination of phi-psi angles defines
 # the conformation of a left-handed alpha helix and is generally
 # only observed for glycine residues. Let's replot the data, but
-# color the points for glycine residues differently. First, we
+# colour the points for glycine residues differently. First, we
 # get a vector of glycine residue indices in the structure:
 
 mySeq <- bio3d::pdbseq(apses)
@@ -242,7 +243,7 @@ for (i in 1:nrow(dat)) {
 # ==   3.1  Density-based colours  =============================================
 
 # A first approximation to  scatterplots that visualize the density of the
-# underlying distribution is coloring via the densCols() function.
+# underlying distribution is colouring via the densCols() function.
 ?densCols
 iNA <- c(which(is.na(tor$phi)), which(is.na(tor$psi)))
 phi <- tor$phi[-iNA]
@@ -334,7 +335,7 @@ str(dPhiPsi)
 contour(dPhiPsi)
 
 
-# ===   3.4.1  ... as overlay on a colored grid 
+# ===   3.4.1  ... as overlay on a coloured grid
 
 image(dPhiPsi,
       col = myColorRamp(100),
@@ -351,7 +352,7 @@ abline(h = 0, lwd = 0.5, col = "#00000044")
 abline(v = 0, lwd = 0.5, col = "#00000044")
 
 
-# ===   3.4.2  ... as filled countour           
+# ===   3.4.2  ... as filled countour
 
 filled.contour(dPhiPsi,
                xlim = c(-180, 180), ylim = c(-180, 180),
@@ -382,7 +383,7 @@ filled.contour(dPhiPsi,
                     abline(v = 0, lwd = 0.5, col = "#00000044")
                   })
 
-# ===   3.4.3  ... as a perspective plot        
+# ===   3.4.3  ... as a perspective plot
 
 persp(dPhiPsi,
       xlab = "phi",
@@ -633,7 +634,7 @@ hist(dH)
 hist(dE)
 
 
-# add color:
+# add colour:
 hist(dH, col="#DD0055")
 hist(dE, col="#00AA70")
 
@@ -653,7 +654,7 @@ hist(dH, col="#DD0055")
 hist(dE, col="#00AA70", add=TRUE)
 
 # We see that the leftmost column of the sheet bonds hides the helix bonds in
-# that column. Not good. But we can make the colors transparent! We just need to
+# that column. Not good. But we can make the colours transparent! We just need to
 # add a fourth set of two hexadecimal-numbers to the #RRGGBB triplet. Lets use
 # 2/3 transparent, in hexadecimal, 1/3 of 256 is x55 - i.e. an RGB triplet
 # specied as #RRGGBB55 is only 33% opaque:
@@ -712,7 +713,7 @@ legend("topright",
 # it is easy to try this with a larger protein.
 # 3ugj for example is VERY large.
 
-pdb <- read.pdb("3ugj")
+pdb <- bio3d::read.pdb("3ugj")
 
 # helices...
 iN <- ssSelect(pdb, ssType = c("helix"), myElety = "N")
@@ -769,7 +770,7 @@ dH <- c() # collect all helix H-bonds here
 dE <- c() # collect all sheet H-bonds here
 
 for (i in seq_along(myPDBs)) {
-  pdb <- read.pdb(myPDBs[i])
+  pdb <- bio3d::read.pdb(myPDBs[i])
 
   # helices...
   iN <- ssSelect(pdb, ssType = c("helix"), myElety = "N")
@@ -786,7 +787,7 @@ for (i in seq_along(myPDBs)) {
 
 # Inspect the results
 
-length(dH)  # 4415 (your numbers are different, but it should be a lot)
+length(dH)  # 4415 (your numbers are different, but there should be many)
 length(dE)  # 262
 
 brk=seq(2.0, 4.0, 0.1)
