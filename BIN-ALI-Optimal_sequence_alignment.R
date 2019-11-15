@@ -3,12 +3,13 @@
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the BIN-ALI-Optimal_sequence_alignment unit.
 #
-# Version:  1.5
+# Version:  1.6
 #
-# Date:     2017  09   -   2019  01
+# Date:     2017  09   -   2019  11
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.6    Maintenance
 #           1.5    Change from require() to requireNamespace(),
 #                    use <package>::<function>() idiom throughout
 #           1.4    Pull s2c() from seqinr package, rather then loading the
@@ -34,20 +35,20 @@
 
 
 #TOC> ==========================================================================
-#TOC> 
+#TOC>
 #TOC>   Section  Title                                                      Line
 #TOC> --------------------------------------------------------------------------
-#TOC>   1        Prepare                                                      54
-#TOC>   2        Biostrings Pairwise Alignment                                71
-#TOC>   2.1        Optimal global alignment                                   89
-#TOC>   2.2        Optimal local alignment                                   152
-#TOC>   3        APSES Domain annotation by alignment                        176
-#TOC>   4        Update your database script                                 257
-#TOC>   4.1        Preparing an annotation file ...                          263
-#TOC>   4.1.1          If you HAVE NOT done the BIN-FUNC-Annotation unit     265
-#TOC>   4.1.2          If you HAVE done the BIN-FUNC-Annotation unit         308
-#TOC>   4.2        Execute and Validate                                      332
-#TOC> 
+#TOC>   1        Prepare                                                      55
+#TOC>   2        Biostrings Pairwise Alignment                                72
+#TOC>   2.1        Optimal global alignment                                   90
+#TOC>   2.2        Optimal local alignment                                   153
+#TOC>   3        APSES Domain annotation by alignment                        177
+#TOC>   4        Update your database script                                 258
+#TOC>   4.1        Preparing an annotation file ...                          264
+#TOC>   4.1.1          If you HAVE NOT done the BIN-FUNC-Annotation unit     266
+#TOC>   4.1.2          If you HAVE done the BIN-FUNC-Annotation unit         309
+#TOC>   4.2        Execute and Validate                                      333
+#TOC>
 #TOC> ==========================================================================
 
 
@@ -125,17 +126,17 @@ ali1@pattern@mismatch
 
 # or work with "normal" R functions
 # the alignment length
-nchar(ali1@pattern)
+nchar(as.character(ali1@pattern))
 
 # the number of identities
-sum(s2c(as.character(ali1@pattern)) ==
-    s2c(as.character(ali1@subject)))
+sum(seqinr::s2c(as.character(ali1@pattern)) ==
+    seqinr::s2c(as.character(ali1@subject)))
 
 # ... e.g. to calculate the percentage of identities
 100 *
-  sum(s2c(as.character(ali1@pattern)) ==
-      s2c(as.character(ali1@subject))) /
-  nchar(ali1@pattern)
+  sum(seqinr::s2c(as.character(ali1@pattern)) ==
+      seqinr::s2c(as.character(ali1@subject))) /
+  nchar(as.character(ali1@pattern))
 # ... which should be the same as reported in the writePairwiseAlignments()
 # output. Awkward to type? Then it calls for a function:
 #
@@ -144,7 +145,7 @@ percentID <- function(al) {
   return(100 *
          sum(seqinr::s2c(as.character(al@pattern)) ==
              seqinr::s2c(as.character(al@subject))) /
-         nchar(al@pattern))
+         nchar(as.character(al@pattern)))
 }
 
 percentID(ali1)
@@ -305,7 +306,7 @@ aliApses@subject@range@start + aliApses@subject@range@width - 1
 # Then SKIP the next section.
 #
 #
-# ===   4.1.2  If you HAVE done the BIN-FUNC-Annotation unit    
+# ===   4.1.2  If you HAVE done the BIN-FUNC-Annotation unit
 #
 #
 #   You DO already have a file called "<MYSPE>-Annotations.json" in the
