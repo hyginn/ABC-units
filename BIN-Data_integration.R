@@ -56,8 +56,8 @@
 
 # To begin, we load  httr, which supports sending and receiving data via the
 # http protocol, just like a Web browser.
-if (! requireNamespace("httpr", quietly=TRUE)) {
-  install.packages("httpr")
+if (! requireNamespace("httr", quietly=TRUE)) {
+  install.packages("httr")
 }
 # Package information:
 #  library(help = httr)       # basic information
