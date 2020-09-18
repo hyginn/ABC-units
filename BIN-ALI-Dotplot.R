@@ -1,4 +1,10 @@
-# BIN-ALI-Dotplot.R
+# tocID <- "BIN-ALI-Dotplot.R"
+#
+# ---------------------------------------------------------------------------- #
+#  PATIENCE  ...                                                               #
+#    Do not yet work wih this code. Updates in progress. Thank you.            #
+#    boris.steipe@utoronto.ca                                                  #
+# ---------------------------------------------------------------------------- #
 #
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the BIN-ALI-Dotplot unit.
@@ -27,12 +33,12 @@
 
 
 #TOC> ==========================================================================
-#TOC> 
+#TOC>
 #TOC>   Section  Title                  Line
 #TOC> --------------------------------------
 #TOC>   1        ___Section___            39
 #TOC>   2        Tasks                   187
-#TOC> 
+#TOC>
 #TOC> ==========================================================================
 
 

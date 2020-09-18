@@ -1,4 +1,10 @@
-# RPR-Unit_testing.R
+# tocID <- "RPR-Unit_testing.R"
+#
+# ---------------------------------------------------------------------------- #
+#  PATIENCE  ...                                                               #
+#    Do not yet work wih this code. Updates in progress. Thank you.            #
+#    boris.steipe@utoronto.ca                                                  #
+# ---------------------------------------------------------------------------- #
 #
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the RPR-Unit_testing unit.
@@ -29,10 +35,10 @@
 #TOC> 
 #TOC>   Section  Title                             Line
 #TOC> -------------------------------------------------
-#TOC>   1        Unit Tests with testthat            40
-#TOC>   2        Organizing your tests              159
-#TOC>   2.1        Testing scripts                  183
-#TOC>   3        Task solutions                     198
+#TOC>   1        Unit Tests with testthat            46
+#TOC>   2        Organizing your tests              165
+#TOC>   2.1        Testing scripts                  189
+#TOC>   3        Task solutions                     204
 #TOC> 
 #TOC> ==========================================================================
 

@@ -1,4 +1,10 @@
-# BIN-PHYLO-Tree_analysis.R
+# tocID <- "BIN-PHYLO-Tree_analysis.R"
+#
+# ---------------------------------------------------------------------------- #
+#  PATIENCE  ...                                                               #
+#    Do not yet work wih this code. Updates in progress. Thank you.            #
+#    boris.steipe@utoronto.ca                                                  #
+# ---------------------------------------------------------------------------- #
 #
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the BIN-PHYLO-Tree_analysis unit.
@@ -31,7 +37,7 @@
 
 
 #TOC> ==========================================================================
-#TOC> 
+#TOC>
 #TOC>   Section  Title                              Line
 #TOC> --------------------------------------------------
 #TOC>   1        Preparation and Tree Plot            46
@@ -39,7 +45,7 @@
 #TOC>   2.1        Rooting Trees                     145
 #TOC>   2.2        Rotating Clades                   190
 #TOC>   2.3        Computing tree distances          241
-#TOC> 
+#TOC>
 #TOC> ==========================================================================
 
 

@@ -357,20 +357,23 @@ parseBLASTalignment <- function(hit) {
 
 # ==== TESTS ===================================================================
 
-# define query:
-# q   <- paste("IYSARYSGVDVYEFIHSTGSIMKRKKDDWVNATHI", # Mbp1 APSES domain
-#              "LKAANFAKAKRTRILEKEVLKETHEKVQGGFGKYQ",
-#              "GTWVPLNIAKQLAEKFSVYDQLKPLFDFTQTDGSASP",
-#              sep="")
-# or ...
-# q <- "NP_010227" # refseq ID
-#
-# test <- BLAST(q,
-#               nHits = 100,
-#               E = 0.001,
-#               rid = "",
-#               limits = "txid4751[ORGN]")
-# length(test$hits)
+if (FALSE) {
+  # define query:
+  q   <- paste("IYSARYSGVDVYEFIHSTGSIMKRKKDDWVNATHI", # Mbp1 APSES domain
+               "LKAANFAKAKRTRILEKEVLKETHEKVQGGFGKYQ",
+               "GTWVPLNIAKQLAEKFSVYDQLKPLFDFTQTDGSASP",
+               sep="")
+  # or ...
+  q <- "NP_010227" # refseq ID
+
+  test <- BLAST(q,
+                nHits = 100,
+                E = 0.001,
+                rid = "",
+                limits = "txid4751[ORGN]")
+  str(test)
+  length(test$hits)
+}
 
 # [END]
 

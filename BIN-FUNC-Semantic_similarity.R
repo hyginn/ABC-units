@@ -1,4 +1,10 @@
-# BIN-FUNC_Semantic_similarity.R
+# tocID <- "BIN-FUNC_Semantic_similarity.R"
+#
+# ---------------------------------------------------------------------------- #
+#  PATIENCE  ...                                                               #
+#    Do not yet work wih this code. Updates in progress. Thank you.            #
+#    boris.steipe@utoronto.ca                                                  #
+# ---------------------------------------------------------------------------- #
 #
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the BIN-FUNC_Semantic_similarity unit.
@@ -28,14 +34,14 @@
 
 
 #TOC> ==========================================================================
-#TOC> 
+#TOC>
 #TOC>   Section  Title                                                Line
 #TOC> --------------------------------------------------------------------
 #TOC>   1        Preparations: Packages, AnnotationDB, Setup            42
 #TOC>   2        Fetch GO Annotations                                   98
 #TOC>   3        Semantic Similarities                                 107
 #TOC>   4        GO Term Enrichment in Gene Sets                       125
-#TOC> 
+#TOC>
 #TOC> ==========================================================================
 
 
@@ -158,27 +164,9 @@ myEnr <- GOenrichment(mySet, allGenes)
 
 sort(myEnr$p.values)  # Any significantly enriched terms? All of these are ...
 
-#Yes: most significantly enriched is GO:0071931. What is this?
-getGOTerm("GO:0071931")  # ... makes sense.
+#Most significantly enriched is GO:0071931. What is this?
+annotate::getGOTerm("GO:0071931")  # ... makes sense.
 
-(fullSet <- myEnr$genes$`GO:0071931`)  # What genes are annotated to this term?
-
-intersect(mySet, fullSet) # These are in both sets
-setdiff(mySet, fullSet)   # These mySet members are not annotated to that term
-setdiff(fullSet, mySet)   # These are annotated to that term but not in mySet.
-                          # ... that's the most interesting set. From a set of
-                          # genes we have identified a function that they
-                          # share, and that shared function has allowed us
-                          # to identify
-
-# What are these genes?
-# Select annotations from the annotation database:
-AnnotationDbi::select(org.Sc.sgd.db,
-                      keys = setdiff(fullSet, mySet),
-                      columns = c("COMMON", "DESCRIPTION"))
-
-# Note that these annotations are partially redundant to several different
-# aliases of the same three genes.
 
 
 

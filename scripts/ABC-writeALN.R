@@ -1,4 +1,4 @@
-# ABC-writeALN.R
+# tocID <- "scripts/ABC-writeALN.R"
 #
 # ToDo:    calculate consensus line
 #          append sequence numbers

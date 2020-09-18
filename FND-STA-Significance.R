@@ -1,4 +1,10 @@
-# FND-STA-Significance.R
+# tocID <- "FND-STA-Significance.R"
+#
+# ---------------------------------------------------------------------------- #
+#  PATIENCE  ...                                                               #
+#    Do not yet work wih this code. Updates in progress. Thank you.            #
+#    boris.steipe@utoronto.ca                                                  #
+# ---------------------------------------------------------------------------- #
 #
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the FND-STA-Significance unit.
@@ -25,7 +31,7 @@
 
 
 #TOC> ==========================================================================
-#TOC> 
+#TOC>
 #TOC>   Section  Title                                              Line
 #TOC> ------------------------------------------------------------------
 #TOC>   1        Significance and p-value                             43
@@ -36,7 +42,7 @@
 #TOC>   3        Significance by integration                         198
 #TOC>   4        Significance by simulation or permutation           204
 #TOC>   5        Final tasks                                         312
-#TOC> 
+#TOC>
 #TOC> ==========================================================================
 
 
@@ -100,7 +106,7 @@ print(x, digits = 22)
 # curve, as a fraction of the whole.
 
 
-# ===   1.2.1  p-value illustrated                      
+# ===   1.2.1  p-value illustrated
 
 # Let's illustrate. First we draw a million random values from our
 # standard, normal distribution:

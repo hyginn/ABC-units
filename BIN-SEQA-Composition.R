@@ -1,4 +1,10 @@
-# BIN-SEQA-Composition.R
+# tocID <- "BIN-SEQA-Composition.R"
+#
+# ---------------------------------------------------------------------------- #
+#  PATIENCE  ...                                                               #
+#    Do not yet work wih this code. Updates in progress. Thank you.            #
+#    boris.steipe@utoronto.ca                                                  #
+# ---------------------------------------------------------------------------- #
 #
 # Purpose: A Bioinformatics Course:
 #              R code accompanying the BIN-SEQA-Comparison unit
@@ -29,7 +35,7 @@
 
 
 #TOC> ==========================================================================
-#TOC> 
+#TOC>
 #TOC>   Section  Title                                      Line
 #TOC> ----------------------------------------------------------
 #TOC>   1        Preparation                                  47
@@ -40,7 +46,7 @@
 #TOC>   3.3        Plotting log ratios                       185
 #TOC>   3.4        Sort by frequency                         200
 #TOC>   3.5        Color by amino acid type                  215
-#TOC> 
+#TOC>
 #TOC> ==========================================================================
 
 

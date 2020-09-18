@@ -181,19 +181,29 @@ fetchMSAmotif <- function(ali, mot) {
 
 # ====== PDB ID selection ======================================================
 
-selectPDBrep <- function(n) {
+selectPDBrep <- function(n, seed = as.numeric(Sys.time())) {
   # Select n PDB IDs from a list of high-resolution, non-homologous, single
   # domain, single chain structure files that represent a CATH topology
   # group.
-  # Parameters   n  num   number of IDs to return.
+  # Parameters:
+  #   n     num     number of IDs to return
+  #   seed  num     a seed for the RNG
+  #
   # Value:          char  PDB IDs
-  # Note: the list is loaded from an RData file in the data directory
+  #
+  # Note: the list is loaded from an RData file in the "./data" directory.
+  # If you use this function for a course submissio, it MUST be invoked as:
+  #
+  #         selectPDBrep(n, seed = myStudentNumber)
+  #
+  # ... and myStudentNumber MUST be correctly initialized
 
   load("./data/pdbRep.RData")  # loads pdbRep
   if (n > length(pdbRep)) {
-    stop(sprintf("You can select no more than %d IDs.", length(pdbRep)))
+    stop(sprintf("There are only %d PDB IDs in the table to choose from.",
+                 length(pdbRep)))
   }
-  set.seed(as.numeric(Sys.time()))
+  set.seed(seed)
   return(sample(pdbRep, n))
 }
 

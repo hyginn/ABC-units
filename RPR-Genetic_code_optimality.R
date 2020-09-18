@@ -1,4 +1,10 @@
-# RPR-Genetic_code_optimality.R
+# tocID <- "RPR-Genetic_code_optimality.R"
+#
+# ---------------------------------------------------------------------------- #
+#  PATIENCE  ...                                                               #
+#    Do not yet work wih this code. Updates in progress. Thank you.            #
+#    boris.steipe@utoronto.ca                                                  #
+# ---------------------------------------------------------------------------- #
 #
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the RPR-Genetic_code_optimality unit.
@@ -30,7 +36,7 @@
 
 
 #TOC> ==========================================================================
-#TOC> 
+#TOC>
 #TOC>   Section  Title                                          Line
 #TOC> --------------------------------------------------------------
 #TOC>   1        Designing a computational experiment             57
@@ -43,7 +49,7 @@
 #TOC>   2.2.4          measure effect                            213
 #TOC>   3        Run the experiment                              260
 #TOC>   4        Task solutions                                  356
-#TOC> 
+#TOC>
 #TOC> ==========================================================================
 
 
@@ -142,7 +148,7 @@ swappedGC <- function(GC) {
 #   - we count the number of mutations and evaluate their severity.
 
 
-# ===   2.2.1  reverse-translate                    
+# ===   2.2.1  reverse-translate
 
 # To reverse-translate an amino acid vector, we randomly pick one of its
 # codons from a genetic code, and assemble all codons to a sequence.
@@ -167,7 +173,7 @@ traRev <- function(s, GC) {
 }
 
 
-# ===   2.2.2  Randomly mutate                      
+# ===   2.2.2  Randomly mutate
 
 # To mutate, we split a codon into it's three nucleotides, then randomly replace
 # one of the three with another nucleotide.
@@ -192,7 +198,7 @@ randMut <- function(vC) {
 
 
 
-# ===   2.2.3  Forward- translate                   
+# ===   2.2.3  Forward- translate
 
 traFor <- function(vC, GC) {
   # Parameters:
@@ -210,7 +216,7 @@ traFor <- function(vC, GC) {
   }
 
 
-# ===   2.2.4  measure effect                       
+# ===   2.2.4  measure effect
 
 # How do we evaluate the effect of the mutation? We'll take a simple ad hoc
 # approach: we divide amino acids into hydrophobic, hydrophilic, and neutral

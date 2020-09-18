@@ -1,4 +1,10 @@
-# BIN-Data_integration.R
+# tocID <- "BIN-Data_integration.R"
+#
+# ---------------------------------------------------------------------------- #
+#  PATIENCE  ...                                                               #
+#    Do not yet work wih this code. Updates in progress. Thank you.            #
+#    boris.steipe@utoronto.ca                                                  #
+# ---------------------------------------------------------------------------- #
 #
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the BIN-Data_integration unit.
@@ -30,12 +36,12 @@
 
 
 #TOC> ==========================================================================
-#TOC> 
+#TOC>
 #TOC>   Section  Title                             Line
 #TOC> -------------------------------------------------
 #TOC>   1        Identifier mapping                  42
 #TOC>   2        Cross-referencing tables           165
-#TOC> 
+#TOC>
 #TOC> ==========================================================================
 
 

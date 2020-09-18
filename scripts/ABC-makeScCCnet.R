@@ -1,4 +1,4 @@
-# ABC-makeScCCnet.R
+# tocID <- "scripts/ABC-makeScCCnet.R"
 #
 # Create a subnetwork of high-confidence yeast genes with a "mitotic cell cycle"
 # GOSlim annotation.

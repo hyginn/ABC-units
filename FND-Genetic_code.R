@@ -1,4 +1,10 @@
-# FND-Genetic_code.R
+# tocID <- "FND-Genetic_code.R"
+#
+# ---------------------------------------------------------------------------- #
+#  PATIENCE  ...                                                               #
+#    Do not yet work wih this code. Updates in progress. Thank you.            #
+#    boris.steipe@utoronto.ca                                                  #
+# ---------------------------------------------------------------------------- #
 #
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the FND-Genetic_code unit.
@@ -28,7 +34,7 @@
 
 
 #TOC> ==========================================================================
-#TOC> 
+#TOC>
 #TOC>   Section  Title                                            Line
 #TOC> ----------------------------------------------------------------
 #TOC>   1        Storing the genetic code                           45
@@ -38,7 +44,7 @@
 #TOC>   3        An alternative representation: 3D array           212
 #TOC>   3.1        Print a Genetic code table                      246
 #TOC>   4        Tasks                                             272
-#TOC> 
+#TOC>
 #TOC> ==========================================================================
 
 

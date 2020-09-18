@@ -1,4 +1,10 @@
-# BIN-ALI-MSA.R
+# tocID <- "BIN-ALI-MSA.R"
+#
+# ---------------------------------------------------------------------------- #
+#  PATIENCE  ...                                                               #
+#    Do not yet work wih this code. Updates in progress. Thank you.            #
+#    boris.steipe@utoronto.ca                                                  #
+# ---------------------------------------------------------------------------- #
 #
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the BIN-ALI-MSA unit.
@@ -29,7 +35,7 @@
 
 
 #TOC> ==========================================================================
-#TOC> 
+#TOC>
 #TOC>   Section  Title                                              Line
 #TOC> ------------------------------------------------------------------
 #TOC>   1        Preparations                                         54
@@ -47,7 +53,7 @@
 #TOC>   6        Sequence Logos                                      546
 #TOC>   6.1        Subsetting an alignment by motif                  555
 #TOC>   6.2        Plot a Sequence Logo                              604
-#TOC> 
+#TOC>
 #TOC> ==========================================================================
 
 
@@ -239,7 +245,7 @@ for (i in seq_along(highScoringRanges$lengths)) {
 #   -  adjust the sequence names
 #   -  convert to msaAAMultipleAlignment object
 
-# ===   4.1.1  importing an .aln file                   
+# ===   4.1.1  importing an .aln file
 
 # The seqinr package has a function to read CLUSTAL W formatted .aln files ...
 if (! requireNamespace("seqinr", quietly=TRUE)) {

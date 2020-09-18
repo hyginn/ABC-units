@@ -8,7 +8,7 @@
 # http://steipe.biochemistry.utoronto.ca/abc/index.php/Reference_species_for_fungi
 #
 # For the data model, see
-# https://docs.google.com/drawings/d/1uupNvz18_FYFwyyVPebTM0CUxcJCPDQuxuIJGpjWQWg
+# https://docs.google.com/presentation/d/13vWaVcFpWEOGeSNhwmqugj2qTQuH1eZROgxWdHGEMr0
 # For the schema, see dbInit() in ./scripts/ABC-dbUtilities.R
 #
 # ==============================================================================

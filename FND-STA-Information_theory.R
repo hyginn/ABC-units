@@ -1,14 +1,21 @@
-# FND-STA-Information_theory.R
+# tocID <- "FND-STA-Information_theory.R"
+#
+# ---------------------------------------------------------------------------- #
+#  PATIENCE  ...                                                               #
+#    Do not yet work wih this code. Updates in progress. Thank you.            #
+#    boris.steipe@utoronto.ca                                                  #
+# ---------------------------------------------------------------------------- #
 #
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the FND-STA-Information_theory unit.
 #
-# Version:  0.2
+# Version:  0.2.1
 #
-# Date:     2017  MM  DD
+# Date:     2017 - 2019
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           0.2.1  Maintenance
 #           0.2    Under development
 #           0.1    First code copied from 2016 material.
 #
@@ -58,10 +65,32 @@ AAref["Y"] <- 0.0294
 sum(AAref)
 
 # Function to calculate Shannon entropy
-H <- function(v) {
-  # Shannon entropy (bits)
-  return(-sum(v * (log(v) / log(2))))
+H <- function(pmf) {
+  # Calculate Shannon entropy
+  # Parameters:
+  #   pmf (numeric) probability mass function: a vector of states and
+  #                 associated probabilities. Each element of
+  #                 pmf must be in (0, 1] and sum(pmf) must be 1.
+  # Value:
+  #   Shannon entropy in bits.
+  # Examples:
+  #   H(c(A=0.25, C=0.25, G=0.25, T=0.25))  # 2 bits entropy in a random
+  #                                         # nucleotide sequence
+  #   H(1)     # If all elements are the same, entropy is zero
+  #
+  if (any(pmf <= 0 | pmf > 1) || isFALSE(all.equal(1.0, sum(pmf)))) {
+    stop("Input is not a discrete probability distribution.")
+  }
+  H <- -sum(pmf * (log(pmf) / log(2)))
+  return(H)
 }
+
+# Why use all.equal()? Exact comparisons with floating point numbers are
+# brittle. Consider for example:
+1/6 + 1/6 + 1/6 + 1/6 + 1/6 + 1/6 == 1
+print(1/6 + 1/6 + 1/6 + 1/6 + 1/6 + 1/6, digits = 22) # 0.9999999999999998889777
+# all.equal() tests for _near_ equality with tolerance of ~ 1.5e-8
+
 
 
 # Entropy of the database frequencies (in bits):

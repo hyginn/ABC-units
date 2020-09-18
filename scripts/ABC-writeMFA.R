@@ -40,7 +40,7 @@ writeMFA <- function(ali,
   if (is.na(blockWidth)) {
     stop("PANIC: parameter \"blockWidth\" must be numeric.")
   }
-  if (blockWidth < 1){
+  if (! blockWidth > 0){
     stop("PANIC: parameter \"blockWidth\" must be greater than zero.")
   }
 
@@ -105,7 +105,7 @@ writeMFA <- function(ali,
     txt <- c(txt, "")  # append an empty line for readability
   }
 
-  writeLines(txt, con= myCon)
+  writeLines(txt, con = myCon)
 
 }
 

@@ -1,4 +1,10 @@
-# BIN-PHYLO-Tree_building.R
+# tocID <- "BIN-PHYLO-Tree_building.R"
+#
+# ---------------------------------------------------------------------------- #
+#  PATIENCE  ...                                                               #
+#    Do not yet work wih this code. Updates in progress. Thank you.            #
+#    boris.steipe@utoronto.ca                                                  #
+# ---------------------------------------------------------------------------- #
 #
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the BIN-PHYLO-Tree_building unit.
@@ -29,7 +35,7 @@
 
 
 #TOC> ==========================================================================
-#TOC> 
+#TOC>
 #TOC>   Section  Title                                       Line
 #TOC> -----------------------------------------------------------
 #TOC>   1        Calculating Trees                             46
@@ -39,7 +45,7 @@
 #TOC>   1.1.3          ... on Linux                            96
 #TOC>   1.1.4          Confirming PROMLPATH                   101
 #TOC>   1.2        Building a maximum likelihood tree         110
-#TOC> 
+#TOC>
 #TOC> ==========================================================================
 
 
@@ -68,7 +74,7 @@ if (! requireNamespace("Rphylip", quietly = TRUE)) {
 # on your computer Phylip has been installed and define the path
 # to the proml program that calculates a maximum-likelihood tree.
 
-# ===   1.1.1  ... on the Mac                    
+# ===   1.1.1  ... on the Mac
 # On the Mac, the standard installation places a phylip folder
 # in the /Applications directory. That folder contains all the
 # individual phylip programs as <name>.app files. These are not
@@ -79,7 +85,7 @@ if (! requireNamespace("Rphylip", quietly = TRUE)) {
 # directly to that subdirectory to find the program it needs:
 # PROMLPATH <- "/Applications/phylip-3.695/exe/proml.app/Contents/MacOS"
 
-# ===   1.1.2  ... on Windows                    
+# ===   1.1.2  ... on Windows
 # On Windows you need to know where the programs have been installed, and you
 # need to specify a path that is correct for the Windows OS. Find the folder
 # that is named "exe", and right-click to inspect its properties. The path
@@ -93,12 +99,12 @@ if (! requireNamespace("Rphylip", quietly = TRUE)) {
 # I have heard that your path must not contain spaces, and it is prudent to
 # avoid other special characters as well.
 
-# ===   1.1.3  ... on Linux                      
+# ===   1.1.3  ... on Linux
 # If you are running Linux I trust you know what to do. It's probably
 # something like
 # PROMLPATH <- "/usr/local/phylip-3.695/bin"
 
-# ===   1.1.4  Confirming PROMLPATH              
+# ===   1.1.4  Confirming PROMLPATH
 # Confirm that the settings are right.
 PROMLPATH                # returns the path
 list.dirs(PROMLPATH)     # returns the directories in that path

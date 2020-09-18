@@ -1,4 +1,10 @@
-# BIN-ALI-Similarity.R
+# tocID <- "BIN-ALI-Similarity.R"
+#
+# ---------------------------------------------------------------------------- #
+#  PATIENCE  ...                                                               #
+#    Do not yet work wih this code. Updates in progress. Thank you.            #
+#    boris.steipe@utoronto.ca                                                  #
+# ---------------------------------------------------------------------------- #
 #
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the BIN-ALI-Similarity unit.
@@ -28,13 +34,13 @@
 
 
 #TOC> ==========================================================================
-#TOC> 
+#TOC>
 #TOC>   Section  Title                          Line
 #TOC> ----------------------------------------------
 #TOC>   1        Amino Acid Properties            41
 #TOC>   2        Mutation Data matrix            158
 #TOC>   3        Background score                199
-#TOC> 
+#TOC>
 #TOC> ==========================================================================
 
 

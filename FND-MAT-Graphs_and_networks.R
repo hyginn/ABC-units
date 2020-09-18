@@ -1,4 +1,10 @@
-# FND-MAT-Graphs_and_networks.R
+# tocID <- "FND-MAT-Graphs_and_networks.R"
+#
+# ---------------------------------------------------------------------------- #
+#  PATIENCE  ...                                                               #
+#    Do not yet work wih this code. Updates in progress. Thank you.            #
+#    boris.steipe@utoronto.ca                                                  #
+# ---------------------------------------------------------------------------- #
 #
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the FND-MAT-Graphs_and_networks unit.
@@ -29,7 +35,7 @@
 
 
 #TOC> ==========================================================================
-#TOC> 
+#TOC>
 #TOC>   Section  Title                                        Line
 #TOC> ------------------------------------------------------------
 #TOC>   1        Review                                         50
@@ -43,7 +49,7 @@
 #TOC>   4        RANDOM GRAPHS AND GRAPH METRICS               539
 #TOC>   4.1        Diameter                                    576
 #TOC>   5        GRAPH CLUSTERING                              645
-#TOC> 
+#TOC>
 #TOC> ==========================================================================
 
 
@@ -280,7 +286,7 @@ plot(GBA,
      vertex.color=heat.colors(max(igraph::degree(GBA)+1))[igraph::degree(GBA)+1],
      vertex.size = 200 + (30 * igraph::degree(GBA)),
      vertex.label = NA)
-par(oPar)                              # restore grphics state
+par(oPar)                              # restore graphics state
 
 # This is a very obviously different graph! Some biological networks have
 # features that look like that - but in my experience the hub nodes are usually

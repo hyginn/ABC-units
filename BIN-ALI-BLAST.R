@@ -1,4 +1,10 @@
-# BIN-ALI-BLAST.R
+# tocID <- "BIN-ALI-BLAST.R"
+#
+# ---------------------------------------------------------------------------- #
+#  PATIENCE  ...                                                               #
+#    Do not yet work wih this code. Updates in progress. Thank you.            #
+#    boris.steipe@utoronto.ca                                                  #
+# ---------------------------------------------------------------------------- #
 #
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the BIN-ALI-BLAST unit.
@@ -29,13 +35,13 @@
 
 
 #TOC> ==========================================================================
-#TOC> 
+#TOC>
 #TOC>   Section  Title                               Line
 #TOC> ---------------------------------------------------
 #TOC>   1        Defining the APSES domain             42
 #TOC>   2        Executing the BLAST search            64
 #TOC>   3        Analysing results                     86
-#TOC> 
+#TOC>
 #TOC> ==========================================================================
 
 

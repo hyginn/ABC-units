@@ -1,4 +1,10 @@
-# RPR-eUtils_and_XML.R
+# tocID <- "RPR-eUtils_and_XML.R"
+#
+# ---------------------------------------------------------------------------- #
+#  PATIENCE  ...                                                               #
+#    Do not yet work wih this code. Updates in progress. Thank you.            #
+#    boris.steipe@utoronto.ca                                                  #
+# ---------------------------------------------------------------------------- #
 #
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the RPR-Scripting_data_downloads unit.
@@ -28,13 +34,13 @@
 
 
 #TOC> ==========================================================================
-#TOC> 
+#TOC>
 #TOC>   Section  Title                                       Line
 #TOC> -----------------------------------------------------------
 #TOC>   1        Working with NCBI eUtils                      41
 #TOC>   1.1        Task - fetchNCBItaxData() function         144
 #TOC>   2        Task solutions                               151
-#TOC> 
+#TOC>
 #TOC> ==========================================================================
 
 

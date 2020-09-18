@@ -1,4 +1,10 @@
-# BIN-MYSPE.R
+# tocID <- "BIN-MYSPE.R"
+#
+# ---------------------------------------------------------------------------- #
+#  PATIENCE  ...                                                               #
+#    Do not yet work wih this code. Updates in progress. Thank you.            #
+#    boris.steipe@utoronto.ca                                                  #
+# ---------------------------------------------------------------------------- #
 #
 # Purpose: A Bioinformatics Course:
 #              R code accompanying the BIN-MYSPE unit

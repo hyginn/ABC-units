@@ -1,4 +1,10 @@
-# RPR_GEO2R.R
+# tocID <- "RPR_GEO2R.R"
+#
+# ---------------------------------------------------------------------------- #
+#  PATIENCE  ...                                                               #
+#    Do not yet work wih this code. Updates in progress. Thank you.            #
+#    boris.steipe@utoronto.ca                                                  #
+# ---------------------------------------------------------------------------- #
 #
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the RPR_GEO2R unit.
@@ -34,7 +40,7 @@
 
 
 #TOC> ==========================================================================
-#TOC> 
+#TOC>
 #TOC>   Section  Title                                                      Line
 #TOC> --------------------------------------------------------------------------
 #TOC>   1        Preparations                                                 56
@@ -49,7 +55,7 @@
 #TOC>   5.1        Final task: Gene descriptions                             504
 #TOC>   6        Improving on Discovery by Differential Expression           510
 #TOC>   7        Annotation data                                             594
-#TOC> 
+#TOC>
 #TOC> ==========================================================================
 
 

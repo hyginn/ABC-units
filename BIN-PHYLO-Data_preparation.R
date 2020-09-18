@@ -1,4 +1,10 @@
-# BIN-PHYLO-Data_preparation.R
+# tocID <- "BIN-PHYLO-Data_preparation.R"
+#
+# ---------------------------------------------------------------------------- #
+#  PATIENCE  ...                                                               #
+#    Do not yet work wih this code. Updates in progress. Thank you.            #
+#    boris.steipe@utoronto.ca                                                  #
+# ---------------------------------------------------------------------------- #
 #
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the BIN-PHYLO-Data_preparation unit.
@@ -29,7 +35,7 @@
 
 
 #TOC> ==========================================================================
-#TOC> 
+#TOC>
 #TOC>   Section  Title                                     Line
 #TOC> ---------------------------------------------------------
 #TOC>   1        Preparations                                44
@@ -37,7 +43,7 @@
 #TOC>   3        Multiple Sequence Alignment                117
 #TOC>   4        Reviewing and Editing Alignments           136
 #TOC>   4.1        Masking workflow                         152
-#TOC> 
+#TOC>
 #TOC> ==========================================================================
 
 

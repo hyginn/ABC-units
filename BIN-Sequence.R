@@ -1,4 +1,10 @@
-# BIN-Sequence.R
+# tocID <- "BIN-Sequence.R"
+#
+# ---------------------------------------------------------------------------- #
+#  PATIENCE  ...                                                               #
+#    Do not yet work wih this code. Updates in progress. Thank you.            #
+#    boris.steipe@utoronto.ca                                                  #
+# ---------------------------------------------------------------------------- #
 #
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the BIN-Sequence unit.
@@ -30,7 +36,7 @@
 
 
 #TOC> ==========================================================================
-#TOC> 
+#TOC>
 #TOC>   Section  Title                                Line
 #TOC> ----------------------------------------------------
 #TOC>   1        Prepare                                63
@@ -50,7 +56,7 @@
 #TOC>   7.2        Sampling                            306
 #TOC>   7.2.1          Equiprobable characters         308
 #TOC>   7.2.2          Defined probability vector      350
-#TOC> 
+#TOC>
 #TOC> ==========================================================================
 
 
@@ -171,16 +177,16 @@ cat(sprintf("\n%s fish", c("one", "two", "red", "blue")))
 
 # =    6  Changing strings  ====================================================
 
-# ===   6.1.1  Changing case              
+# ===   6.1.1  Changing case
 tolower(s)
 toupper(tolower(s))
 
 
-# ===   6.1.2  Reverse                    
+# ===   6.1.2  Reverse
 reverse(s)
 
 
-# ===   6.1.3  Change characters          
+# ===   6.1.3  Change characters
 # chartr(old, new, x) maps all characters in x that appear in "old" to the
 # correpsonding character in "new."
 
@@ -208,7 +214,7 @@ chartr(myCypher, lett, x)
 # (Nb. substitution cyphers are easy to crack!)
 
 
-# ===   6.1.4  Substitute characters      
+# ===   6.1.4  Substitute characters
 (s <- gsub("IV", "i-v", s))  # gsub can change length, first argument is
                              # a "regular expression"!
 
@@ -305,7 +311,7 @@ sum(d <= 2.5) # 276. 276 of our 10000 samples are just as bunched near the
 
 # ==   7.2  Sampling  ==========================================================
 
-# ===   7.2.1  Equiprobable characters    
+# ===   7.2.1  Equiprobable characters
 
 # Assume you need a large random-nucleotide string for some statistical model.
 # How to create such a string? sample() can easily create it:
@@ -347,7 +353,7 @@ length(unlist(x))
 # of the smaller number of Cs and Gs - before biology even comes into play. How
 # do we account for that?
 
-# ===   7.2.2  Defined probability vector 
+# ===   7.2.2  Defined probability vector
 
 # This is where we need to know how to create samples with specific probability
 # distributions. A crude hack would be to create a sampling source vector with

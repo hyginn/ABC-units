@@ -1,4 +1,10 @@
-# RPR-PROSITE_POST.R
+# tocID <- "RPR-PROSITE_POST.R"
+#
+# ---------------------------------------------------------------------------- #
+#  PATIENCE  ...                                                               #
+#    Do not yet work wih this code. Updates in progress. Thank you.            #
+#    boris.steipe@utoronto.ca                                                  #
+# ---------------------------------------------------------------------------- #
 #
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the RPR-Scripting_data_downloads unit.
@@ -29,13 +35,13 @@
 
 
 #TOC> ==========================================================================
-#TOC> 
+#TOC>
 #TOC>   Section  Title                                                 Line
 #TOC> ---------------------------------------------------------------------
 #TOC>   1        Constructing a POST command from a Web query            42
 #TOC>   1.1        Task - fetchPrositeFeatures() function               142
 #TOC>   2        Task solutions                                         150
-#TOC> 
+#TOC>
 #TOC> ==========================================================================
 
 

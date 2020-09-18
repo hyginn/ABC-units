@@ -1,4 +1,10 @@
-# BIN-FUNC-Domain_annotation.R
+# tocID <- "BIN-FUNC-Domain_annotation.R"
+#
+# ---------------------------------------------------------------------------- #
+#  PATIENCE  ...                                                               #
+#    Do not yet work wih this code. Updates in progress. Thank you.            #
+#    boris.steipe@utoronto.ca                                                  #
+# ---------------------------------------------------------------------------- #
 #
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the BIN-FUNC-Domain_annotation unit.
@@ -25,7 +31,7 @@
 
 
 #TOC> ==========================================================================
-#TOC> 
+#TOC>
 #TOC>   Section  Title                                                               Line
 #TOC> -----------------------------------------------------------------------------------
 #TOC>   1        Update your database script                                           41
@@ -34,7 +40,7 @@
 #TOC>   1.1.2    If you HAVE done the BIN-ALI-Optimal_sequence_alignment               93
 #TOC>   1.2      Execute and Validate                                                 119
 #TOC>   2        Plot Annotations                                                     144
-#TOC> 
+#TOC>
 #TOC> ==========================================================================
 
 
@@ -90,7 +96,7 @@
 # Then SKIP the next section.
 #
 #
-# ===  1.1.2  If you HAVE done the BIN-ALI-Optimal_sequence_alignment         
+# ===  1.1.2  If you HAVE done the BIN-ALI-Optimal_sequence_alignment
 #
 #
 #   You DO already have a file called "<MYSPE>-Annotations.json" in the

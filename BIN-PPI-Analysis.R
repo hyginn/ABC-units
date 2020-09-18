@@ -1,4 +1,10 @@
-# BIN-PPI-Analysis.R
+# tocID <- "BIN-PPI-Analysis.R"
+#
+# ---------------------------------------------------------------------------- #
+#  PATIENCE  ...                                                               #
+#    Do not yet work wih this code. Updates in progress. Thank you.            #
+#    boris.steipe@utoronto.ca                                                  #
+# ---------------------------------------------------------------------------- #
 #
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the BIN-PPI-Analysis unit.
@@ -29,7 +35,7 @@
 
 
 #TOC> ==========================================================================
-#TOC> 
+#TOC>
 #TOC>   Section  Title                                           Line
 #TOC> ---------------------------------------------------------------
 #TOC>   1        Setup and data                                    46
@@ -39,7 +45,7 @@
 #TOC>   2.3        Betweenness Centrality                         180
 #TOC>   3        biomaRt                                          226
 #TOC>   4        Task for submission                              296
-#TOC> 
+#TOC>
 #TOC> ==========================================================================
 
 

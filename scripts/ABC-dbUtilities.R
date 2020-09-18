@@ -1,12 +1,35 @@
-# ABC-dbUtilities.R
-
+# tocID <- "scripts/ABC-dbUtilities.R"
+#
 # database utilities for ABC learning units
 #
 # ==============================================================================
-#
 
 
-# ====== PACKAGES ==============================================================
+#TOC> ==========================================================================
+#TOC> 
+#TOC>   Section  Title                             Line
+#TOC> -------------------------------------------------
+#TOC>   1        PACKAGES                            32
+#TOC>   2        FUNCTIONS                           50
+#TOC>   2.01       dbSanitizeSequence()              53
+#TOC>   2.02       dbConfirmUnique()                 88
+#TOC>   2.03       dbInit()                         106
+#TOC>   2.04       dbAutoincrement()                147
+#TOC>   2.05       dbAddProtein()                   160
+#TOC>   2.06       dbAddFeature()                   180
+#TOC>   2.07       dbAddTaxonomy()                  199
+#TOC>   2.08       dbAddAnnotation()                215
+#TOC>   2.09       dbFetchUniProtSeq()              243
+#TOC>   2.10       dbFetchPrositeFeatures()         267
+#TOC>   2.11       node2text()                      311
+#TOC>   2.12       dbFetchNCBItaxData()             323
+#TOC>   2.13       UniProtIDmap()                   362
+#TOC>   3        TESTS                              399
+#TOC> 
+#TOC> ==========================================================================
+
+
+# =    1  PACKAGES  ============================================================
 
 
 if (! requireNamespace("jsonlite", quietly = TRUE)) {
@@ -24,9 +47,10 @@ if (! requireNamespace("xml2", quietly = TRUE)) {
 }
 
 
-# ====== FUNCTIONS =============================================================
+# =    2  FUNCTIONS  ===========================================================
 
 
+# ==   2.01  dbSanitizeSequence()  =============================================
 dbSanitizeSequence <- function(s, unambiguous = TRUE) {
   # Remove FASTA header lines, if any,
   # flatten any structure that s has,
@@ -61,6 +85,7 @@ dbSanitizeSequence <- function(s, unambiguous = TRUE) {
 }
 
 
+# ==   2.02  dbConfirmUnique()  ================================================
 dbConfirmUnique <- function(x) {
   # x is a vector of logicals.
   # returns x if x has exactly one TRUE element.
@@ -78,10 +103,15 @@ dbConfirmUnique <- function(x) {
 }
 
 
+# ==   2.03  dbInit()  =========================================================
 dbInit <- function() {
   # Return an empty instance of the protein database
+  # Open the link and study the schema:
+  # https://docs.google.com/presentation/d/13vWaVcFpWEOGeSNhwmqugj2qTQuH1eZROgxWdHGEMr0
 
   db <- list()
+
+  db$version <- "1.0"
 
   db$protein <- data.frame(
     ID = numeric(),
@@ -89,13 +119,11 @@ dbInit <- function() {
     RefSeqID = character(),
     UniProtID = character(),
     taxonomyID = numeric(),
-    sequence = character(),
-    stringsAsFactors = FALSE)
+    sequence = character())
 
   db$taxonomy <- data.frame(
     ID = numeric(),
-    species = character(),
-    stringsAsFactors = FALSE)
+    species = character())
 
 
   db$annotation <- data.frame(
@@ -103,21 +131,20 @@ dbInit <- function() {
     proteinID = numeric(),
     featureID = numeric(),
     start = numeric(),
-    end = numeric(),
-    stringsAsFactors = FALSE)
+    end = numeric())
 
   db$feature <- data.frame(
     ID = numeric(),
     name = character(),
     description = character(),
     sourceDB = character(),
-    accession = character(),
-    stringsAsFactors = FALSE)
+    accession = character())
 
   return(db)
 }
 
 
+# ==   2.04  dbAutoincrement()  ================================================
 dbAutoincrement <- function(tb) {
   # Return a unique integer that can be used as a primary key
   # Value:
@@ -130,6 +157,7 @@ dbAutoincrement <- function(tb) {
 }
 
 
+# ==   2.05  dbAddProtein()  ===================================================
 dbAddProtein <- function(db, jsonDF) {
   # Add one or more protein entries to the database db.
   # Parameters:
@@ -142,14 +170,14 @@ dbAddProtein <- function(db, jsonDF) {
                     RefSeqID    = jsonDF$RefSeqID[i],
                     UniProtID   = jsonDF$UniProtID[i],
                     taxonomyID  = jsonDF$taxonomyID[i],
-                    sequence    = dbSanitizeSequence(jsonDF$sequence[i]),
-                    stringsAsFactors = FALSE)
+                    sequence    = dbSanitizeSequence(jsonDF$sequence[i]))
     db$protein <- rbind(db$protein, x)
   }
   return(db)
 }
 
 
+# ==   2.06  dbAddFeature()  ===================================================
 dbAddFeature <- function(db, jsonDF) {
   # Add one or more feature entries to the database db.
   # Parameters:
@@ -161,14 +189,14 @@ dbAddFeature <- function(db, jsonDF) {
                     name        = jsonDF$name[i],
                     description = jsonDF$description[i],
                     sourceDB    = jsonDF$sourceDB[i],
-                    accession   = jsonDF$accession[i],
-                    stringsAsFactors = FALSE)
+                    accession   = jsonDF$accession[i])
     db$feature <- rbind(db$feature, x)
   }
   return(db)
 }
 
 
+# ==   2.07  dbAddTaxonomy()  ==================================================
 dbAddTaxonomy <- function(db, jsonDF) {
   # Add one or more taxonomy entries to the database db.
   # Parameters:
@@ -178,13 +206,13 @@ dbAddTaxonomy <- function(db, jsonDF) {
   for (i in seq_len(nrow(jsonDF))) {
     x <- data.frame(
       ID =  jsonDF$ID[i],
-      species = jsonDF$species[i],
-      stringsAsFactors = FALSE)
+      species = jsonDF$species[i])
     db$taxonomy <- rbind(db$taxonomy, x)
   }
   return(db)
 }
 
+# ==   2.08  dbAddAnnotation()  ================================================
 dbAddAnnotation <- function(db, jsonDF) {
   # Add one or more annotation entries to the database db.
   # Parameters:
@@ -205,14 +233,14 @@ dbAddAnnotation <- function(db, jsonDF) {
                     proteinID = pID,
                     featureID = fID,
                     start     = as.integer(jsonDF$start[i]),
-                    end       = as.integer(jsonDF$end[i]),
-                    stringsAsFactors = FALSE)
+                    end       = as.integer(jsonDF$end[i]))
     db$annotation <- rbind(db$annotation, x)
   }
   return(db)
 }
 
 
+# ==   2.09  dbFetchUniProtSeq()  ==============================================
 dbFetchUniProtSeq <- function(ID) {
   # Fetch a protein sequence from UniProt.
   # Parameters:
@@ -236,6 +264,7 @@ dbFetchUniProtSeq <- function(ID) {
 }
 
 
+# ==   2.10  dbFetchPrositeFeatures()  =========================================
 dbFetchPrositeFeatures <- function(ID) {
   # Fetch feature annotations from ScanProsite.
   # Parameters:
@@ -272,14 +301,14 @@ dbFetchPrositeFeatures <- function(ID) {
                                      start =  as.numeric(tokens[4]),
                                      end   =  as.numeric(tokens[5]),
                                      psID  =  tokens[6],
-                                     psName = tokens[7],
-                                     stringsAsFactors = FALSE))
+                                     psName = tokens[7]))
     }
   }
   return(myFeatures)
 }
 
 
+# ==   2.11  node2text()  ======================================================
 node2text <- function(doc, tag) {
   # an extractor function for the contents of elements
   # between given tags in an XML response.
@@ -291,6 +320,7 @@ node2text <- function(doc, tag) {
 }
 
 
+# ==   2.12  dbFetchNCBItaxData()  =============================================
 dbFetchNCBItaxData <- function(ID) {
   # Fetch feature taxID and Organism from the NCBI.
   # Parameters:
@@ -329,6 +359,7 @@ dbFetchNCBItaxData <- function(ID) {
 
 
 
+# ==   2.13  UniProtIDmap()  ===================================================
 UniProtIDmap <- function (s, mapFrom = "P_REFSEQ_AC", mapTo = "ACC") {
   # Use UniProt ID mapping service to map one or more IDs
   # Parameters:
@@ -351,8 +382,7 @@ UniProtIDmap <- function (s, mapFrom = "P_REFSEQ_AC", mapTo = "ACC") {
 
   if (httr::status_code(response) == 200) { # 200: oK
     myMap <- read.delim(file = textConnection(httr::content(response)),
-                        sep = "\t",
-                        stringsAsFactors = FALSE)
+                        sep = "\t")
     myMap <- myMap[ , c(1,3)]
     colnames(myMap) <- c("From", "To")
   } else {
@@ -366,7 +396,7 @@ UniProtIDmap <- function (s, mapFrom = "P_REFSEQ_AC", mapTo = "ACC") {
 }
 
 
-# ====== TESTS =================================================================
+# =    3  TESTS  ===============================================================
 
 if (FALSE) {
   if (! requireNamespace("testthat", quietly = TRUE)) {
