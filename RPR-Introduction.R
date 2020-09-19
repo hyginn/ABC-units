@@ -1,19 +1,15 @@
 # tocID <- "RPR-Introduction.R"
 #
-# ---------------------------------------------------------------------------- #
-#  PATIENCE  ...                                                               #
-#    Do not yet work wih this code. Updates in progress. Thank you.            #
-#    boris.steipe@utoronto.ca                                                  #
-# ---------------------------------------------------------------------------- #
 #
 # Purpose: A Bioinformatics Course:
 #              R code accompanying the RPR-Introduction unit
 #
-# Version: 0.1
+# Version: 1.0
 #
-# Date:    2017  08  25
+# Date:    2020-09-18
 # Author:  Boris Steipe (boris.steipe@utoronto.ca)
 #
+# V 1.0    Updtaed workflow; live
 # V 0.1    First code
 #
 # TODO:
@@ -32,17 +28,22 @@
 # === TASK: Local script
 #
 # - Open the file myScript.R
-# - Update the header of the script to emulate the header of the file you are
-#     reading right now. Don't bother giving the myScript.R file version numbers
-#     though.
+#
 # - Create a section header with a date.
-# - Enter an R-expression that will produce the first 10 powers of 2 (starting
+# - Enter an R-expression that will produce the first 11 powers of 2 (starting
 #     from 0). Not a loop - a single expression. The first number you get must
 #     be 1. The last number you get must be 1024.
-# - Save the file.
+#
+# - Save the file in the myScripts folder, and close it.
+#
+# - Open the file again, select the expression and type Cmd+Enter (or Cmd+R)
+#   to execute it.
+#
+# - Done
 
-# (This task is meant simply to make sure that writing R expressions, saving
-# them in scripts, and opening and executing script files works for you. )
+# (This task is meant  to make sure that writing R expressions, saving
+#  them in scripts, opening script files and executing code in the file works
+#  for you. If there is an issue, get in touch.)
 
 
 
