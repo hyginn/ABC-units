@@ -1,25 +1,21 @@
 # tocID <- "BIN-Storing_data.R"
 #
-# ---------------------------------------------------------------------------- #
-#  PATIENCE  ...                                                               #
-#    Do not yet work wih this code. Updates in progress. Thank you.            #
-#    boris.steipe@utoronto.ca                                                  #
-# ---------------------------------------------------------------------------- #
-#
 # Purpose: A Bioinformatics Course:
 #              R code accompanying the BIN-Storing_data unit
 #
-# Version: 1.1
+# Version: 1.2
 #
-# Date:    2017  10  08
+# Date:    2017-10  -  2020-09
 # Author:  Boris Steipe (boris.steipe@utoronto.ca)
 #
+# V 1.2    2020 updates. Finally removed stringAsFactors  :-)
 # V 1.1    Add instructions to retrieve UniProt ID from ID mapping service.
 # V 1.0    First live version, complete rebuilt. Now using JSON data sources.
 # V 0.1    First code copied from BCH441_A03_makeYFOlist.R
 #
 # TODO:
-#
+#  The sameSpecies() approach is a bit of a hack - can we solve the
+#  species vs. strain issue in a more principled way?
 #
 # == HOW TO WORK WITH LEARNING UNIT FILES ======================================
 #
@@ -33,30 +29,30 @@
 
 
 #TOC> ==========================================================================
-#TOC>
+#TOC> 
 #TOC>   Section  Title                                                   Line
 #TOC> -----------------------------------------------------------------------
-#TOC>   1        A Relational Datamodel in R: review                       57
-#TOC>   1.1        Building a sample database structure                    97
-#TOC>   1.1.1          completing the database                            208
-#TOC>   1.2        Querying the database                                  243
-#TOC>   1.3        Task: submit for credit (part 1/2)                     272
-#TOC>   2        Implementing the protein datamodel                       284
-#TOC>   2.1        JSON formatted source data                             310
-#TOC>   2.2        "Sanitizing" sequence data                             350
-#TOC>   2.3        Create a protein table for our data model              370
-#TOC>   2.3.1          Initialize the database                            372
-#TOC>   2.3.2          Add data                                           384
-#TOC>   2.4        Complete the database                                  404
-#TOC>   2.4.1          Examples of navigating the database                431
-#TOC>   2.5        Updating the database                                  463
-#TOC>   3        Add your own data                                        475
-#TOC>   3.1        Find a protein                                         483
-#TOC>   3.2        Put the information into JSON files                    512
-#TOC>   3.3        Create an R script to create your own database         535
-#TOC>   3.3.1          Check and validate                                 555
-#TOC>   3.4        Task: submit for credit (part 2/2)                     596
-#TOC>
+#TOC>   1        A Relational Datamodel in R: review                       59
+#TOC>   1.1        Building a sample database structure                    99
+#TOC>   1.1.1          completing the database                            205
+#TOC>   1.2        Querying the database                                  238
+#TOC>   1.3        Task: submit for credit (part 1/2)                     269
+#TOC>   2        Implementing the protein datamodel                       291
+#TOC>   2.1        JSON formatted source data                             317
+#TOC>   2.2        "Sanitizing" sequence data                             358
+#TOC>   2.3        Create a protein table for our data model              380
+#TOC>   2.3.1          Initialize the database                            382
+#TOC>   2.3.2          Add data                                           394
+#TOC>   2.4        Complete the database                                  414
+#TOC>   2.4.1          Examples of navigating the database                441
+#TOC>   2.5        Updating the database                                  473
+#TOC>   3        Add your own data                                        485
+#TOC>   3.1        Find a protein                                         493
+#TOC>   3.2        Put the information into JSON files                    523
+#TOC>   3.3        Create an R script to create your own database         546
+#TOC>   3.3.1          Check and validate                                 569
+#TOC>   3.4        Task: submit for credit (part 2/2)                     614
+#TOC> 
 #TOC> ==========================================================================
 
 
@@ -111,8 +107,7 @@ x <- data.frame(id = c(1,2),
                 name = c("Laozi", "Martin Heidegger"),
                 born = c(NA, "1889"),
                 died = c("531 BCE", "1976"),
-                school = c("Daoism", "Phenomenology"),
-                stringsAsFactors = FALSE)
+                school = c("Daoism", "Phenomenology"))
 str(x)
 
 # Lets add the dataframe to the philDB list and call it "person" there.
@@ -131,7 +126,6 @@ philDB$person$name[1]   # Laozi
 # task: Write an expression that returns all "school" entries from the
 #       person table.
 
-
 # Let's now add another person. There are several ways to do this, the
 # conceptually cleanest is to create a one-row dataframe with the data, and
 # rbind() it to the existing dataframe. Doing this, we must take care that
@@ -145,8 +139,14 @@ rbind(x, y)
 rbind(x, y)
 
 # All clear? That's good - this behaviour provides us with a sanity check on the
-# operation.
+# operation. Incidentally: rbind(x, y) did NOT change the table ...
+x
+# rather rbind() had the chnaged table as its return value and that's why it
+# was printed. To actually change the table, you need to ASSIGN the return
+# value  of rbind() ... like so:
+x <- rbind(x, y)
 
+# To continue ...
 (x <- data.frame(id = 2,
                  name = "Zhuangzi",
                  born = "369 BCE",
@@ -159,21 +159,13 @@ philDB$person <- rbind(philDB$person, x)
 # ... and examine the result:
 str(philDB)
 
-# Now one thing you should note is that we had forgotten to declare
-# stringsAsFactors = FALSE when we created x - but this did not damage
-# the database. This is because the existing columns had type chr and the
-# implicit coercion, e.g. ...
-as.character(x$name)
-# happened to do the right thing. Don't rely on that. The Right Way is to
-# turn factors off, even when you are making just a single row.
-
-# But we made a serious error in our data! Did you spot it?
+# We made a serious error in our data! Did you spot it?
 #
 # If not, look at ...
 philDB$person$id
 # ... does that look oK?
 #
-# Absolutely not! id is the Primary Key in the table, and it has to be
+# Absolutely not! "id" is the Primary Key in the table, and it has to be
 # unique. How can we guarantee it to be unique? Certainly not when we
 # enter it by hand. We need a function that generates a unique key. Here's
 # a simple version, without any error-checking. It assumes that a column
@@ -202,16 +194,15 @@ x <- data.frame(id = autoincrement(philDB$person),
                 name = "Zhuangzi",
                 born = "369 BCE",
                 died = "286 BCE",
-                school = "Daoism",
-                stringsAsFactors = FALSE)
+                school = "Daoism")
 philDB$person <- rbind(philDB$person, x)
 str(philDB)
 
 # So far so good. Be honest with yourself. If you didn't follow any of this,
-# go back, re-read, play with it, and ask for help. This is essential.
+# go back, re-read, play with it, and ask for help. These are the foundations.
 
 
-# ===   1.1.1  completing the database
+# ===   1.1.1  completing the database                       
 
 
 # Next I'll add one more person, and create the other two tables:
@@ -220,11 +211,10 @@ x <- data.frame(id = autoincrement(philDB$person),
                 name = "Kongzi",
                 born = "551 BCE",
                 died = "479 BCE",
-                school = "Confucianism",
-                stringsAsFactors = FALSE)
+                school = "Confucianism")
 philDB$person <- rbind(philDB$person, x)
 
-
+# a table of major works ...
 philDB[["books"]] <- data.frame(id = 1:5,
                                 title = c("Zhuangzi",
                                           "Analects",
@@ -235,13 +225,12 @@ philDB[["books"]] <- data.frame(id = 1:5,
                                               "220 BCE",
                                               "1927",
                                               "530 BCE",
-                                              "1959"),
-                                stringsAsFactors = FALSE)
+                                              "1959"))
 
+# a "join" table that links works and their author ...
 philDB[["works"]] <- data.frame(id = 1:5,
                                 personID = c(3, 4, 2, 1, 2),
-                                bookID = c(1, 2, 3, 4, 5),
-                                stringsAsFactors = FALSE)
+                                bookID = c(1, 2, 3, 4, 5))
 
 str(philDB)
 
@@ -261,8 +250,10 @@ philDB$books$title
 # author:
 (sel <- order(philDB$person$name))   # check out ?order and describe to
                                      # someone you know what it does, so that
-                                     # you are sure you understand it.
-(pID <- philDB$person$id[sel])
+                                     # you are sure you understand it. Its
+                                     # indirection can be a bit tricky to
+                                     # understand.
+( pID <- philDB$person$id[sel] )
 sel <- numeric()   # initialize the vector
 for (ID in pID) {
   sel <- which(philDB$works$personID == ID)          # get all rows for which
@@ -278,13 +269,23 @@ for (ID in pID) {
 # ==   1.3  Task: submit for credit (part 1/2)  ================================
 
 
-#    Write and submit code that adds another philosopher to the datamodel:
+#    Write code that adds another philosopher to the datamodel:
 #       Immanuel Kant, (1724 - 1804), Enlightenment Philosophy.
 #       Works: Critique of Pure Reason (1781), Critique of Judgement (1790)
-#    Write and submit code that lists the books in alphabetical order,
-#    followed by the author and the year of publishing. Format your output like:
-#    "Analects" - Kongzi (220 BCE)
-#    Show the result.
+#    Paste your code into your submission page. Enclose it in <pre> ... </pre>
+#    tags.
+#
+#    Write and submit code that lists the philosophical schools in
+#    alphabetical order, and the books associated with them, also
+#    alphabetically. Format your output like:
+#    Confucianism
+#       Analects - (220 BCE)
+#    Daoism
+#       Daodejing - (530 BCE)
+#       ... etc.
+#
+#    Show the output of your code. Make sure the code itself is enclosed
+#    in <pre> ... </pre> tags.
 
 
 # =    2  Implementing the protein datamodel  ==================================
@@ -296,13 +297,13 @@ for (ID in pID) {
 # mistakes.
 #  - Data needs to be captured in a human-readable form so it can be verified
 #      and validated;
-#  - Some aspects of the database should _never_ be done by hand because they
+#  - Some aspects of the database should _never_ be done by hand because
 #      errors are easy to make and hard to see. That essentially includes
 #      every operation that has to do with abstract, primary keys;
 #  - Elementary operations we need to support are: adding data, selecting
 #      data, modifying data and deleting data.
 
-# We will therefore construct our database in the following way:
+# We will therefore construct our protein database in the following way:
 #  - For each table, we will keep the primary information in JSON files. There
 #      it is easy to read, edit if needed, and modify it.
 #  - We will use simple scripts to read the JSON data and assemble it in
@@ -334,8 +335,9 @@ file.show("./data/MBP1_SACCE.json")
 #     sanitize the sequence at some point. But since we need to do that
 #     anyway, it is easier to see the whole sequence if we store it in chunks.
 
-# Let's make sure the "jsonlite" package exists on your computer, then we'll
-# explore how it reads this data.
+# The .utilities.R script that get's loaded whenever you open this project
+# has already made sure the "jsonlite" package exists on your computer. This
+# package supports our work with .json formatted data.
 
 if (! requireNamespace("jsonlite", quietly = TRUE)) {
   install.packages("jsonlite")
@@ -365,17 +367,19 @@ dbSanitizeSequence
 dbSanitizeSequence(c("GAA", "ttc"))
 dbSanitizeSequence("MsnQ00%0 I@#>YSary    S
                      G1 V2DV3Y>")
-x <- "        1 msnqiysary sgvdvyefih stgsimkrkk ddwvnathil kaanfakakr trilekevlk
+x <- "
+        1 msnqiysary sgvdvyefih stgsimkrkk ddwvnathil kaanfakakr trilekevlk
        61 ethekvqggf gkyqgtwvpl niakqlaekf svydqlkplf dftqtdgsas pppapkhhha
       121 skvdrkkair sastsaimet krnnkkaeen qfqsskilgn ptaaprkrgr pvgstrgsrr
-..." # copy/paste from Genbank
+      ...
+     " # copy/paste from Genbank
 
 dbSanitizeSequence(x)
 
 
 # ==   2.3  Create a protein table for our data model  =========================
 
-# ===   2.3.1  Initialize the database
+# ===   2.3.1  Initialize the database                       
 
 
 # The function dbInit contains all the code to return a list of empty
@@ -387,7 +391,7 @@ myDB <- dbInit()
 str(myDB)
 
 
-# ===   2.3.2  Add data
+# ===   2.3.2  Add data                                      
 
 
 # fromJSON() returns a dataframe that we can readily process to add data
@@ -434,7 +438,7 @@ source("./scripts/ABC-createRefDB.R")
 str(myDB)
 
 
-# ===   2.4.1  Examples of navigating the database
+# ===   2.4.1  Examples of navigating the database           
 
 
 # You can look at the contents of the tables in the usual way we access
@@ -481,9 +485,9 @@ myDB$taxonomy$species[sel]
 # =    3  Add your own data  ===================================================
 
 
-# You have chosen an organism as "MYSPE", and you final task will be to find the
-# protein in MYSPE that is most similar to yeast Mbp1 and enter its information
-# into the database.
+# You have defined a genome sequence fungus as "MYSPE", and your final task
+# will be to find the protein in MYSPE that is most similar to yeast Mbp1, and
+# to enter its information into the database.
 
 
 # ==   3.1  Find a protein  ====================================================
@@ -495,22 +499,23 @@ myDB$taxonomy$species[sel]
 # - Navigate to https://blast.ncbi.nlm.nih.gov/Blast.cgi and click on
 #   Protein BLAST.
 # - Enter NP_010227 into the "Query Sequence" field.
-# - Choose "Reference proteins (refseq_protein)" as the "Database".
+# - Choose "Reference proteins (refseq_protein)" as the "Database" in the
+#   "Choose Search Set" section.
 # - Paste the MYSPE species name into the "Organism" field.
 #
-# - Click "BLAST".
+# - Click the "BLAST" button.
 
 # You will probably get more than one result. If you get dozens of results or
 # more, or if you get no results, something went wrong. Reconsider whether the
 # problem was with your input, try something different, or ask for help.
 
-# Otherwise, look for the top-hit in the "Alignments" section. In some cases
+# Otherwise, look for the top-hit in the "Descriptions" tab In some cases
 # there will be more than one hit with nearly similar E-values. If this is the
 # case for MYSPE, choose the one with the higher degree of similarity (more
 # identities) with the N-terminus of the query - i.e. the Query sequence of
 # the first ~ 100 amino acids.
 
-# -  Follow the link to the protein data page, linked from "Sequence ID".
+# -  Follow the link to the protein data page, linked from "Accession".
 # -  From there, in a separate tab, open the link to the taxonomy database page
 #      for MYSPE which is linked from the "ORGANISM" record.
 
@@ -550,15 +555,18 @@ myDB$taxonomy$species[sel]
 #     myDB <- dbAddProtein(    myDB, fromJSON("MBP1_<code>.json"))
 #     myDB <- dbAddTaxonomy(   myDB, fromJSON("MYSPEtaxonomy.json"))
 #
-# - save the file and source() it:
-#     source("makeProteinDB.R")
+# - save the file in the ./myScripts/ folder and source() it:
+#     source("./myScripts/makeProteinDB.R")
 
 # This command needs to be executed whenever you recreate
 # the database. In particular, whenver you have added or modified data
 # in any of the JSON files. Later you will add more information ...
 
+# Remember this principle. Don't rely on objects in memory - you might
+# "break" them with a code experiment. But always have a script with
+# which you can create what you need.
 
-# ===   3.3.1  Check and validate
+# ===   3.3.1  Check and validate                            
 
 
 # Is your protein named according to the pattern "MBP1_MYSPE"? It should be.
@@ -585,7 +593,11 @@ myDB$protein$sequence[nrow(myDB$protein)]
 #                Mbp1 homologue, DO NOT CONTINUE. Fix the problem.
 
 # Is that the right taxonomy ID and binomial name for MYSPE?
-sel <- myDB$taxonomy$species == MYSPE
+# This question may be a bit non-trivial ... MYSPE is a species, but the
+# recorded taxonomy ID may be a strain. We have a utility function,
+# sameSpecies()  that normalizes organism name to the binomial species.
+#
+sel <- sameSpecies(myDB$taxonomy$species, MYSPE)
 myDB$taxonomy[sel, ]
 
 # If not, or if the result was "<0 rows> ... " then DO NOT CONTINUE.
@@ -605,11 +617,13 @@ myDB$protein$RefSeqID[sel]
 # - On your submission page, note the E-value of your protein and link
 #     to its NCBI protein database page.
 # - Copy and paste the contents of your two JSON files on your submission
-#     page on the Student Wiki
-# - Execute the two commands below and show the result on your submission page
+#     page on the Student Wiki. Make sure they are enclosed in <pre> ... </pre>
+#     tags.
+# - Execute the three commands below and show the result on your submission page
 
 biCode(myDB$taxonomy$species) %in% biCode(MYSPE)
-myDB$protein$taxonomyID %in% myDB$taxonomy$ID[(myDB$taxonomy$species == MYSPE)]
+sel <- sameSpecies(myDB$taxonomy$species, MYSPE)
+myDB$protein$taxonomyID %in% myDB$taxonomy$ID[sel]
 
 # That is all.
 
