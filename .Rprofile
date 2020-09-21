@@ -14,7 +14,9 @@ init <- function() {
 
   cat("\n\n")
   cat("Please open the file \".myProfile.R\" (click on the file-name in the\n")
-  cat("\"files\" pane), edit it, and save it into the \"myScripts\" folder.\n\n")
+  cat("\"files\" pane), edit it and save it.\n")
+  cat("Then click the checkbox, and use the More -> Move... dialogue\n")
+  cat("to move it into the \"myScripts\" folder.\n\n")
 
   file.edit("ABC-units.R")
   return(invisible(NULL))

@@ -34,13 +34,13 @@
 
 
 #TOC> ==========================================================================
-#TOC> 
+#TOC>
 #TOC>   Section  Title                           Line
 #TOC> -----------------------------------------------
 #TOC>   1        Preparations                      47
 #TOC>   2        Suitable MYSPE Species            59
 #TOC>   3        Adopt "MYSPE"                     83
-#TOC> 
+#TOC>
 #TOC> ==========================================================================
 
 
@@ -48,7 +48,7 @@
 #
 
 # Execute the two conditionals below:
-if (! file.exists("scripts/.myProfile.R")) {
+if (! file.exists("./myScripts/.myProfile.R")) {
   stop("PANIC: profile file does not exist. Fix problem or ask for help.")
 }
 if (! exists("myStudentNumber")) {

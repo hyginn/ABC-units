@@ -8,7 +8,7 @@
 #                            correct.
 #
 # NOTE:
-# After you have updated this script, save the file in your "myScripts" folder.
+# After you have updated this script, move the file to your "myScripts" folder.
 # Utility scripts will look for it on the path: "./myScripts/.myProfile.R"
 #
 # ==============================================================================
