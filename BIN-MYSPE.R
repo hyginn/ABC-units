@@ -124,21 +124,25 @@ Nfng <- nrow(fungiDat) - Nord - Ngen - Nspc
 
 # proportions
 pCol <- c("#ed394e", "#ff9582", "#ffd5c4", "#f2f2f0")
+oPar <- par(mar = c(1.1, 0, 1.1, 1))
 pie(c(Nspc, Ngen, Nord, Nfng),
     labels = "",
     radius = 1,
     main = "MYSPE in genome-sequenced fungi",
     sub = MYSPE,
+    lty = 0,                 # no borders for wedges
     col = pCol,
     clockwise = TRUE,
     init.angle = 90)
-legend(x = 1.3, y = 0.8,     # position
+legend(x = 1.05, y = 0.8,     # position
        legend = c("Species", "Genus", "Order", "Fungi"),
-       y.intersp = 1.5,      # line spacing for labels
-       cex = 0.9,            # character size for labels
+       y.intersp = 2,      # line spacing for labels
+       cex = 0.8,            # character size for labels
        bty = "n",            # "no" box around the legend
        pt.cex = 2,           # size of colour boxes
        pch = 15,
        col = pCol)
+par(oPar)
+
 
 # [END]
