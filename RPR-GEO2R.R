@@ -9,12 +9,13 @@
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the RPR_GEO2R unit.
 #
-# Version:  1.2
+# Version:  1.3
 #
-# Date:     2017 09  -  2019 01
+# Date:     2017-09  -  2020-09
 # Author:   Boris Steipe <boris.steipe@utoronto.ca>
 #
 # Versions:
+#           1.3    use saveRDS()/readRDS() rather than save()/load()
 #           1.2    Change from require() to requireNamespace(),
 #                      use <package>::<function>() idiom throughout,
 #                      use Biocmanager:: not biocLite()
@@ -122,7 +123,9 @@ GSE3635 <- GSE3635[[idx]]
 # FALLBACK
 # ... in case the GEO server is not working, load the "GSE3635" object from
 # the data directory:
-# load(file="./data/GSE3635.RData")
+#
+# GSE3635 <- readRDS(file="./data/GSE3635.rds")
+
 
 # Checkpoint ...
 if (! exists("GSE3635")) {

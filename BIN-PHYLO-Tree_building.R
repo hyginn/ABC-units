@@ -9,12 +9,13 @@
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the BIN-PHYLO-Tree_building unit.
 #
-# Version:  1.1
+# Version:  1.2
 #
-# Date:     2017  10.  31
+# Date:     2017-10   2020-09
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.2    deprecate save()/load() for saveRDS()/readRDS()
 #           1.1    Change from require() to requireNamespace(),
 #                      use <package>::<function>() idiom throughout,
 #           1.0    First 2017 version
@@ -139,7 +140,7 @@ apsTree <- Rphylip::Rproml(apsIn, path=PROMLPATH)
 plot(apsTree)
 
 # save your tree:
-save(apsTree, file = "APSEStreeRproml.RData")
+saveRDS(apsTree, file = "APSEStreeRproml.rds")
 
 # If this did not work, ask for advice.
 

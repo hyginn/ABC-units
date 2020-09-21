@@ -6,9 +6,6 @@
 #                            UofT eMail address.
 # myStudentNumber  numeric   Your UofT student number. Take care to have this
 #                            correct.
-# MYSPE            char      A string with the species name of a genome-
-#                            sequenced fungus. Which species this is will be
-#                            determined in the BIN-MYSPE unit.
 #
 # NOTE:
 # After you have updated this script, save the file in your "myScripts" folder.
@@ -18,6 +15,5 @@
 
 myEMail <- "<your-e-mail-address-here>"        # e.g. "u.franklin@utoronto.ca"
 myStudentNumber <- <your-student-number-here>  # e.g. 1003141592
-MYSPE <- "<your-adopted-species-here>"         # e.g. "Neurospora crassa OR74A"
 
 # [END]

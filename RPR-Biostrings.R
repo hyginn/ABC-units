@@ -198,7 +198,7 @@ Biostrings::translate(biosDNAseq[4:15])
 
 Biostrings::toString(biosDNAseq[4:15])
 
-# save() and load() works like on all other R objects.
+# saveRDS() and readRDS() works like on all other R objects.
 
 
 # =    5  More  ================================================================

@@ -119,10 +119,10 @@ scCCnet <- scCCnet[! duplicated(x), ]
 # length(unique(c(mySubnet$protein1, mySubnet$protein2)))  # 261, no change
 # Network has 261 nodes, 1280 edges
 
-save(scCCnet, file = "./data/scCCnet.RData")
+saveRDS(scCCnet, file = "./data/scCCnet.rds")
 
-# load("./data/scCCnet.RData")   # <<<- use this to load the object when
-                                 # needed
+# scCCnet <- readRDS("./data/scCCnet.rds")   # <<<- use this to restore the
+                                             #      object when needed
 
 
 # [END]

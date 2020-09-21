@@ -110,7 +110,7 @@ ape::nodelabels(text = fungiTree$node.label,
 
 # We load the APSES sequence tree that you produced in the
 # BIN-PHYLO-Tree_building unit:
-load(file = "APSEStreeRproml.RData")
+apsTree <- readRDS(file = "APSEStreeRproml.rds")
 
 plot(apsTree) # default type is "phylogram"
 plot(apsTree, type = "unrooted")

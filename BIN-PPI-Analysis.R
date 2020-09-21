@@ -9,12 +9,13 @@
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the BIN-PPI-Analysis unit.
 #
-# Version:   1.1
+# Version:   1.2
 #
-# Date:     2017  08  -  2019  01
+# Date:     2017-08  -  2020-09
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.2    Deprecate save()/load() for saveRDS()/readRDS()
 #           1.1    Change from require() to requireNamespace(),
 #                      use <package>::<function>() idiom throughout,
 #                      use Biocmanager:: not biocLite()
@@ -72,7 +73,7 @@ if (! requireNamespace("igraph", quietly = TRUE)) {
 # a fungal proteome. You can load the saved dataframe here (To read more about
 # what the numbers mean, see http://www.ncbi.nlm.nih.gov/pubmed/15608232 ).
 
-load("./data/STRINGedges.RData")
+STRINGedges <- readRDS("./data/STRINGedges.rds")
 
 head(STRINGedges)
 

@@ -4,23 +4,23 @@
 #          This script uses the BLAST URL-API
 #          (Application Programming Interface) at the NCBI.
 #          Read about the constraints here:
-#          https://ncbi.github.io/blast-cloud/dev/api.html
+#          https://blast.ncbi.nlm.nih.gov/Blast.cgi?CMD=Web&PAGE_TYPE=BlastDocs&DOC_TYPE=DeveloperInfo
 #
 #
-# Version: 3.1
-# Date:    2016 09 - 2019 01
+# Version: 3.2
+# Date:    2016 09 - 2020 09
 # Author:  Boris Steipe
 #
 # Versions:
+#    3.2   2020 updates
 #    3.1   Change from require() to requireNamespace(),
 #          use <package>::<function>() idiom throughout
-#    3     parsing logic had not been fully implemented; Fixed.
+#    3.0   parsing logic had not been fully implemented; Fixed.
 #    2.1   bugfix in BLAST(), bug was blanking non-split deflines;
 #          refactored parseBLASTalignment() to handle lists with multiple hits.
 #    2.0   Completely rewritten because the interface completely changed.
 #          Code adpated in part from NCBI Perl sample code:
 #          $Id: web_blast.pl,v 1.10 2016/07/13 14:32:50 merezhuk Exp $
-#
 #    1.0   first version posted for BCH441 2016, based on BLAST - API
 #
 # ToDo:
@@ -31,47 +31,50 @@
 # ==============================================================================
 
 
-if (! requireNamespace(httr, quietly = TRUE)) {
+if (! requireNamespace("httr", quietly = TRUE)) {
   install.packages("httr")
 }
 
 
-BLAST <- function(q,
+BLAST <- function(Q,
                   db = "refseq_protein",
                   nHits = 30,
                   E = 0.1,
                   limits = "",
                   rid = "",
+                  query = "",
                   quietly = FALSE,
                   myTimeout = 120) {
     # Purpose:
     #     Basic BLAST search
     #
     # Parameters:
-    #     q: query - either a valid ID or a sequence
+    #     Q: query - either a valid ID or a sequence
     #     db: "refseq_protein" by default,
-    #         other legal valuses include: "nr", "pdb", "swissprot" ...
+    #         other legal values include: "nr", "pdb", "swissprot" ...
     #     nHits: number of hits to maximally return
     #     E: E-value cutoff. Do not return hits whose score would be expected
     #        to occur E or more times in a database of random sequence.
     #     limits: a valid ENTREZ filter
-    #     rid: a request ID - to retrieve earleir search results
+    #     rid: a request ID - to retrieve earlier search results
+    #     query: the actual query string (needed when retrieving results
+    #            with an rid)
     #     quietly: controls printing of wait-time progress bar
     #     timeout: how much longer _after_ rtoe to wait for a result
     #              before giving up (seconds)
     # Value:
-    #     result: list of resulting hits and some metadata
+    #     result: list of process status or resulting hits, and some metadata
 
 
     EXTRAWAIT <- 10 # duration of extra wait cycles if BLAST search is not done
 
     results <- list()
+    results$query = query
     results$rid <- rid
     results$rtoe <- 0
 
-    if (rid == "") {  # if rid is not the empty string we skip the
-                      # initial search and and proceed directly to retrieval
-
+    if (rid == "") {  # If no rid is available, spawn a search.
+                      # Else, proceed directly to retrieval.
 
       # prepare query, GET(), and parse rid and rtoe from BLAST server response
       results$query <- paste0("https://blast.ncbi.nlm.nih.gov/blast/Blast.cgi",
@@ -141,7 +144,8 @@ BLAST <- function(q,
 
         if (myTimeout <= 0) { # abort
           cat("BLAST search not concluded before timeout. Aborting.\n")
-          cat(sprintf("You could check back later with rid \"%s\"\n",
+          cat(sprintf("%s  BLASThits <- BLAST(rid=\"%s\")\n",
+                      "Trying checking back later with >",
                       results$rid))
           return(results)
         }
@@ -370,7 +374,7 @@ if (FALSE) {
                 nHits = 100,
                 E = 0.001,
                 rid = "",
-                limits = "txid4751[ORGN]")
+                limits = "txid4751[ORGN]")  # Fungi
   str(test)
   length(test$hits)
 }

@@ -1,14 +1,16 @@
-# ABC_makeMYSPElist.R
+# tocID <- "scripts/ABC-makeMYSPElist.R"
 #
 # Purpose:  Create a list of genome sequenced fungi with protein annotations and
 #               Mbp1 homologues.
 #
-# Version: 1.2
+# Version: 1.3
 #
-# Date:    2016  09  -  2019  01
+# Date:    2016  09  -  2020  09
 # Author:  Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions
+#          1.3    Rewrite to change datasource. NCBI has not been updated
+#                   since 2012. Use ensembl fungi as initial source.
 #          1.2    Change from require() to requireNamespace()
 #          1.1.2  Moved BLAST.R to ./scripts directory
 #          1.1    Update 2017
@@ -36,18 +38,17 @@
 
 #TOC> ==========================================================================
 #TOC> 
-#TOC>   Section  Title                                     Line
-#TOC> ---------------------------------------------------------
-#TOC>   1        The strategy                                55
-#TOC>   2        GOLD species                                67
-#TOC>   2.1        Initialize                                72
-#TOC>   2.2        Import                                    79
-#TOC>   2.3        Unique species                           131
-#TOC>   3        BLAST species                              173
-#TOC>   3.1        find homologous proteins                 180
-#TOC>   3.2        Identify species in "hits"               204
-#TOC>   4        Intersect GOLD and BLAST species           249
-#TOC>   5        Cleanup and finish                         267
+#TOC>   Section  Title                                    Line
+#TOC> --------------------------------------------------------
+#TOC>   1        The strategy                               56
+#TOC>   2        PACKAGES AND INITIALIZATIONS               68
+#TOC>   3        ENSEMBL FUNGI                              76
+#TOC>   3.1        Import                                   79
+#TOC>   4        BLAST SEARCH                              156
+#TOC>   4.1        find homologous proteins                162
+#TOC>   4.2        Identify species in "hits"              193
+#TOC>   5        MERGE ENSEMBL AND BLAST RESULTS           283
+#TOC>   6        STUDENT NUMBERS                           366
 #TOC> 
 #TOC> ==========================================================================
 
@@ -55,129 +56,110 @@
 # =    1  The strategy  ========================================================
 
 # This script will create a list of "MYSPE" species and save it in an R object
-# MYSPEspecies that is stored in the data subdirectory of this project from where
-# it can be loaded. The strategy is as follows: we download a list of all
-# genome projects and then select species for which protein annotations are
-# available - i.e. these are all genome-sequenced species that have been
-# annotated. Then we search for fungal species that have homologues to MBP1.
-# Then we intersect the two lists to give us genome-sequenced species that
-# also have Mbp1 homologues ...
+# MYSPEspecies that is stored in the data subdirectory of this project from
+# where it can be loaded. The strategy is as follows: we download a list of
+# annotated fungal genomes from ensembl.fungi. All these are genome-sequenced
+# species that have been annotated.
+# Next we perform a BLAST search, to identify fungal species that have
+# genes that are homologous to yeast MBP1.
+#
+# ...
 
-
-# =    2  GOLD species  ========================================================
-
-#  Fetch and parse the Genomes OnLine Database of the Joint Genome Institute
-#  (https://gold.jgi.doe.gov/). Use the data that is hosted at the NCBI.
-
-# ==   2.1  Initialize  ========================================================
+# =    2  PACKAGES AND INITIALIZATIONS  ========================================
 
 # httr provides interfaces to Webservers on the Internet
 if (! requireNamespace("httr", quietly = TRUE)) {
   install.packages("httr")
 }
 
-# ==   2.2  Import  ============================================================
 
-# The URL of the genome data directory at the NCBI:
-# is https://ftp.ncbi.nlm.nih.gov/genomes/GENOME_REPORTS
-# Note the relative size of the prokaryotes and the eukaryotes data.
-
-# What's in this directory?
-URL <- "ftp://ftp.ncbi.nlm.nih.gov/genomes/GENOME_REPORTS/README"
-GOLDreadme <- readLines(URL) # read the file into a vector
-cat(GOLDreadme, sep = "\n")  # display the contents
-
-# Retrieve the file "eukaryotes" via ftp from the NCBI ftp server and put it
-# into a dataframe. This will take a few moments.
-# URL <- "ftp://ftp.ncbi.nlm.nih.gov/genomes/GENOME_REPORTS/eukaryotes.txt"
-# GOLDdata <- read.csv(URL,
-#                      header = TRUE,
-#                      sep = "\t",
-#                      stringsAsFactors = FALSE)
-# save(GOLDdata, file="data/GOLDdata.RData")
-# or ...
-load(file="data/GOLDdata.RData")
+# =    3  ENSEMBL FUNGI  =======================================================
 
 
-# What columns does the table have, how is it structured?
-str(GOLDdata)
+# ==   3.1  Import  ============================================================
 
-# What groups of organisms are in the table? How many of each?
-table(GOLDdata$Group)
+# Navigate to https://fungi.ensembl.org and click on the link to the full
+# list of all species: https://fungi.ensembl.org/species.html
+# On the page, click on the spreadsheet symbol top right and choose
+# "download whole table". The file will be named  "Species.csv", in your
+# usual downloads folder. Move it to the data folder, and read it.
 
-# What subgroups of fungi do we have?
-table(GOLDdata$SubGroup[GOLDdata$Group == "Fungi"])
+sDat <- read.csv("./data/Species.csv")
+str(sDat)
 
-# How many of the fungi have protein annotations? The README file told us that
-# the column "Proteins" contains "Number of Proteins annotated in the assembly".
-# Looking at a few ...
-head(GOLDdata$Proteins, 30)
-# ... we see that the number varies, and some have a hyphen, i.e. no
-# annotations. The hyphens make this a char type column (as per: all elements
-# of a vector must have the same type). Therefore we can't read this as numbers
-# and filter by some value > 0. But we can filter for all genomes that don't
-# have the hyphen:
-sum(GOLDdata$Proteins[GOLDdata$Group == "Fungi"] != "-")
+# The most obvious way to partition these is according to Classification ...
+# (poking around a bit in the UniProt taxonomy database shows that the
+#  classification used here is the taxonomic rank of "order").
+# how many classifications do we have?
+length(unique(sDat$Classification))  # 66
 
-# Subset the data, with fungi that have protein annotations
-GOLDfungi <- GOLDdata[GOLDdata$Group == "Fungi" &
-                          GOLDdata$Proteins != "-" , ]
+# To have a good set for the class, we should have about 100.
+# Let's see for which of these we can find Mbp1 homologues.
+# First, we'll keep only the colums for name, classification, and taxID, and
+# drop the rest ...
+sDat <- sDat[ , c("Name", "Classification", "Taxon.ID")]
+colnames(sDat) <- c("name", "order", "taxID")
 
-# check what we have in the table
-nrow(GOLDfungi)
-head(GOLDfungi)
+# Next, we make an extra column: genus - the first part of the binomial name.
+# We'll use the gsub() function, and for that we need a "regular expression"
+# that matches to all characters from the first blank to the end of the string:
+myPatt <- "\\s.*$"  # one whitespace (\\s) ...
+                    # followed by any character (.) 0..n times (*) ...
+                    # until the end of the string
 
+# using gsub() we substitue all matching characters with the empty string "" -
+# this deletes the matching characters
+# Test this:
+gsub(myPatt, "", "Genus")                      # one word: unchanged
+gsub(myPatt, "", "gEnus species")              # two words: return only first
+gsub(myPatt, "", "geNus species strain 123")   # many words: return only first
 
-# ==   2.3  Unique species  ====================================================
+# apply this to the "name" column and add the result as a separate column
+# called "genus"
+sDat$genus <- gsub(myPatt, "", sDat$name)
 
-# For our purpose of defining species, we will select only species, not strains
-# from this list. To do this, we pick the first two words i.e. the systematic
-# binomial name from the "X.Organism.Name" column, and then we remove redundant
-# species. Here is a function:
+# what do we get?
+c(head(unique(sDat$genus)),
+  tail(unique(sDat$genus)))  # inspect the first and last few. Note that there
+                             # is a problem that we have to keep in mind.
+                             # (Always inspect your results!)
+# Drop all rows for which the genus contains special chracters -
+# like "[Candida]"
+sDat <- sDat[ ! grepl("[^a-zA-Z]", sDat$genus) , ]
+
+length(table(sDat$genus))    # how many genus?
+hist(table(sDat$genus), col = "#E9F4FF")      # Distribution ...
+                                              # most genus have very few, but
+                                              # some have very many species.
+sort(table(sDat$genus), decreasing = TRUE)[1:10]  # Top ten...
+
+# We should have at least one species from each taxonomic order, but we can
+# add a few genus until we have about 100 validated species.
+
+# Let's add a column for species, by changing our regular expression a bit,
+# using ^ (start of string), \\S (NOT a whitespace),
+# and + (one or more matches), capturing the match (...), and returning
+# it as the substitution (\\1) ...
+
+myPatt <- "^(\\S+\\s\\S+)\\s.*$"
+sDat$species <- gsub(myPatt, "\\1", sDat$name)
+
+# And we reorder the columns, just for aesthetics:
+sDat <- sDat[ , c("name", "species", "genus", "order", "taxID")]
+
+# Final check:
+any(grepl("[^a-zA-Z -]", sDat$species)) # FALSE means no special characters
+
 #
+# Now we check which of these have Mbp1 homologues ...
 
-getBinom <- function(s) {
-    # Fetch the first two words from a string.
-    # Parameters:
-    #   s: char  a string which is expected to contain a binomial species name
-    #            as the first two words, possibly followed by other text.
-    # Value: char  the first two words separated by a single blank
-    #
-    x <- unlist(strsplit(s, "\\s+"))     # split s on one or more whitespace
-    return(paste(x[1:2], collapse=" "))  # return first two elements
-}
-
-# iterate through GOLDdata and extract species names
-GOLDspecies <- character()
-for (i in 1:nrow(GOLDfungi)) {
-    GOLDspecies[i] <- getBinom(GOLDfungi$X.Organism.Name[i])
-}
-head(GOLDspecies)
-length(GOLDspecies)
-
-# N.b. this would be more efficiently (but perhaps less explicitly) coded with
-# one of the apply() functions, instead of a for-loop.
-# GOLDspecies <- unlist(lapply(GOLDfungi$X.Organism.Name, getBinom))
-
-# Species of great interest may appear more than once, one for each sequenced
-# strain: e.g. brewer's yeast:
-sum(GOLDspecies == "Saccharomyces cerevisiae")
-
-# Therefore we use the function unique() to throw out duplicates. Simple:
-GOLDspecies <- unique(GOLDspecies)
-
-length(GOLDspecies)
-# i.e. we got rid of about 40% of the species by removing duplicates.
+# =    4  BLAST SEARCH  ========================================================
 
 
-# =    3  BLAST species  =======================================================
-#
-# Next, we filter our list by species that have homologues to the yeast Mbp1
-# gene. To do this we run a BLAST search to find all related proteins in any
-# fungus. We list the species that appear in that list, and then we select those
-# that appear in our GOLD table as well.
-#
-# ==   3.1  find homologous proteins  ==========================================
+# We run a BLAST search to find all proteins related to yeast Mbp1 in any
+# fungus. With the results, we'll annotate our sDat table.
+
+# ==   4.1  find homologous proteins  ==========================================
 #
 # Use BLAST to fetch proteins related to Mbp1 and identify the species that
 # contain them.
@@ -188,20 +170,27 @@ length(GOLDspecies)
 # to make a BLAST interface (demo-quality, not research-quality) is in the file
 # ./scripts/BLAST.R Feel encouraged to study how this works. It's a pretty
 # standard task of communicating with servers and parsing responses - everyday
-# fare in thebioinformatics lab. Surprisingly, there seems to be no good BLAST
+# fare in the bioinformatics lab. Surprisingly, there seems to be no good BLAST
 # parser in currently available packages.
-
-# source("./scripts/BLAST.R")   # load the function and its utilities
+#
+# DON'T use this for BLAST searches unless you have read the NCBI policy
+# for automated tasks. If you indicriminately pound on the NCBI's BLAST
+# server, they will blacklist your IP-address. See:
+# https://blast.ncbi.nlm.nih.gov/Blast.cgi?CMD=Web&PAGE_TYPE=BlastDocs&DOC_TYPE=DeveloperInfo
+#
 # Use BLAST() to find yeast Mbp1 homologues in other fungi in refseq
 # BLASThits <- BLAST("NP_010227",                  # Yeast Mbp1 RefSeq ID
 #                    db = "refseq_protein",        # database to search in
-#                    nHits = 3000,                 # 720 hits in 2017
+#                    nHits = 3000,                 # 945 hits in 2020
 #                    E = 0.01,                     #
 #                    limits = "txid4751[ORGN]")    # = fungi
-# save(BLASThits, file="data/BLASThits.RData")
-load(file="data/BLASThits.RData")
+# saveRDS(BLASThits, file="data/BLASThits.rds")
+#
+# NO NEED TO ACTUALLY RUN THIS:you can load the results from the data directory
+#
+BLASThits <- readRDS(file = "data/BLASThits.rds")
 
-# ==   3.2  Identify species in "hits"  ========================================
+# ==   4.2  Identify species in "hits"  ========================================
 
 # This is a very big list that can't be usefully analyzed manually. Here
 # we are only interested in the species names that it contains.
@@ -224,61 +213,208 @@ str(BLASThits$hit[[277]])
 
 BLASTspecies <- character()
 for (i in seq_along(BLASThits$hits)) {
-    BLASTspecies[i] <-BLASThits$hits[[i]]$species
+    BLASTspecies[i] <- BLASThits$hits[[i]]$species
 }
 
 # You can confirm that BLASTspecies has the expected size.
 length(BLASTspecies)
+
+# if we delete some of these later on, we still want to remember which hit
+# they came from. Thus we name() the elements with their index, which is the
+# same as the index of the hit in BLASThits
+names(BLASTspecies) <- 1:length(BLASTspecies)
+
+
+# let's plot the distribution of E-values
+eVals <- numeric()
+for (i in seq_along(BLASThits$hits)) {
+  eVals[i] <- BLASThits$hits[[i]]$E
+}
+range(eVals)
+sum(eVals == 0)
+
+# let's plot the log of all values > 0 to see how they are distributed
+# plotting only one vectyor of numbers plots their index as x, and
+# their value as y ...
+plot(log(eVals[eVals > 0]), col = "#CC0000")
+
+# This is very informative: I would suspect that the first ten or so are
+# virtually identical to the yeast protein, then we have about 700 hits with
+# decreasing similarity, and then about 200 more that may actually be false
+# positives. Also - we plotted them by index, that means the table is SORTED:
+# Lower E-values strictly come before higher E-values.
 
 # Again, some species appear more than once, e.g. ...
 sum(BLASTspecies == "Saccharomyces cerevisiae")
 
 # ... corresponding to the five homologous gene sequences (paralogues) of yeast.
 
-# Therefore we use unique() to throw out duplicates:
-BLASTspecies <- unique(BLASTspecies)
+# Therefore we remove duplicates. Removing duplicates will leave the FIRST
+# in a list alone, and only remove the SUBSEQUENT ones. Which means, from each
+# species, we will retain only the protein that has the highest similarity
+# to yeast Mbp1, not any of its more distant paralogues.
+sel <- ! duplicated(BLASTspecies)
+BLASTspecies <- BLASTspecies[sel]
 
 length(BLASTspecies)
 # i.e. we got rid of about two thirds of the hits.
+tail(BLASTspecies)  # see how the names are useful!
+                    # again - there are some special characters ...
+                    # what are they?
+BLASTspecies[grep("[^a-zA-Z ]", BLASTspecies)]
 
-# You should think about this: what is the biological interpretation of the
-# finding that on average we have three sequences that are similar to Mbp1 in
-# other species?
+# remove the brackets ...
+BLASTspecies <- gsub("\\[|\\]", "", BLASTspecies)
+# drop any new duplicates ...
+BLASTspecies <- BLASTspecies[ ! duplicated(BLASTspecies)]
 
+# check the number again:
+length(BLASTspecies)
+# Think a bit about this: what may be the biological reason to find that
+# on average, in 300 fungi across the entire phylogenetic tree, we have
+# three sequences that are homologous to yeast Mbp1?
 
-# =    4  Intersect GOLD and BLAST species  ====================================
-
-# Now we can compare the two lists for species that appear in both sources: the
-# simplest way is to use the set operation functions union(), intersection()
-# etc. See here:
-?union
-
-MYSPEspecies <- intersect(GOLDspecies, BLASTspecies)
-
-# Again: interpret this:
-#  - what is the number of GOLDspecies?
-#  - what is the number of BLAST species?
-#  - how many species are present in both lists?
-#  - what does it mean if a species is in GOLD but not in the BLAST list?
-#  - what does it mean if a species has been found during BLAST, but it
-#    is not in GOLD?
+# Let's look at the distribution of E-values in this selection (Subsetting FTW):
+# we plot all values that are TRUE in the vector "sel" that we created above,
+# AND greater than 0
+plot(log(eVals[sel & eVals > 0]), col = "#00CC00")
 
 
-# =    5  Cleanup and finish  ==================================================
+# =    5  MERGE ENSEMBL AND BLAST RESULTS  =====================================
 
-# One final thing: some of the species will be our so-called "reference" species
-# which we use for model solutions and examples in the course. They are defined
-# in the .utilities.R file of this project. We remove them from the list so that
-# we don't inadvertently assign them.
+# Next we add the blast result to our sDat dataframe. We'll store the index,
+# the E-value, and the Query-bounds from which we can estimate which domains
+# of Mbp1 are actually covered by the hit. (True orthologues MUST align with
+# Mbp1's N-terminal APSES domain.)
 #
+# First we pull the hits we wanted from the BLASTspecies:
+iHits <- as.numeric(names(BLASTspecies))
+length(iHits)     # one index for each TRUE in sel
 
-REFspecies
+# add columns to sDat
+l <- nrow(sDat)
+sDat$iHit   <- numeric(l)  # index of the hit in the BLAST results
+sDat$eVal   <- numeric(l)  # E-value of the hit
+sDat$lAli   <- numeric(l)  # length of the aligned region
 
-MYSPEspecies <- sort(setdiff(MYSPEspecies, REFspecies))
+# extract and merge
+for (iHit in iHits) {
+  thisSp <- BLASThits$hits[[iHit]]$species
+  sel <- sDat$species == thisSp
 
-# save(MYSPEspecies, file = "data/MYSPEspecies.RData")
+  sDat$iHit[sel]   <- iHit
+  sDat$eVal[sel]   <- BLASThits$hits[[iHit]]$E
+  sDat$lAli[sel]   <- BLASThits$hits[[iHit]]$lengthAli
+}
+
+# Are all reference species accounted for?
+selA <- sDat$iHit != 0                 # all rows which matched to a BLAST hit
+REFspecies %in% sDat$species[selA]     # yes, all there
+
+selB <- sDat$species %in% REFspecies   # all rows which have one of REF species
+
+sum(selA & selB)   # How many rows?
+
+# sDat of course includes all duplicates. Some may be multiply sequenced, some
+# may be different strains. We'll use the same strategy as before and keep
+# only the best hit: order the rows by E-value, then drop all rows which
+# are duplicated.
+
+
+# drop all rows without BLAST hits ...
+sDat <- sDat[ ! (sDat$iHit == 0) , ]
+
+# order sDat by E-value ...
+sDat <- sDat[order(sDat$eVal, decreasing = FALSE) , ]
+
+# drop all rows with duplicated species ...
+sDat <- sDat[ ! duplicated(sDat$species) , ]
+
+# Lets look at the E-values ...
+plot(log(sDat$eVal[sDat$eVal > 0]), col = "#00CC00")
+
+# and alignment lengths ...
+plot(sDat$lAli, col = "#00DDAA")
+
+# How many ...
+length(unique(sDat$name))
+length(unique(sDat$species))
+length(unique(sDat$genus))
+length(unique(sDat$order))
+
+# To get the final dataset, we remove the reference species with their
+# entire orders ...
+REForders <- unique(sDat$order[sDat$species %in% REFspecies])
+sel <- sDat$order %in% REForders
+REFdat <- sDat[sel , ]
+sDat   <- sDat[ ! sel , ]
+
+# REFdat should now contain only the REFspecies ...
+( REFdat <- REFdat[REFdat$species %in% REFspecies , ] )
+
+# ... but all of them
+sum(REFspecies %in% REFdat$species)
+
+# ... and we have enough left in sDat to prune sDat to unique genus ...
+sDat <- sDat[ ! duplicated(sDat$genus) , ]
+
+# saveRDS(sDat, file = "data/sDat.rds")
+# saveRDS(REFdat, file = "data/REFdat.rds")
 
 
 
+# =    6  STUDENT NUMBERS  =====================================================
+#
+# An asymmetric function to retrieve a MYSPE species
+
+students <- read.csv("../BCH441-2020-students.csv")
+
+sN <- students$Student.Number
+range(sN)
+any(duplicated(gsub(".+(.......)$", "\\1", sN)))
+
+N <- 7
+x <- numeric(N)
+for (i in 1:N) {
+  x[i] <- H(substr(gsub(".+(.......)$", "\\1", sN), i, i))
+}
+plot(x, col = "#BB0000", type = "b")
+
+keys <- as.numeric(gsub(".+(....).$", "\\1", sN))
+any(duplicated(keys))
+
+# =====
+set.seed(112358)
+names(sN) <- sample(1:nrow(sDat), length(sN))
+
+MYSPEmap <- data.frame(keys = sprintf("%04d", 0:9999),
+                       iMYSPE = sample(1:nrow(sDat), 10000, replace = TRUE))
+rownames(MYSPEmap) <- MYSPEmap$keys
+
+for (i in 1:length(sN)) {
+  rMap <- gsub(".+(....).$", "\\1", sN[i])
+  MYSPEmap[rMap, "iMYSPE"] <- as.integer(names(sN)[i])
+}
+
+# saveRDS(MYSPEmap, "./data/MYSPEmap.rds")
+
+getMYSPE <- function(x) {
+  dat <- readRDS("./data/sDat.rds")
+  map <- readRDS("./data/MYSPEmap.rds")
+  key <- gsub(".+(....).$", "\\1", x)
+  return(dat$species[map[key, "iMYSPE"]])
+}
+
+# === validate
+l <- length(sN)
+sp <- character(l)
+for(i in 1:l) {
+  sp[i] <- getMYSPE(sN[i])
+}
+any(duplicated(sp))
+length(unique(sp))
+which(! sDat$species %in% sp)  # these can be assigned to late-comers
+
+# Done.
 
 # [END]

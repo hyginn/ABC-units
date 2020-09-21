@@ -1,11 +1,12 @@
-# .utilities.R
+# tocID <- "./.utilities.R"
 #
 # Miscellaneous R code to suppport the project
 #
-# Version: 1.3.1
-# Date:    2017  09 - 2019  11
+# Version: 1.4
+# Date:    2017-09 - 2020-09
 # Author:  Boris Steipe
 #
+# V 1.4    Maintenance
 # V 1.3.1  prefix Biostrings:: to subseq()
 # V 1.3    load msa support functions
 # V 1.2    update database utilities to support 2017 version of JSON sources
@@ -17,15 +18,39 @@
 #
 # ==============================================================================
 
-# ====== SCRIPTS =============================================================
+
+#TOC> ==========================================================================
+#TOC> 
+#TOC>   Section  Title                                       Line
+#TOC> -----------------------------------------------------------
+#TOC>   1        SCRIPTS TO SOURCE                             42
+#TOC>   2        SUPPORT FUNCTIONS                             49
+#TOC>   2.1        objectInfo()                                52
+#TOC>   2.2        biCode()                                    80
+#TOC>   2.3        pBar()                                     114
+#TOC>   2.4        waitTimer()                                136
+#TOC>   2.5        fetchMSAmotif()                            164
+#TOC>   2.6        H() (Shannon entropy)                      208
+#TOC>   3        DATA                                         222
+#TOC>   3.1        REFspecies                                 224
+#TOC>   4        FUNCTIONS TO CUSTOMIZE ASSIGNMENTS           239
+#TOC>   4.1        getMYSPE()                                 242
+#TOC>   4.2        selectPDBrep()                             251
+#TOC> 
+#TOC> ==========================================================================
+
+
+# =    1  SCRIPTS TO SOURCE  ===================================================
 
 source("./scripts/ABC-dbUtilities.R")
 source("./scripts/ABC-writeALN.R")
 source("./scripts/ABC-writeMFA.R")
 
 
-# ====== SUPPORT FUNCTIONS =====================================================
+# =    2  SUPPORT FUNCTIONS  ===================================================
 
+
+# ==   2.1  objectInfo()  ======================================================
 objectInfo <- function(x) {
     # Function to combine various information items about R objects
     #
@@ -53,6 +78,7 @@ objectInfo <- function(x) {
 }
 
 
+# ==   2.2  biCode()  ==========================================================
 biCode <- function(s) {
   # Make a 5 character "biCode" from a binomial name by concatening
   # the uppercased first three letter of the first word and the first
@@ -86,6 +112,7 @@ biCode <- function(s) {
 }
 
 
+# ==   2.3  pBar()  ============================================================
 pBar <- function(i, l, nCh = 50) {
   # Draw a progress bar in the console
   # i: the current iteration
@@ -107,6 +134,7 @@ pBar <- function(i, l, nCh = 50) {
 }
 
 
+# ==   2.4  waitTimer()  =======================================================
 waitTimer <- function(t, nIntervals = 50) {
   # pause and wait for t seconds and display a progress bar as
   # you are waiting
@@ -134,6 +162,7 @@ waitTimer <- function(t, nIntervals = 50) {
 }
 
 
+# ==   2.5  fetchMSAmotif()  ===================================================
 fetchMSAmotif <- function(ali, mot) {
   # Retrieve a subset from ali that spans the sequence in mot.
   # Biostrings package must be installed.
@@ -177,40 +206,23 @@ fetchMSAmotif <- function(ali, mot) {
 }
 
 
-
-
-# ====== PDB ID selection ======================================================
-
-selectPDBrep <- function(n, seed = as.numeric(Sys.time())) {
-  # Select n PDB IDs from a list of high-resolution, non-homologous, single
-  # domain, single chain structure files that represent a CATH topology
-  # group.
-  # Parameters:
-  #   n     num     number of IDs to return
-  #   seed  num     a seed for the RNG
-  #
-  # Value:          char  PDB IDs
-  #
-  # Note: the list is loaded from an RData file in the "./data" directory.
-  # If you use this function for a course submissio, it MUST be invoked as:
-  #
-  #         selectPDBrep(n, seed = myStudentNumber)
-  #
-  # ... and myStudentNumber MUST be correctly initialized
-
-  load("./data/pdbRep.RData")  # loads pdbRep
-  if (n > length(pdbRep)) {
-    stop(sprintf("There are only %d PDB IDs in the table to choose from.",
-                 length(pdbRep)))
-  }
-  set.seed(seed)
-  return(sample(pdbRep, n))
+# ==   2.6  H() (Shannon entropy)  =============================================
+H <- function(x, N) {
+  # calculate the Shannon entropy of the vector x given N possible states
+  # (in bits).
+  # H(x) = - sum_i(P(x_i) * log2(P(x_i)); 0 * log(0) == 0
+  t <- table(x)
+  if (missing(N)) { N <- length(t) }
+  if (length(t) > N ) { stop("N can't be smaller than observed states.") }
+  h <- sum(- (t / length(x)) * log2(t / length(x)))
+  return(h)
 }
 
 
-# ====== DATA ==================================================================
 
+# =    3  DATA  ================================================================
 
+# ==   3.1  REFspecies  ========================================================
 # 10 species of fungi for reference analysis.
 # http://steipe.biochemistry.utoronto.ca/abc/index.php/Reference_species_for_fungi
 REFspecies <- c("Aspergillus nidulans",
@@ -222,8 +234,52 @@ REFspecies <- c("Aspergillus nidulans",
                 "Saccharomyces cerevisiae",
                 "Schizosaccharomyces pombe",
                 "Ustilago maydis",
-                "Wallemia mellicola"
-)
+                "Wallemia mellicola")
+
+
+# =    4  FUNCTIONS TO CUSTOMIZE ASSIGNMENTS  ==================================
+
+
+# ==   4.1  getMYSPE()  ========================================================
+getMYSPE <- function(x) {
+  dat <- readRDS("./data/sDat.rds")
+  map <- readRDS("./data/MYSPEmap.rds")
+  key <- gsub(".+(....).$", "\\1", x)
+  return(dat$species[map[key, "iMYSPE"]])
+}
+
+
+# ==   4.2  selectPDBrep()  ====================================================
+selectPDBrep <- function(n, seed) {
+  # Select n PDB IDs from a list of high-resolution, non-homologous, single
+  # domain, single chain structure files that represent a CATH topology
+  # group.
+  # Parameters:
+  #   n     num     number of IDs to return
+  #   seed  num     a seed for the RNG
+  #
+  # Value:          char  PDB IDs
+  #
+  # Note: the list is loaded from an .rds file in the "./data" directory.
+  # If you use this function for a course submission, it MUST be invoked as:
+  #
+  #         selectPDBrep(n, seed = myStudentNumber)
+  #
+  # ... and myStudentNumber MUST be correctly initialized
+
+  pdbRep <- readRDS("./data/pdbRep.rds")  # loads pdbRep
+
+  if (n > length(pdbRep)) {
+    stop(sprintf("There are only %d PDB IDs in the table to choose from.",
+                 length(pdbRep)))
+  }
+  oldSeed <- .Random.seed
+  set.seed(seed)
+  PDBset <- sample(pdbRep, n)
+  .Random.seed <- oldSeed
+  return(PDBset)
+}
+
 
 
 # [END]
