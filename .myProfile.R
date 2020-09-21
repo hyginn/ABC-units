@@ -12,6 +12,7 @@
 # Utility scripts will look for it on the path: "./myScripts/.myProfile.R"
 #
 # ==============================================================================
+# options(stringsAsFactors = FALSE)
 
 myEMail <- "<your-e-mail-address-here>"        # e.g. "u.franklin@utoronto.ca"
 myStudentNumber <- <your-student-number-here>  # e.g. 1003141592

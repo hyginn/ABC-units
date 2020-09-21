@@ -3,10 +3,6 @@
 # This script is automatically executed on startup
 # ==============================================================================
 
-# DO NOT uncomment, unless you know exactly why, or have been instructed to
-# do so:
-# options(stringsAsFactors = FALSE)
-
 init <- function() {
 
   # Create a local copy of myScript.R if not done yet.
