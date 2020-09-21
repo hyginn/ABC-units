@@ -6,7 +6,7 @@
 # Date:    2017-09 - 2020-09
 # Author:  Boris Steipe
 #
-# V 1.4    Maintenance
+# V 1.4    Maintenance, and new validation utilities
 # V 1.3.1  prefix Biostrings:: to subseq()
 # V 1.3    load msa support functions
 # V 1.2    update database utilities to support 2017 version of JSON sources
@@ -23,19 +23,21 @@
 #TOC> 
 #TOC>   Section  Title                                       Line
 #TOC> -----------------------------------------------------------
-#TOC>   1        SCRIPTS TO SOURCE                             42
-#TOC>   2        SUPPORT FUNCTIONS                             49
-#TOC>   2.1        objectInfo()                                52
-#TOC>   2.2        biCode()                                    80
-#TOC>   2.3        pBar()                                     114
-#TOC>   2.4        waitTimer()                                136
-#TOC>   2.5        fetchMSAmotif()                            164
-#TOC>   2.6        H() (Shannon entropy)                      208
-#TOC>   3        DATA                                         222
-#TOC>   3.1        REFspecies                                 224
-#TOC>   4        FUNCTIONS TO CUSTOMIZE ASSIGNMENTS           239
-#TOC>   4.1        getMYSPE()                                 242
-#TOC>   4.2        selectPDBrep()                             251
+#TOC>   1        SCRIPTS TO SOURCE                             45
+#TOC>   2        PACKAGES                                      51
+#TOC>   3        SUPPORT FUNCTIONS                             62
+#TOC>   3.1        objectInfo()                                65
+#TOC>   3.2        biCode()                                    93
+#TOC>   3.3        sameSpecies()                              127
+#TOC>   3.4        pBar()                                     146
+#TOC>   3.5        waitTimer()                                168
+#TOC>   3.6        fetchMSAmotif()                            196
+#TOC>   3.7        H() (Shannon entropy)                      240
+#TOC>   4        DATA                                         254
+#TOC>   4.1        REFspecies                                 256
+#TOC>   5        FUNCTIONS TO CUSTOMIZE ASSIGNMENTS           271
+#TOC>   5.1        getMYSPE()                                 274
+#TOC>   5.2        selectPDBrep()                             283
 #TOC> 
 #TOC> ==========================================================================
 
@@ -46,11 +48,21 @@ source("./scripts/ABC-dbUtilities.R")
 source("./scripts/ABC-writeALN.R")
 source("./scripts/ABC-writeMFA.R")
 
+# =    2  PACKAGES  ============================================================
 
-# =    2  SUPPORT FUNCTIONS  ===================================================
+if (! requireNamespace("digest", quietly = TRUE)) {
+  install.packages("digest")
+}
+
+if (! requireNamespace("jsonlite", quietly = TRUE)) {
+  install.packages("jsonlite")
+}
 
 
-# ==   2.1  objectInfo()  ======================================================
+# =    3  SUPPORT FUNCTIONS  ===================================================
+
+
+# ==   3.1  objectInfo()  ======================================================
 objectInfo <- function(x) {
     # Function to combine various information items about R objects
     #
@@ -78,7 +90,7 @@ objectInfo <- function(x) {
 }
 
 
-# ==   2.2  biCode()  ==========================================================
+# ==   3.2  biCode()  ==========================================================
 biCode <- function(s) {
   # Make a 5 character "biCode" from a binomial name by concatening
   # the uppercased first three letter of the first word and the first
@@ -112,9 +124,28 @@ biCode <- function(s) {
 }
 
 
-# ==   2.3  pBar()  ============================================================
-pBar <- function(i, l, nCh = 50) {
-  # Draw a progress bar in the console
+# ==   3.3  sameSpecies()  =====================================================
+sameSpecies <- function(a, b) {
+  # Parameters: a, b two vectors that contain
+  # binomial species names and maybe additional strain information.
+  # Value: a boolean vector, true where the species in a is the same as
+  # the species in b.
+  # Note: the usual vector recycling applies. Length is not checked.
+  a <- gsub("^(\\S+\\s\\S+).*", "\\1", a)
+  b <- gsub("^(\\S+\\s\\S+).*", "\\1", b)
+  if (any(! grepl("^\\S+\\s\\S+$", a))) {
+    stop("\"a\" contains elements that are not binomial names.")
+  }
+  if (any(! grepl("^\\S+\\s\\S+$", b))) {
+    stop("\"b\" contains elements that are not binomial names.")
+  }
+  return(a == b)
+}
+
+
+# ==   3.4  pBar()  ============================================================
+  pBar <- function(i, l, nCh = 50) {
+    # Draw a progress bar in the console
   # i: the current iteration
   # l: the total number of iterations
   # nCh: width of the progress bar
@@ -134,7 +165,7 @@ pBar <- function(i, l, nCh = 50) {
 }
 
 
-# ==   2.4  waitTimer()  =======================================================
+# ==   3.5  waitTimer()  =======================================================
 waitTimer <- function(t, nIntervals = 50) {
   # pause and wait for t seconds and display a progress bar as
   # you are waiting
@@ -162,7 +193,7 @@ waitTimer <- function(t, nIntervals = 50) {
 }
 
 
-# ==   2.5  fetchMSAmotif()  ===================================================
+# ==   3.6  fetchMSAmotif()  ===================================================
 fetchMSAmotif <- function(ali, mot) {
   # Retrieve a subset from ali that spans the sequence in mot.
   # Biostrings package must be installed.
@@ -206,7 +237,7 @@ fetchMSAmotif <- function(ali, mot) {
 }
 
 
-# ==   2.6  H() (Shannon entropy)  =============================================
+# ==   3.7  H() (Shannon entropy)  =============================================
 H <- function(x, N) {
   # calculate the Shannon entropy of the vector x given N possible states
   # (in bits).
@@ -220,9 +251,9 @@ H <- function(x, N) {
 
 
 
-# =    3  DATA  ================================================================
+# =    4  DATA  ================================================================
 
-# ==   3.1  REFspecies  ========================================================
+# ==   4.1  REFspecies  ========================================================
 # 10 species of fungi for reference analysis.
 # http://steipe.biochemistry.utoronto.ca/abc/index.php/Reference_species_for_fungi
 REFspecies <- c("Aspergillus nidulans",
@@ -237,10 +268,10 @@ REFspecies <- c("Aspergillus nidulans",
                 "Wallemia mellicola")
 
 
-# =    4  FUNCTIONS TO CUSTOMIZE ASSIGNMENTS  ==================================
+# =    5  FUNCTIONS TO CUSTOMIZE ASSIGNMENTS  ==================================
 
 
-# ==   4.1  getMYSPE()  ========================================================
+# ==   5.1  getMYSPE()  ========================================================
 getMYSPE <- function(x) {
   dat <- readRDS("./data/sDat.rds")
   map <- readRDS("./data/MYSPEmap.rds")
@@ -249,7 +280,7 @@ getMYSPE <- function(x) {
 }
 
 
-# ==   4.2  selectPDBrep()  ====================================================
+# ==   5.2  selectPDBrep()  ====================================================
 selectPDBrep <- function(n, seed) {
   # Select n PDB IDs from a list of high-resolution, non-homologous, single
   # domain, single chain structure files that represent a CATH topology
