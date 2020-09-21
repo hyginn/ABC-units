@@ -1,11 +1,5 @@
 # tocID <- "BIN-MYSPE.R"
 #
-# ---------------------------------------------------------------------------- #
-#  PATIENCE  ...                                                               #
-#    Do not yet work wih this code. Updates in progress. Thank you.            #
-#    boris.steipe@utoronto.ca                                                  #
-# ---------------------------------------------------------------------------- #
-#
 # Purpose: A Bioinformatics Course:
 #              R code accompanying the BIN-MYSPE unit
 #
@@ -124,17 +118,17 @@ Nfng <- nrow(fungiDat) - Nord - Ngen - Nspc
 
 # proportions
 pCol <- c("#ed394e", "#ff9582", "#ffd5c4", "#f2f2f0")
-oPar <- par(mar = c(1.1, 0, 1.1, 1))
+oPar <- par(mar = c(0.1, 0.1, 2.5, 0.1))
 pie(c(Nspc, Ngen, Nord, Nfng),
     labels = "",
-    radius = 1,
+    radius = 0.9,
     main = "MYSPE in genome-sequenced fungi",
-    sub = MYSPE,
     lty = 0,                 # no borders for wedges
     col = pCol,
     clockwise = TRUE,
     init.angle = 90)
-legend(x = 1.05, y = 0.8,     # position
+title(main = MYSPE,  line = 0, cex.main = 0.7)
+legend(x = 0.95, y = 0.8,     # position
        legend = c("Species", "Genus", "Order", "Fungi"),
        y.intersp = 2,      # line spacing for labels
        cex = 0.8,            # character size for labels
