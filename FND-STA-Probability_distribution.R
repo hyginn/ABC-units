@@ -1,20 +1,16 @@
 # tocID <- "FND-STA-Probability_distribution.R"
 #
-# ---------------------------------------------------------------------------- #
-#  PATIENCE  ...                                                               #
-#    Do not yet work wih this code. Updates in progress. Thank you.            #
-#    boris.steipe@utoronto.ca                                                  #
-# ---------------------------------------------------------------------------- #
 #
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the FND-STA-Probability_distribution unit.
 #
-# Version:  1.3
+# Version:  1.4
 #
-# Date:     2017  10  -  2019  01
+# Date:     2017-10  -  2020-09
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.4    2020 Maintenance
 #           1.3    Change from require() to requireNamespace(),
 #                      use <package>::<function>() idiom throughout,
 #           1.2    Update set.seed() usage
@@ -34,24 +30,24 @@
 
 
 #TOC> ==========================================================================
-#TOC>
+#TOC> 
 #TOC>   Section  Title                                                         Line
 #TOC> -----------------------------------------------------------------------------
-#TOC>   1        Introduction                                                    52
-#TOC>   2        Three fundamental distributions                                115
-#TOC>   2.1        The Poisson Distribution                                     118
-#TOC>   2.2        The uniform distribution                                     172
-#TOC>   2.3        The Normal Distribution                                      192
-#TOC>   3        quantile-quantile comparison                                   233
-#TOC>   3.1        qqnorm()                                                     243
-#TOC>   3.2        qqplot()                                                     309
-#TOC>   4        Quantifying the difference                                     326
-#TOC>   4.1        Chi2 test for discrete distributions                         361
-#TOC>   4.2        Kullback-Leibler divergence                                  452
-#TOC>   4.2.1          An example from tossing dice                             463
-#TOC>   4.2.2          An example from lognormal distributions                  586
-#TOC>   4.3        Kolmogorov-Smirnov test for continuous distributions         629
-#TOC>
+#TOC>   1        Introduction                                                    54
+#TOC>   2        Three fundamental distributions                                117
+#TOC>   2.1        The Poisson Distribution                                     120
+#TOC>   2.2        The uniform distribution                                     174
+#TOC>   2.3        The Normal Distribution                                      194
+#TOC>   3        quantile-quantile comparison                                   235
+#TOC>   3.1        qqnorm()                                                     245
+#TOC>   3.2        qqplot()                                                     311
+#TOC>   4        Quantifying the difference                                     328
+#TOC>   4.1        Chi2 test for discrete distributions                         363
+#TOC>   4.2        Kullback-Leibler divergence                                  454
+#TOC>   4.2.1          An example from tossing dice                             465
+#TOC>   4.2.2          An example from lognormal distributions                  588
+#TOC>   4.3        Kolmogorov-Smirnov test for continuous distributions         631
+#TOC> 
 #TOC> ==========================================================================
 
 
@@ -167,10 +163,10 @@ set.seed(NULL)
 # Add these values to the plot
 y <- numeric(26)                     # initialize vector with 26 slots
 y[as.numeric(names(t)) + 1] <- t     # put the tabled values there (index + 1)
-points(midPoints, y, pch = 21, cex = 0.7, bg = "firebrick")
+points(midPoints - 0.55, y, type = "s", col = "firebrick")
 legend("topright",
-       legend = c("poisson distribution", "samples"),
-       pch = c(22, 21),
+       legend = c("theoretical", "simulated"),
+       pch = c(22, 22),
        pt.bg = c("#E6FFF6", "firebrick"),
        bty = "n")
 
@@ -230,7 +226,7 @@ for (i in 1:length(v)) {
   v[i] <- mean(sample(x, 77))
 }
 
-hist(v, breaks = 20, col = "#F8DDFF")
+hist(v, breaks = 20, col = "#F8DDFF", freq = FALSE)
 
 # The outcomes all give normal distributions, regardless what the details of our
 # original distribution were!
@@ -466,7 +462,7 @@ chisq.test(countsL1, countsG1.9, simulate.p.value = TRUE, B = 10000)
 # be applied to discrete distributions. But we need to talk a bit about
 # converting counts to p.m.f.'s.
 
-# ===   4.2.1  An example from tossing dice
+# ===   4.2.1  An example from tossing dice                        
 
 #  The p.m.f of an honest die is (1:1/6, 2:1/6, 3:1/6, 4:1/6, 5:1/6, 6:1/6). But
 #  there is an issue when we convert sampled counts to frequencies, and estimate
@@ -589,7 +585,7 @@ abline(v = KLdiv(rep(1/6, 6), pmfPC(counts, 1:6)), col="firebrick")
 # somewhat but not drastically atypical.
 
 
-# ===   4.2.2  An example from lognormal distributions
+# ===   4.2.2  An example from lognormal distributions             
 
 # We had compared a set of lognormal and gamma distributions above, now we
 # can use KL-divergence to quantify their similarity:
