@@ -1,20 +1,16 @@
 # tocID <- "FND-STA-Significance.R"
 #
-# ---------------------------------------------------------------------------- #
-#  PATIENCE  ...                                                               #
-#    Do not yet work wih this code. Updates in progress. Thank you.            #
-#    boris.steipe@utoronto.ca                                                  #
-# ---------------------------------------------------------------------------- #
 #
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the FND-STA-Significance unit.
 #
-# Version:  1.2
+# Version:  1.3
 #
-# Date:     2017  09  - 2019  01
+# Date:     2017-09  - 2020-09
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.3    2020 Maintenance. Add sample solution.
 #           1.2    Update set.seed() usage
 #           1.1    Corrected treatment of empirical p-value
 #           1.0    First contents
@@ -31,18 +27,22 @@
 
 
 #TOC> ==========================================================================
-#TOC>
+#TOC> 
 #TOC>   Section  Title                                              Line
 #TOC> ------------------------------------------------------------------
-#TOC>   1        Significance and p-value                             43
-#TOC>   1.1        Significance levels                                54
-#TOC>   1.2        probability and p-value                            71
-#TOC>   1.2.1          p-value illustrated                           103
-#TOC>   2        One- or two-sided                                   158
-#TOC>   3        Significance by integration                         198
-#TOC>   4        Significance by simulation or permutation           204
-#TOC>   5        Final tasks                                         312
-#TOC>
+#TOC>   1        Significance and p-value                             49
+#TOC>   1.1        Significance levels                                60
+#TOC>   1.2        probability and p-value                            77
+#TOC>   1.2.1          p-value illustrated                           109
+#TOC>   2        One- or two-sided                                   165
+#TOC>   3        Significance by integration                         209
+#TOC>   4        Significance by simulation or permutation           215
+#TOC>   5        Final tasks                                         327
+#TOC>   6        Sample solutions                                    336
+#TOC>   6.1                                                          338
+#TOC>   6.2                                                          342
+#TOC>   6.3                                                          346
+#TOC> 
 #TOC> ==========================================================================
 
 
@@ -106,7 +106,7 @@ print(x, digits = 22)
 # curve, as a fraction of the whole.
 
 
-# ===   1.2.1  p-value illustrated
+# ===   1.2.1  p-value illustrated                      
 
 # Let's illustrate. First we draw a million random values from our
 # standard, normal distribution:
@@ -146,19 +146,20 @@ rect(x, 0, xMax, y, col = "#00EE0044", border = TRUE)
 # ... and a red line for our observation.
 abline(v = x, col = "#EE0000", lwd = 2)
 
-# The p-value of our observation is the area colored red as a fraction of the
+# The p-value of our observation is the red area as a fraction of the
 # whole histogram (red + green).
 
 
 # Task:
 #    Explain how the expression sum(r < x) works to give us a count of values
-#    with the property we are looking for.
+#    with the property we are looking for. E.g., examine -4:4 < x
 
 # Task:
 #    Write an expression to estimate the probability that a value
 #    drawn from the vector r is less-or-equal to x. The result you get
 #    will depend on the exact values that went into the vector r but it should
 #    be close to 0.185  That expression is the p-value associated with x.
+#    (Sample solution 6.1)
 
 
 # =    2  One- or two-sided  ===================================================
@@ -173,7 +174,7 @@ abline(v = x, col = "#EE0000", lwd = 2)
 sum(r > 1.96)
 # [1] 24589
 
-# Wait - that's about 2.5% , not 5% as expected. Why?
+# Wait - that's about 2.5% of 1,000,000, not 5% as expected. Why?
 
 # The answer is: we have to be careful with two-sided distributions. 2 standard
 # deviations away from the mean means either larger or smaller than 1.96 . This
@@ -193,6 +194,9 @@ sum(r > quantile(r, probs = 0.95))
 # [1] 50000
 # which is 5%, as expected.
 
+# Task:
+# Use abline() to add the p = 0.05 boundary for smaller values to the histogram.
+# (Sample solution 6.2)
 
 # To summarize: when we evaluate the significance of an event, we divide a
 # probability distribution into two parts at the point where the event was
@@ -200,6 +204,7 @@ sum(r > quantile(r, probs = 0.95))
 # or more than 5% of the whole. If it is less, we deem the event to be
 # significant.
 #
+
 
 # =    3  Significance by integration  =========================================
 
@@ -307,12 +312,16 @@ for (i in 1:N) {
   chs[i] <- chSep(sample(v, length(v))) # charge
 }
 
-hist(chs)
+hist(chs, breaks = 50)
 abline(v = chSep(v), col = "#EE0000")
 
 # Contrary to our expectations, the actual observed mean minimum charge
 # separation seems to be larger than what we observe in randomly permuted
 # sequences. But is this significant? Your task to find out.
+
+# Task:
+# Calculate the empirical p-value for chsep(v)
+# (Sample solution 6.3)
 
 
 # =    5  Final tasks  =========================================================
@@ -321,7 +330,22 @@ abline(v = chSep(v), col = "#EE0000")
 #   be larger or equal to the value observed for the yeast MBP1 sequence. Note
 #   the result in your journal. Is it significant? Also note the result of
 #   the following expression for validation:
-writeBin(sum(chs), raw(8))
+seal(sum(chs))
+
+
+# =    6  Sample solutions  ====================================================
+
+# ==   6.1    ==================================================================
+#
+sum(r <= x) / length(r)
+
+# ==   6.2    ==================================================================
+#
+abline(v = quantile(r, probs = c(0.05)))
+
+# ==   6.3    ==================================================================
+#
+( x <- (sum(chs >= chSep(v)) + 1) / (length(chs) + 1) )
 
 
 # [END]
