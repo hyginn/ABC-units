@@ -1,19 +1,14 @@
 # tocID <- "RPR-RegEx.R"
 #
-# ---------------------------------------------------------------------------- #
-#  PATIENCE  ...                                                               #
-#    Do not yet work wih this code. Updates in progress. Thank you.            #
-#    boris.steipe@utoronto.ca                                                  #
-# ---------------------------------------------------------------------------- #
-#
 # Purpose: A Bioinformatics Course:
 #              R code accompanying the RPR-RegEx unit
 #
-# Version: 0.1
+# Version: 1.0
 #
-# Date:    2017  08  25
+# Date:    2017-08  -  2020-09
 # Author:  Boris Steipe (boris.steipe@utoronto.ca)
 #
+# V 0.1    Maintenance 2020
 # V 0.1    First code
 #
 # TODO:
@@ -29,22 +24,19 @@
 #
 # ==============================================================================
 
+
 #TOC> ==========================================================================
 #TOC>
-#TOC>   Section  Title                          Line
-#TOC> ----------------------------------------------
-#TOC>   1        A regex example                  44
-#TOC>   2        Counting lines                  111
-#TOC>   2.1      Counting C-alpha atoms only     128
-#TOC>   3        Code Solutions                  144
-#TOC>   3.1      Counting atoms                  146
-#TOC>   3.2      Counting C-alpha records        160
+#TOC>   Section  Title                                Line
+#TOC> ----------------------------------------------------
+#TOC>   1        A regex example                        41
+#TOC>   2        Counting lines                        108
+#TOC>   2.1        Counting C-alpha atoms only         126
+#TOC>   3        Code Solutions                        142
+#TOC>   3.1        Counting atoms                      144
+#TOC>   3.2        Counting C-alpha records            160
 #TOC>
 #TOC> ==========================================================================
-#TOC>
-#TOC>
-#TOC>
-#TOC>
 
 
 # =    1  A regex example  =====================================================
@@ -125,7 +117,8 @@ myPDB <- readLines("./data/0TST.pdb")
 #       Return the number of lines in that file that begin with "ATOM  "
 #       or with "HETATM".
 
-#       Try this. Solution code is at the end of this file. Don't peek.
+#       Try this. Write a function. Solution code is at the end of this file.
+#       Don't peek.
 
 atomCount("./data/0TST.pdb")  # must return 6
 
@@ -157,6 +150,8 @@ atomCount <- function(IN) {
   #     IN  chr  path of the file to read
   # Value:
   #         numeric  number of lines that match "^ATOM  " or "^HETATM"
+  # Note: the regex MUST be anchored to the beginning of the line, otherwise
+  # it might match somewhere in a comment!
   x <- readLines(IN)
   patt <- "(^ATOM  )|(^HETATM)"
   return(length(grep(patt, x)))
@@ -173,6 +168,8 @@ CAcount <- function(IN) {
   # Value:
   #         numeric  number of lines that match " CA " in position 13 - 16 of
   #                  an ATOM record.
+  # Note: the regex MUST be aligned into the right position, otherwise it
+  #       might match Calcium records!
   x <- readLines(IN)
   patt <- "^ATOM  ...... CA "
   return(length(grep(patt, x)))
