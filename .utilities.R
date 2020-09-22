@@ -20,7 +20,7 @@
 
 
 #TOC> ==========================================================================
-#TOC> 
+#TOC>
 #TOC>   Section  Title                                       Line
 #TOC> -----------------------------------------------------------
 #TOC>   1        SCRIPTS TO SOURCE                             45
@@ -38,7 +38,7 @@
 #TOC>   5        FUNCTIONS TO CUSTOMIZE ASSIGNMENTS           271
 #TOC>   5.1        getMYSPE()                                 274
 #TOC>   5.2        selectPDBrep()                             283
-#TOC> 
+#TOC>
 #TOC> ==========================================================================
 
 
@@ -270,6 +270,9 @@ REFspecies <- c("Aspergillus nidulans",
 
 # =    5  FUNCTIONS TO CUSTOMIZE ASSIGNMENTS  ==================================
 
+# ==   5.1  seal()  ========================================================
+seal <- function(x.1L) { .Call(digest:::digest_impl,x.1L,1L,-1L,-0,-0,-0) }
+
 
 # ==   5.1  getMYSPE()  ========================================================
 getMYSPE <- function(x) {
@@ -281,7 +284,7 @@ getMYSPE <- function(x) {
 
 
 # ==   5.2  selectPDBrep()  ====================================================
-selectPDBrep <- function(n, seed) {
+selectPDBrep <- function(n, forCredit = FALSE) {
   # Select n PDB IDs from a list of high-resolution, non-homologous, single
   # domain, single chain structure files that represent a CATH topology
   # group.
@@ -292,11 +295,15 @@ selectPDBrep <- function(n, seed) {
   # Value:          char  PDB IDs
   #
   # Note: the list is loaded from an .rds file in the "./data" directory.
-  # If you use this function for a course submission, it MUST be invoked as:
-  #
-  #         selectPDBrep(n, seed = myStudentNumber)
-  #
-  # ... and myStudentNumber MUST be correctly initialized
+
+  if (forCredit) {
+    seed <- myStudentNumber
+  } else {
+    seed <- as.integer(Sys.time())
+    cat("NOTE: This selection will not validate for a course submission.\n")
+    cat("      If you intend to use it for an assignment task, invoke\n")
+    cat("      this function like \"selectPDBrep(n, forCredit = TRUE)\".\n\n")
+  }
 
   pdbRep <- readRDS("./data/pdbRep.rds")  # loads pdbRep
 
@@ -309,6 +316,19 @@ selectPDBrep <- function(n, seed) {
   PDBset <- sample(pdbRep, n)
   .Random.seed <- oldSeed
   return(PDBset)
+}
+
+
+# ==   5.2  selectChi2()  ====================================================
+selectChi2 <- function() {
+  # Select one random Amino acid from those that have a Chi2 angle
+
+  oldSeed <- .Random.seed
+  set.seed(myStudentNumber)
+  AA <- sample(c("Asp", "Glu", "Phe", "His", "Ile", "Lys", "Leu",
+                 "Met", "Asn", "Gln","Arg", "Trp", "Tyr"))
+  .Random.seed <- oldSeed
+  cat(sprintf("  Chi1/Ch2: Use \"%s\".  <%s>\n", AA[4], seal(AA)))
 }
 
 
