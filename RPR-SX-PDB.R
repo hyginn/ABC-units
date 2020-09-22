@@ -9,13 +9,14 @@
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the RPR-SX-PDB unit.
 #
-# Version:  1.2
+# Version:  1.3
 #
-# Date:     2017  10  -  2019  11
+# Date:     2017-10  -  2020-09
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
-#           1.2    Maintenance
+#           1.3    2020 Maintenance
+#           1.2    2019 Maintenance
 #           1.1    Change from require() to requireNamespace(),
 #                      use <package>::<function>() idiom throughout
 #           1.0    First live version, completely refactores 2016 code
@@ -57,9 +58,9 @@
 
 
 # In this example of protein structure interpretation, we ...
-#   - load the library "bio3D" which supports work with
+#   - download the package bio3D:: which supports work with
 #     protein structure files,
-#   - explore some elementary functions of the library
+#   - explore some elementary functions of the package
 #   - explore plotting of density values with scatterplots
 #   - assemble a script to see whether H-bond lengths systematically differ
 #     between alpha-helical and beta-sheet structures.
@@ -77,7 +78,7 @@ if (! requireNamespace("bio3d", quietly = TRUE)) {
 #  data(package = "bio3d")     # available datasets
 
 
-# bio3d can load molecules directly from the PDB servers, you don't _have_ to
+# bio3d:: can load molecules directly from the PDB servers, you don't _have_ to
 # store them locally, but you could.
 #
 # But before you _load_ a file, have a look what such a file contains. I have
@@ -87,15 +88,15 @@ file.show("./data/1BM8.pdb")
 # Have a look at the header section, the atom records, the coordinate records
 # etc.
 #
-# Task: Answer the following questions:
-#
-#          What is the resolution of the structure?
-#          Is the first residue in the SEQRES section also the first residue
-#              with an ATOM record?
-#          How many water molecules does the structure contain?
-#          Can you explain REMARK 525 regarding HOH 459 and HOH 473?
-#          Are all atoms of the N-terminal residue present?
-#          Are all atoms of the C-terminal residue present?
+# Task:
+#   Answer the following questions:
+#     What is the resolution of the structure?
+#     Is the first residue in the SEQRES section also the first residue
+#         with an ATOM record?
+#     How many water molecules does the structure contain?
+#     Can you explain REMARK 525 regarding HOH 459 and HOH 473?
+#     Are all atoms of the N-terminal residue present?
+#     Are all atoms of the C-terminal residue present?
 
 apses <- bio3d::read.pdb("1bm8")  # load a molecule directly from the PDB via
                                   # the Internet.
@@ -119,7 +120,7 @@ str(apses)
 i <- 5
 apses$atom[i,]
 apses$atom[i, c("x", "y", "z")]   # here we are selecting with column names!
-apses$xyz[c(i*3-2, i*3-1, i*3)]   # here we are selcting with row numbers
+apses$xyz[c(i*3-2, i*3-1, i*3)]   # here we are selecting with row numbers
 
 # all atoms of a residue ...
 i <- 48
@@ -140,11 +141,12 @@ length(apses$seqres)
 length(apses$atom$resid[apses$calpha])
 
 # Are the sequences the same?
-sum(apses$seqres == apses$atom$resid[apses$calpha])
+any(apses$seqres != apses$atom$resid[apses$calpha])
 
 # get a list of all CA atoms of arginine residues
+cols <- c("eleno", "elety", "resid", "chain", "resno", "insert")
 sel <- apses$atom$resid == "ARG" & apses$atom$elety == "CA"
-apses$atom[sel, c("eleno", "elety", "resid", "chain", "resno", "insert")]
+apses$atom[sel, cols]
 
 # The introduction to bio3d tutorial at
 #   http://thegrantlab.org/bio3d/tutorials/structure-analysis
@@ -647,33 +649,34 @@ hist(dE, col="#00AA70")
 
 
 # For better comparison, plot both in the
-# same window:
+# same window (use the "add = TRUE" parameter in hist() ):
 
 hist(dH, col="#DD0055")
-hist(dE, col="#00AA70", add=TRUE)
+hist(dE, col="#00AA70", add = TRUE)
 
-# ... oops, we dind't reset the graphics parameters. You can either close the
-# window, a new window will open with default parameters, or ...
+# ... oops, we dind't reset the graphics parameters. You can either use
+# the broom icon of the  Plot  tab to clear asll plots, or ...
 par(opar)      # ... reset the graphics parameters
 
-hist(dH, col="#DD0055")
-hist(dE, col="#00AA70", add=TRUE)
+hist(dH, col = "#DD0055")
+hist(dE, col = "#00AA70", add = TRUE)
 
 # We see that the leftmost column of the sheet bonds hides the helix bonds in
 # that column. Not good. But we can make the colours transparent! We just need to
-# add a fourth set of two hexadecimal-numbers to the #RRGGBB triplet. Lets use
-# 2/3 transparent, in hexadecimal, 1/3 of 256 is x55 - i.e. an RGB triplet
+# add a fourth set of two hexadecimal-numbers to the #RRGGBB triplet. (This
+# sets the transparency of the colour, it is called the "alpha channel"). Lets
+# use 2/3 transparent, in hexadecimal, 1/3 of 256 is x55 - i.e. an RGB triplet
 # specied as #RRGGBB55 is only 33% opaque:
 
-hist(dH, col="#DD005555")
-hist(dE, col="#00AA7055", add=TRUE)
+hist(dH, col = "#DD005555")
+hist(dE, col = "#00AA7055", add = TRUE)
 
 # To finalize the plots, let's do two more things: Explicitly define the breaks,
 # to make sure they match up - otherwise they would not need to... like in this
 # example:
 
-hist(dH, col="#DD005555")
-hist(dE[dE < 3], col="#00AA7055", add=TRUE)
+hist(dH, col ="#DD005555")
+hist(dE[dE < 3], col = "#00AA7055", add = TRUE)
 
 # Breaks are a parameter in hist() that can either be a scalar, to define how
 # many columns you want, or a vector, that defines the actual breakpoints.
@@ -687,9 +690,10 @@ hist(dE, col="#00AA7055", breaks=brk, add=TRUE)
 # impression of the relative frequency, but it is of course skewed by observing
 # relatively more or less of one type of secondary structure in a protein. As
 # part of the hist() function we can rescale the values so that the sum over all
-# is one: set the prameter freq=FALSE.
+# is one: set the parameter freq=FALSE. And we explicitly set y-axis limits
+# to accommodate bot distributions.
 
-hist(dH, col="#DD005555", breaks=brk, freq=FALSE)
+hist(dH, col="#DD005555", breaks=brk, freq=FALSE, ylim = c(0, 4))
 hist(dE, col="#00AA7055", breaks=brk, freq=FALSE, add=TRUE)
 
 # Adding labels and legend ...
@@ -757,7 +761,7 @@ legend('topright',
        border = NA,
        inset = 0.1)
 
-# It looks more and more that the distribution is indeed different. Our sample
+# It's apparent that the distributions are indeed different. Our sample
 # is large, but derives from a single protein. To do database scale statistics,
 # we should look at many more proteins. To give you a sense of how, let's do
 # this for just ten proteins, randomly selected from non-homologous,
