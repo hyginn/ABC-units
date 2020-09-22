@@ -23,7 +23,8 @@
 #          $Id: web_blast.pl,v 1.10 2016/07/13 14:32:50 merezhuk Exp $
 #    1.0   first version posted for BCH441 2016, based on BLAST - API
 #
-# ToDo:
+# ToDo:    Return the organism/strain name in the output, and propagate
+#          into MYSPE selection script.
 #
 # Notes:   This is somewhat pedestrian, but apparently there are currently
 #          no R packages that contain such code.
