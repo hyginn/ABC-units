@@ -1,20 +1,15 @@
 # tocID <- "FND-Genetic_code.R"
 #
-# ---------------------------------------------------------------------------- #
-#  PATIENCE  ...                                                               #
-#    Do not yet work wih this code. Updates in progress. Thank you.            #
-#    boris.steipe@utoronto.ca                                                  #
-# ---------------------------------------------------------------------------- #
-#
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the FND-Genetic_code unit.
 #
-# Version:  1.1
+# Version:  1.2
 #
 # Date:     2017  10  -  2019  01
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.2    2020 Maintenance
 #           1.1    Change from require() to requireNamespace(),
 #                      use <package>::<function>() idiom throughout,
 #                      use Biocmanager:: not biocLite()
@@ -51,19 +46,25 @@
 # =    1  Storing the genetic code  ============================================
 
 # The genetic code maps trinucleotide codons to amino acids. To store it, we
-# need some mechanism to associate these two informattion items. The most
+# need some mechanism to associate the two representations. The most
 # convenient way to do that is a "named vector" which holds the amino acid
 # code and assigns the codons as names to its elements.
 
-x <- c("M", "*")
-names(x) <- c("ATG", "TAA")
+x <- c("M", "H", "H", "*", "*", "*")
+names(x) <- c("ATG", "CAC", "CAT", "TAA", "TAG", "TGA")
 x
 
 # Then we can access the vector by the codon as name, and retrieve the
-# amino acid.
+# amino acid ...
 
 x["ATG"]
+x["CAC"]
 x["TAA"]
+
+# ... or the names of elements, to retrieve the codon(s)
+names(x)[x == "M"]
+names(x)[x == "H"]
+names(x)[x == "*"]
 
 
 # ==   1.1  Genetic code in Biostrings  ========================================
@@ -103,33 +104,33 @@ Biostrings::getGeneticCode("12")  # Alternative Yeast Nuclear
 # to a "local" variable, rather than retrieving it from the package all the
 # time.
 
-genCode <- Biostrings::GENETIC_CODE
+GC <- Biostrings::GENETIC_CODE
 
 # This is a named vector of characters ...
 
-str(genCode)
+str(GC)
 
 # ... which also stores the alternative initiation codons TTG and CTG in
 # an attribute of the vector. (Alternative initiation codons sometimes are
-# used instead of ATG to intiate translation, if if not ATG they are translated
-# with fMet.)
+# used instead of ATG to intiate translation, if translation is not initiated
+# at ATG thses are still translated with fMet.)
 
-attr(genCode, "alt_init_codons")
+attr(GC, "alt_init_codons")
 
 # But the key to use this vector is in the "names" which we use for subsetting
 # the list of amino acids in whatever way we need.
-names(genCode)
+names(GC)
 
 # The translation of "TGG" ...
-genCode["TGG"]
+GC["TGG"]
 
 # All stop codons
-names(genCode)[genCode == "*"]
+names(GC)[GC == "*"]
 
 # All start codons
-names(genCode)[genCode == "M"] # ... or
-c(names(genCode)[genCode == "M"],
-  attr(genCode, "alt_init_codons"))
+names(GC)[GC == "M"] # ... or
+c(names(GC)[GC == "M"],
+  attr(GC, "alt_init_codons"))
 
 
 # ==   2.1  Translate a sequence.  =============================================
@@ -148,7 +149,7 @@ mbp1 <- readLines("./data/S288C_YDL056W_MBP1_coding.fsa")
 
 # The reason for this is that the last character of the file is the letter "A"
 # and not a "\n" line break. This file is exactly how it was sent from the
-# server; I think good, defensive programming practice would have been to
+# NCBI server; I think good, defensive programming practice would have been to
 # include some kind of an end-marker in the file, like a final "\n". This helps
 # us recognize an incomplete transmission. Let's parse the actual sequence from
 # the file, and then check for completeness.
@@ -187,7 +188,7 @@ head(mbp1Codons)
 
 mbp1AA <- character(834)
 for (i in seq_along(mbp1Codons)) {
-  mbp1AA[i] <- genCode[mbp1Codons[i]]
+  mbp1AA[i] <- GC[mbp1Codons[i]]
 }
 
 head(mbp1Codons)
@@ -238,7 +239,7 @@ for (i in 1:4) {
                        dimnames(cCube)[[3]][k],
                        sep = "",
                        collapse = "")
-      cCube[i, j, k] <- genCode[myCodon]
+      cCube[i, j, k] <- GC[myCodon]
     }
   }
 }
@@ -247,6 +248,7 @@ for (i in 1:4) {
 cCube["A", "T", "G"] # methionine
 cCube["T", "T", "T"] # phenylalanine
 cCube["T", "A", "G"] # stop (amber)
+
 
 
 # ==   3.1  Print a Genetic code table  ========================================
@@ -265,13 +267,15 @@ cCube["T", "A", "G"] # stop (amber)
 
 nuc <- c("T", "C", "A", "G")
 
-for (i in nuc) {
-  for (k in nuc) {
-    for (j in nuc) {
-      cat(sprintf("%s%s%s: %s   ", i, j, k, cCube[i, j, k]))
+# (calling variables f, s, t to indicate first, second, and third position ...)
+for (f in nuc) {      # first varies in blocks
+  for (t in nuc) {    # third varies in columns
+    for (s in nuc) {  # second varies in rows
+      cat(sprintf("%s%s%s: %s   ", f, s, t, cCube[f, s, t]))
     }
     cat("\n")
   }
+  cat("\n")
 }
 
 
@@ -335,7 +339,11 @@ for (i in nuc) {
 #
 #
 # Solution:
-table(table(Biostrings::GENETIC_CODE))
+( x <- table(table(Biostrings::GENETIC_CODE)) )
+
+# confirm
+sum(x * as.numeric(names(x)))
+
 
 
 # [END]
