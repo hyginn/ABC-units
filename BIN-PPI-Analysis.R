@@ -1,10 +1,5 @@
 # tocID <- "BIN-PPI-Analysis.R"
 #
-# ---------------------------------------------------------------------------- #
-#  PATIENCE  ...                                                               #
-#    Do not yet work wih this code. Updates in progress. Thank you.            #
-#    boris.steipe@utoronto.ca                                                  #
-# ---------------------------------------------------------------------------- #
 #
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the BIN-PPI-Analysis unit.
@@ -15,7 +10,8 @@
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
-#           1.2    Deprecate save()/load() for saveRDS()/readRDS()
+#           1.2    2020 Updates; Rewrite for new STRINg V11;
+#                  Deprecate save()/load() for saveRDS()/readRDS()
 #           1.1    Change from require() to requireNamespace(),
 #                      use <package>::<function>() idiom throughout,
 #                      use Biocmanager:: not biocLite()
@@ -36,17 +32,17 @@
 
 
 #TOC> ==========================================================================
-#TOC>
+#TOC> 
 #TOC>   Section  Title                                           Line
 #TOC> ---------------------------------------------------------------
-#TOC>   1        Setup and data                                    46
-#TOC>   2        Functional Edges in the Human Proteome            82
-#TOC>   2.1        Cliques                                        125
-#TOC>   2.2        Communities                                    166
-#TOC>   2.3        Betweenness Centrality                         180
-#TOC>   3        biomaRt                                          226
-#TOC>   4        Task for submission                              296
-#TOC>
+#TOC>   1        Setup and data                                    49
+#TOC>   2        Functional Edges in the Human Proteome            85
+#TOC>   2.1        Cliques                                        128
+#TOC>   2.2        Communities                                    169
+#TOC>   2.3        Betweenness Centrality                         183
+#TOC>   3        biomaRt                                          230
+#TOC>   4        Task for submission                              301
+#TOC> 
 #TOC> ==========================================================================
 
 
@@ -68,10 +64,10 @@ if (! requireNamespace("igraph", quietly = TRUE)) {
 # from the STRING database. The full table has 8.5 million records, here is a
 # subset of records with combined confidence scores > 980
 
-# The selected set of edges with a confidence of > 980 is a dataframe with about
-# 50,000 edges and 6,500 unique proteins. Incidentaly, that's about the size of
+# The selected set of edges with a confidence of > 964 is a dataframe with about
+# 50,000 edges and 8,400 unique proteins. Incidentaly, that's about the size of
 # a fungal proteome. You can load the saved dataframe here (To read more about
-# what the numbers mean, see http://www.ncbi.nlm.nih.gov/pubmed/15608232 ).
+# what the scores mean, see http://www.ncbi.nlm.nih.gov/pubmed/15608232 ).
 
 STRINGedges <- readRDS("./data/STRINGedges.rds")
 
@@ -80,8 +76,8 @@ head(STRINGedges)
 # Note that STRING has appended the tax-ID for Homo sapiens - 9606 - to the
 # Ensemble transcript identifiers that start with ENSP. We'll remove them:
 
-STRINGedges$protein1 <- gsub("^9606\\.", "", STRINGedges$protein1)
-STRINGedges$protein2 <- gsub("^9606\\.", "", STRINGedges$protein2)
+STRINGedges$a <- gsub("^9606\\.", "", STRINGedges$a)
+STRINGedges$b <- gsub("^9606\\.", "", STRINGedges$b)
 
 head(STRINGedges)
 
@@ -91,9 +87,9 @@ head(STRINGedges)
 
 # There are many possibilities to explore interesting aspects of biological
 # networks, we will keep with some very simple procedures here but you have
-# to be aware that this is barely scratching the surface of possibilites.
+# to be aware that this is barely scratching the surface of possibilities.
 # However, once the network exists in your computer, it is comparatively
-# easy to find information nline about the many, many options to analyze.
+# easy to find information online about the many, many options to analyze.
 
 
 # Make a graph from this dataframe
@@ -101,7 +97,7 @@ head(STRINGedges)
 
 gSTR <- igraph::graph_from_data_frame(STRINGedges, directed = FALSE)
 
-# CAUTION you DON'T want to plot a graph with 6,500 nodes and 50,000 edges -
+# CAUTION you DON'T want to plot a graph with 8,000 nodes and 50,000 edges -
 # layout of such large graphs is possible, but requires specialized code. Google
 # for <layout large graphs> if you are curious. Also, consider what one can
 # really learn from plotting such a graph ...
@@ -119,7 +115,7 @@ plot(log10(as.numeric(names(freqRank)) + 1),
      log10(as.numeric(freqRank)), type = "b",
      pch = 21, bg = "#FEE0AF",
      xlab = "log(Rank)", ylab = "log(frequency)",
-     main = "6,500 nodes from the human functional interaction network")
+     main = "8,400 nodes from the human functional interaction network")
 
 # This looks very scale-free indeed.
 
@@ -136,11 +132,11 @@ abline(regressionLine, col = "firebrick")
 # Biological complexes often appear as cliques in interaction graphs.
 
 igraph::clique_num(gSTR)
-# The largest clique has 63 members.
+# The largest clique has 81 members.
 
 (C <- igraph::largest_cliques(gSTR)[[1]])
 
-# Pick one of the proteins and find out what this fully connected cluster of 63
+# Pick one of the proteins and find out what this fully connected cluster of 81
 # proteins is (you can simply Google for any of the IDs). Is this expected?
 
 # Plot this ...
@@ -166,7 +162,7 @@ plot(R,
 par(oPar)
 
 # ... well: remember: a clique means every node is connected to every other
-# node. We have 63 * 63 = 3,969 edges. This is what a matrix model of PPI
+# node. We have 81 * 81 = 6,561 edges. This is what a matrix model of PPI
 # networks looks like for large complexes.
 
 
@@ -179,9 +175,9 @@ set.seed(NULL)                         # reset the RNG
 igraph::modularity(gSTRclusters) # ... measures how separated the different
                                  # membership types are from each other
 tMem <- table(igraph::membership(gSTRclusters))
-length(tMem)  # More than 2000 communities identified
+length(tMem)  # About 700 communities identified
 hist(tMem, breaks = 50, col = "skyblue")  # most clusters are small ...
-range(tMem) # ... but one has > 100 members
+range(tMem) # ... but one has > 200 members
 
 
 # ==   2.3  Betweenness Centrality  ============================================
@@ -214,13 +210,14 @@ head(sBC)
 # IDs...
 (ENSPsel <- names(igraph::V(gSTR)[BCsel]))
 
+# Task:
+# =====
+# IMPORTANT, IF YOU INTEND TO SUBMIT YOUR ANALYSIS FOR CREDIT
 # We are going to use these IDs to produce some output for a submitted task:
-# so I need you to personalize ENSPsel with the following
-# three lines of code:
+# therefore I need you to execute the following line, note the "seal" that this
+# returns, and not change ENSPsel later:
 
-set.seed(<myStudentNumber>)         # enter your student number here
-(ENSPsel <- sample(ENSPsel))
-set.seed(NULL)                      # reset the random number generator
+myENSPsel <- seal(ENSPsel)
 
 #  Next, to find what these proteins are...
 
@@ -251,15 +248,15 @@ if (! requireNamespace("biomaRt", quietly = TRUE)) {
 #  browseVignettes("biomaRt")    # available vignettes
 #  data(package = "biomaRt")     # available datasets
 
-# define which dataset to use ...
+# define which dataset to use ... this takes a while for download
 myMart <- biomaRt::useMart("ensembl", dataset="hsapiens_gene_ensembl")
 
 # what filters are defined?
-(filters <- biomaRt::listFilters(myMart))
+( filters <- biomaRt::listFilters(myMart) )
 
 
 # and what attributes can we filter for?
-(attributes <- biomaRt::listAttributes(myMart))
+( attributes <- biomaRt::listAttributes(myMart) )
 
 
 # Soooo many options - let's look for the correct name of filters that are
@@ -296,12 +293,12 @@ for (ID in ENSPsel) {
                                  mart = myMart)
 }
 
+
 # So what are the proteins with the ten highest betweenness centralities?
 #  ... are you surprised? (I am! Really.)
 
 
 # =    4  Task for submission  =================================================
-
 
 # Write a loop that will go through your personalized list of Ensemble IDs and
 #    for each ID:
@@ -310,11 +307,14 @@ for (ID in ENSPsel) {
 #    --  print the first row's wikigene description.
 #    --  print the first row's phenotype.
 #
+# Write your thoughts about this group of genes.
+#
 # (Hint, you can structure your loop in the same way as the loop that
 # created CPdefs. )
 
-# Place the R code for this loop and its output into your report if you are
-# submitting a report for this unit. Please read the requirements carefully.
+# Submit the "seal" for your ENSP vector, the ENSP vector itself, the R code
+# for this loop and its output into your report if you are submitting
+# anything for credit for this unit. Please read the requirements carefully.
 
 
 

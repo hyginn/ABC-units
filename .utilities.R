@@ -332,5 +332,16 @@ selectChi2 <- function() {
 }
 
 
+# ==   5.2  selectENSP()  ====================================================
+selectENSP <- function(x) {
+  oldSeed <- .Random.seed
+  set.seed(myStudentNumber)
+  x <- sample(x[order(x)])
+  .Random.seed <- oldSeed
+  cat(sprintf("seal: %s\n", seal(paste0(x,collapse=""))))
+  return(x)
+}
+
+
 
 # [END]
