@@ -271,7 +271,7 @@ REFspecies <- c("Aspergillus nidulans",
 # =    5  FUNCTIONS TO CUSTOMIZE ASSIGNMENTS  ==================================
 
 # ==   5.1  seal()  ========================================================
-seal <- function(x.1L) { .Call(digest:::digest_impl,x.1L,1L,-1L,-0,-0,-0) }
+seal <- function(x.1L) { .Call(digest:::digest_impl,x.1L,3L,-1L,-0,-0,-0) }
 
 
 # ==   5.1  getMYSPE()  ========================================================
