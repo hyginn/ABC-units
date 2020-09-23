@@ -1,20 +1,15 @@
 # tocID <- "BIN-Sequence.R"
 #
-# ---------------------------------------------------------------------------- #
-#  PATIENCE  ...                                                               #
-#    Do not yet work wih this code. Updates in progress. Thank you.            #
-#    boris.steipe@utoronto.ca                                                  #
-# ---------------------------------------------------------------------------- #
-#
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the BIN-Sequence unit.
 #
-# Version:  1.4
+# Version:  1.5
 #
-# Date:     2017  09  - 2019  01
+# Date:     2017-09  - 2020-09
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.5    2020 Updates
 #           1.4    Change from require() to requireNamespace(),
 #                      use <package>::<function>() idiom throughout,
 #                      use Biocmanager:: not biocLite()
@@ -58,12 +53,6 @@
 #TOC>   7.2.2          Defined probability vector      350
 #TOC>
 #TOC> ==========================================================================
-
-
-#
-#
-#
-#
 
 
 # =    1  Prepare  =============================================================
@@ -116,7 +105,7 @@ as.character(a)
 
 
 length(s) # why ???
-nchar(s)  # aha
+nchar(s)  # Aha!
 
 
 # =    4  Substrings  ==========================================================
@@ -134,10 +123,10 @@ substr(   myBiCodes, 1, 3)
 substring(myBiCodes, 1, 3)
 
 # ... however only substring() will also use vectors for start and stop
-s <- "gatattgtgatgacccagtaa"     # a DNA sequence
-(i <- seq(1, nchar(s), by = 3))  # an index vector
-substr(   s, i, i+2)             # ... returns only the first nucleotide triplet
-substring(s, i, i+2)             # ... returns all triplets
+s <- "gatattgtgatgacccagtaa"       # a DNA sequence
+(vI <- seq(1, nchar(s), by = 3))   # an index vector
+substr(   s, vI, vI+2)             # ... returns only the first nucleotide triplet
+substring(s, vI, vI+2)             # ... returns all triplets
 
 
 # =    5  Creating strings: sprintf()  =========================================
@@ -183,12 +172,22 @@ toupper(tolower(s))
 
 
 # ===   6.1.2  Reverse
-reverse(s)
+# (This used to work in Biostrings, apparently it doesn't work anymore. Why?)
+# Biostrings::str_rev(s)
+# The following works, of course, but awkward:
+s
+paste0(rev(unlist(strsplit(s, ""))), collapse = "")
+
+# reverse complement
+COMP <- c("t", "g", "c", "a")
+names(COMP) <- c("a", "c", "g", "t")     # mapping the complement via names
+s
+paste0(COMP[rev(unlist(strsplit(s, "")))], collapse = "")
 
 
 # ===   6.1.3  Change characters
 # chartr(old, new, x) maps all characters in x that appear in "old" to the
-# correpsonding character in "new."
+# correpsonding character in "new." Kind of like the COMP vector above ...
 
 chartr("aeio", "uuuu", "We hold these truths to be self-evident ...")
 
@@ -200,25 +199,32 @@ chartr(paste0(letters, collapse = ""),
 
 # One amusing way to use the function  is for a reversible substitution
 # cypher.
+alBet <- "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz .,;:?0123456789"
 set.seed(112358)                       # set RNG seed for repeatable randomness
-(myCypher <- paste0(sample(letters), collapse = ""))
+( myCypher <- paste0(sample(unlist(strsplit(alBet, ""))), collapse = "") )
 set.seed(NULL)                         # reset the RNG
 
-(lett <- paste0(letters, collapse = ""))
-
 # encode ...
-(x <- chartr(lett, myCypher, "... seven for a secret, never to be told."))
+(x <- chartr(alBet, myCypher, "... seven for a secret, never to be told."))
 
 # decode ...
-chartr(myCypher, lett, x)
+chartr(myCypher, alBet, x)
 # (Nb. substitution cyphers are easy to crack!)
 
 
 # ===   6.1.4  Substitute characters
-(s <- gsub("IV", "i-v", s))  # gsub can change length, first argument is
-                             # a "regular expression"!
+# gsub can change lengths.
+#   Example: implementing the binary Fibonacci sequence:
+#   0 -> 1; 1 -> 10 , in three nested gsub() statements
+( s <- 1 )
+( s <- gsub("2", "10", gsub("0", "1", gsub("1", "2", s))) )
 
-# I use it often to delete characters I don't want ...
+# Iterate this line a few times ...
+#
+# cf. http://www.maths.surrey.ac.uk/hosted-sites/R.Knott/Fibonacci/fibrab.html
+# for the features of the sequence.
+
+# I use gsub() often to delete unwanted characters ...
 # ... select something, and substitute the empty string for it.
 (s <- gsub("-", "", s))
 
@@ -249,9 +255,9 @@ MSNQIYSARY SGVDVYEFIH STGSIMKRKK DDWVNATHIL KAANFAKAKR ")
 # In our learning units, we use a function dbSanitizeSequence() to clean up
 # sequences that may be copy/pasted from Web-sources
 
-s <- ">FASTA header will be removed
+cat( s <- ">FASTA header will be removed
 10         20         30         40         50
-MSNQIYSARY SGVDVYEFIH STGSIMKRKK DDWVNATHIL KAANFAKAKR "
+MSNQIYSARY SGVDVYEFIH STGSIMKRKK DDWVNATHIL KAANFAKAKR " )
 
 dbSanitizeSequence(s)
 
@@ -341,7 +347,7 @@ if (! requireNamespace("stringi", quietly = TRUE)) {
 #  data(package = "stringi")     # available datasets
 
 
-(x <- stri::stri_match_all(mySeq, regex = "CG"))
+(x <- stringi::stri_match_all(mySeq, regex = "CG"))
 length(unlist(x))
 
 # Now you could compare that number with yeast DNA sequences, and determine
