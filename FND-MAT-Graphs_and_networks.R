@@ -1,11 +1,5 @@
 # tocID <- "FND-MAT-Graphs_and_networks.R"
 #
-# ---------------------------------------------------------------------------- #
-#  PATIENCE  ...                                                               #
-#    Do not yet work wih this code. Updates in progress. Thank you.            #
-#    boris.steipe@utoronto.ca                                                  #
-# ---------------------------------------------------------------------------- #
-#
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the FND-MAT-Graphs_and_networks unit.
 #
@@ -22,7 +16,7 @@
 #           0.1    First code copied from 2016 material.
 #
 #
-# TODO:
+# TODO:     Add some explicit tasks and sample solutions.
 #
 #
 # == DO NOT SIMPLY  source()  THIS FILE! =======================================
@@ -35,30 +29,29 @@
 
 
 #TOC> ==========================================================================
-#TOC>
-#TOC>   Section  Title                                        Line
-#TOC> ------------------------------------------------------------
-#TOC>   1        Review                                         50
-#TOC>   2        DEGREE DISTRIBUTIONS                          204
-#TOC>   2.1        Random graph                                210
-#TOC>   2.2        scale-free graph (Barabasi-Albert)          258
-#TOC>   2.3        Random geometric graph                      323
-#TOC>   3        A CLOSER LOOK AT THE igraph PACKAGE           445
-#TOC>   3.1        Basics                                      448
-#TOC>   3.2        Components                                  520
-#TOC>   4        RANDOM GRAPHS AND GRAPH METRICS               539
-#TOC>   4.1        Diameter                                    576
-#TOC>   5        GRAPH CLUSTERING                              645
-#TOC>
+#TOC> 
+#TOC>   Section  Title                                          Line
+#TOC> --------------------------------------------------------------
+#TOC>   1        REVIEW                                           50
+#TOC>   2        DEGREE DISTRIBUTIONS                            206
+#TOC>   2.1        Random graph                                  212
+#TOC>   2.2        scale-free graph (Barabasi-Albert)            260
+#TOC>   2.3        Random geometric graph                        326
+#TOC>   3        A CLOSER LOOK AT THE igraph:: PACKAGE           448
+#TOC>   3.1        Basics                                        451
+#TOC>   3.2        Components                                    523
+#TOC>   4        RANDOM GRAPHS AND GRAPH METRICS                 542
+#TOC>   4.1        Diameter                                      579
+#TOC>   5        GRAPH CLUSTERING                                648
+#TOC> 
 #TOC> ==========================================================================
 
 
-# =    1  Review  ==============================================================
+# =    1  REVIEW  ==============================================================
 
 # This tutorial covers basic concepts of graph theory and analysis in R. Make
 # sure you have pulled the latest version of the project from the GitHub
-# repository, and that you have typed init() to load some utility functions and
-# data.
+# repository.
 
 # Let's explore some of the basic ideas of graph theory by starting with a small
 # random graph.
@@ -82,7 +75,7 @@ makeRandomGenenames <- function(N) {
 N <- 20
 
 set.seed(112358)                       # set RNG seed for repeatable randomness
-(Nnames <- makeRandomGenenames(N))
+( Nnames <- makeRandomGenenames(N) )
 set.seed(NULL)                         # reset the RNG
 
 # One way to represent graphs in a computer is as an "adjacency matrix". In this
@@ -90,11 +83,11 @@ set.seed(NULL)                         # reset the RNG
 # intersection of a row and column contains a value/TRUE if there is an edge,
 # 0/FALSE otherwise.
 
-# Let's create an adjacency matrix for random graph: let's say a pair of nodes
-# has probability p <- 0.1 to have an edge, and our graph is symmetric , i.e. it
-# is an undirected graph, and it has neither self-edges, i.e. loops, nor
-# multiple edges between the same nodes, i.e. it is a "simple" graph. We use our
-# the Nnames vector as node labels.
+# Let's create an adjacency matrix for our random graph: let's say a pair
+# of nodes has probability p <- 0.09 to have an edge, and our graph is
+# symmetric , i.e. it is an undirected graph, and it has neither self-edges,
+# i.e. loops, nor multiple edges between the same nodes, i.e. it
+# is a "simple" graph. We use the Nnames vector as node labels.
 
 makeRandomAM <- function(nam, p = 0.1) {
   # Make a random adjacency matrix for a set of nodes with edge probability p
@@ -106,11 +99,11 @@ makeRandomAM <- function(nam, p = 0.1) {
   #
 
   N <- length(nam)
-  AM <- matrix(numeric(N * N), ncol = N)  # The adjacency matrix
+  AM <- matrix(numeric(N * N), ncol = N)  # Adjacency matrix, pre-filled with 0
   rownames(AM) <- nam
   colnames(AM) <- nam
   for (iRow in 1:(N-1)) { # Note how we make sure iRow != iCol - this prevents
-                          # loops
+                          # loops (self-edges)
     for (iCol in (iRow+1):N) {
       if (runif(1) < p) {     # runif() creates uniform random numbers
                               # between 0 and 1. The expression is TRUE with
@@ -123,13 +116,13 @@ makeRandomAM <- function(nam, p = 0.1) {
 }
 
 set.seed(112358)                       # set RNG seed for repeatable randomness
-(myRandAM <- makeRandomAM(Nnames, p = 0.09))
+( myRandAM <- makeRandomAM(Nnames, p = 0.09) )
 set.seed(NULL)                         # reset the RNG
 
 
 # Listing the matrix is not very informative - we should plot this graph. The
-# standard package for work with graphs in r is "igraph". We'll go into more
-# details of the igraph package a bit later, for now we just use it to plot:
+# standard package for work with graphs in r is "igraph::". We'll go into more
+# details of the igraph:: package a bit later, for now we just use it to plot:
 
 if (! requireNamespace("igraph", quietly = TRUE)) {
   install.packages("igraph")
@@ -149,7 +142,7 @@ myGxy <- igraph::layout_with_graphopt(myG,
 set.seed(NULL)                         # reset the RNG
 
 
-# The igraph package adds its own function to the collection of plot()
+# The igraph:: package adds its own function to the collection of plot()
 # functions; R makes the selection which plot function to use based on the class
 # of the object that we request to plot. This plot function has parameters
 #  layout - the x,y coordinates of the nodes;
@@ -160,14 +153,14 @@ set.seed(NULL)                         # reset the RNG
 # See ?igraph.plotting for the complete list of parameters
 
 
-oPar <- par(mar= rep(0,4)) # Turn margins off
+oPar <- par(mar= c(0, 0, 0, 0)) # Turn margins off
 plot(myG,
      layout = myGxy,
      rescale = FALSE,
      xlim = c(min(myGxy[,1]) * 0.99, max(myGxy[,1]) * 1.01),
      ylim = c(min(myGxy[,2]) * 0.99, max(myGxy[,2]) * 1.01),
      vertex.color=heat.colors(max(igraph::degree(myG)+1))[igraph::degree(myG)+1],
-     vertex.size = 1600 + (300 * igraph::degree(myG)),
+     vertex.size = 1000 + (900 * igraph::degree(myG)),
      vertex.label = sprintf("%s(%i)", names(igraph::V(myG)), igraph::degree(myG)),
      vertex.label.family = "sans",
      vertex.label.cex = 0.7)
@@ -185,7 +178,7 @@ sum(myRandAM)
 # What about the degree distribution? We can get that simply by summing over the
 # rows and summing over the columns and adding the two vectors.
 
-rowSums(myRandAM) +  colSums(myRandAM) # check this against the plot!
+rowSums(myRandAM) + colSums(myRandAM) # check this against the plot!
 
 # The function degree() gives the same values
 igraph::degree(myG)
@@ -202,10 +195,13 @@ axis(side = 1, at = 0:7)
 # quite well, automatically. But for this purpose I want the columns of the
 # histogram to represent exactly one node-degree difference.
 
-# A degree distribution is actually quite an important descriptor of graphs,
-# since it is very sensitive to the generating mechanism. For biological
+# A degree distribution is actually a very informative descriptor of graphs,
+#  since it is very sensitive to the generating mechanism. For biological
 # networks, that is one of the key questions we are interested in: how was the
-# network formed?
+# network formed? Asking about the mechanism, the way the interactions
+# support function and shape the fitness landscape in which the cell evolves,
+# connects our mathematical abstraction with biological insight.
+
 
 # =    2  DEGREE DISTRIBUTIONS  ================================================
 
@@ -225,14 +221,14 @@ myG200 <- igraph::graph_from_adjacency_matrix(my200AM, mode = "undirected")
 myGxy <- igraph::layout_with_graphopt(myG200, charge=0.0001) # calculate layout
                                                              # coordinates
 
-oPar <- par(mar= rep(0,4))             # Turn margins off, save graphics state
+oPar <- par(mar= c(0, 0, 0, 0))             # Turn margins off, save graphics state
 plot(myG200,
      layout = myGxy,
      rescale = FALSE,
      xlim = c(min(myGxy[,1]) * 0.99, max(myGxy[,1]) * 1.01),
      ylim = c(min(myGxy[,2]) * 0.99, max(myGxy[,2]) * 1.01),
      vertex.color=heat.colors(max(igraph::degree(myG200)+1))[igraph::degree(myG200)+1],
-     vertex.size = 150 + (60 * igraph::degree(myG200)),
+     vertex.size = 150 + (70 * igraph::degree(myG200)),
      vertex.label = NA)
 par(oPar)                              # restore graphics state
 
@@ -251,7 +247,7 @@ axis(side = 1, at = 0:10)
 # Note the pronounced peak of this distribution: this is not "scale-free".
 # Here is the log-log plot of frequency vs. degree-rank ...
 
-(freqRank <- table(dg))
+( freqRank <- table(dg) )
 plot(log10(as.numeric(names(freqRank)) + 1),
      log10(as.numeric(freqRank)), type = "b",
      pch = 21, bg = "#A5F5CC",
@@ -264,9 +260,9 @@ plot(log10(as.numeric(names(freqRank)) + 1),
 # ==   2.2  scale-free graph (Barabasi-Albert)  ================================
 
 # What does one of those intriguing "scale-free" distributions look like? The
-# iGraph package has a function to make random graphs according to the
+# iGraph:: package has a function to make random graphs according to the
 # Barabasi-Albert model of scale-free graphs. It is: sample_pa(), where pa
-# stands for "preferential attachment". Preferential attachment is one type of
+# stands for "preferential attachment". Preferential attachment is _one_ type of
 # process that will yield scale-free distributions.
 
 N <- 200
@@ -277,7 +273,7 @@ set.seed(NULL)                         # reset the RNG
 
 GBAxy <- igraph::layout_with_graphopt(GBA, charge=0.0001)
 
-oPar <- par(mar= rep(0,4))             # Turn margins off, save graphics state
+oPar <- par(mar= c(0, 0, 0, 0))             # Turn margins off, save graphics state
 plot(GBA,
      layout = GBAxy,
      rescale = FALSE,
@@ -296,7 +292,7 @@ par(oPar)                              # restore graphics state
 # singletons.
 
 # What's the degree distribution of this graph?
-(dg <- igraph::degree(GBA))
+( dg <- igraph::degree(GBA) )
 brk <- seq(min(dg)-0.5, max(dg)+0.5, by=1)
 hist(dg, breaks=brk, col="#DCF5B5",
      xlim = c(0,max(dg)+1), xaxt = "n",
@@ -314,9 +310,10 @@ plot(log10(as.numeric(names(freqRank)) + 1),
      main = "200 nodes in a preferential-attachment network")
 
 # Sort-of linear, but many of the higher ranked nodes have a frequency of only
-# one. That behaviour smooths out in larger graphs:
+# one. That behaviour smooths out in larger graphs - let's try 100000 nodes:
 #
-X <- igraph::sample_pa(1e5, power = 0.8, directed = FALSE)  # 100,000 nodes
+N <- 10000
+X <- igraph::sample_pa(N, power = 0.8, directed = FALSE)  # 100,000 nodes
 freqRank <- table(igraph::degree(X))
 plot(log10(as.numeric(names(freqRank)) + 1),
      log10(as.numeric(freqRank)), type = "b",
@@ -336,16 +333,16 @@ rm(X)
 # probability for two nodes to have an edge to be a function of their Euclidian
 # distance in the box.
 
-# Here is a function that makes an adjacency matrix for such graphs. iGraph has
-# a similar function, sample_grg(), which connects nodes that are closer than a
-# cutoff, the function I give you below is a bit more interesting since it
-# creates edges according to a probability that is determined by a generalized
-# logistic function of the distance. This sigmoidal function gives a smooth
-# cutoff and creates more "natural" graphs. Otherwise, the function is very
-# similar to the random graph function, except that we output the "coordinates"
-# of the nodes together with the adjacency matrix which we then use for the
-# layout. list() FTW.
-#
+# Here is a function that makes an adjacency matrix for such graphs. iGraph::
+# has a similar function, sample_grg(), which connects nodes that are closer
+# than a cutoff, the function I give you below is a bit more interesting since
+# it creates edges according to a probability that is determined by a
+# generalized logistic function of the distance. This sigmoidal function gives
+# a smooth cutoff and creates more "natural" graphs. Otherwise, the function is
+# very similar to the random graph function, except that we output the
+# "coordinates" of the nodes together with the adjacency matrix which we then
+# use for the layout. list() FTW.
+
 
 makeRandomGeometricAM <- function(nam, B = 25, Q = 0.001, t = 0.6) {
   # Make an adjacency matrix for an undirected random geometric graph from
@@ -400,7 +397,7 @@ makeRandomGeometricAM <- function(nam, B = 25, Q = 0.001, t = 0.6) {
 # }
 #
 # ... and this code plots p-values over the distances we could encouter between
-# our nodes: from 0 to sqrt(2) i.e. the diagonal of the unit sqaure in which we
+# our nodes: from 0 to sqrt(2) i.e. the diagonal of the unit square in which we
 # will place our nodes.
 # x <- seq(0, sqrt(2), length.out = 50)
 # plot(x, genLog(x), type="l", col="#AA0000", ylim = c(0, 1),
@@ -415,7 +412,7 @@ set.seed(NULL)                         # reset the RNG
 
 myGRG <- igraph::graph_from_adjacency_matrix(rGAM$mat, mode = "undirected")
 
-oPar <- par(mar= rep(0,4)) # Turn margins off
+oPar <- par(mar= c(0, 0, 0, 0)) # Turn margins off
 plot(myGRG,
      layout = cbind(rGAM$x, rGAM$y), # use our node coordinates for layout,
      rescale = FALSE,
@@ -448,12 +445,12 @@ plot(log10(as.numeric(names(freqRank)) + 1),
 
 
 
-# =    3  A CLOSER LOOK AT THE igraph PACKAGE  =================================
+# =    3  A CLOSER LOOK AT THE igraph:: PACKAGE  ===============================
 
 
 # ==   3.1  Basics  ============================================================
 
-# The basic object of the igraph package is a graph object. Let's explore the
+# The basic object of the igraph:: package is a graph object. Let's explore the
 # first graph some more, the one we built with our random gene names:
 summary(myG)
 
@@ -464,7 +461,7 @@ summary(myG)
 mode(myG)
 class(myG)
 
-# This means an igraph graph object is a special list object; it is opaque in
+# This means an igraph:: graph object is a special list object; it is opaque in
 # the sense that a user is never expected to modify its components directly, but
 # through a variety of helper functions which the package provides. There are
 # many ways to construct graphs - from adjacency matrices, as we have just done,
@@ -494,12 +491,12 @@ plot(myG)  # this is the result of default plot parameters
 # See ?plot.igraph for details."
 
 # Plot with some customizing parameters
-oPar <- par(mar= rep(0,4)) # Turn margins off
+oPar <- par(mar= c(0, 0, 0, 0)) # Turn margins off
 plot(myG,
      layout = igraph::layout_with_fr(myG),
      vertex.color=heat.colors(max(igraph::degree(myG)+1))[igraph::degree(myG)+1],
-     vertex.size = 9 + (2 * igraph::degree(myG)),
-     vertex.label.cex = 0.5 + (0.05 * igraph::degree(myG)),
+     vertex.size = 12 + (5 * igraph::degree(myG)),
+     vertex.label.cex = 0.4 + (0.15 * igraph::degree(myG)),
      edge.width = 2,
      vertex.label = igraph::V(myG)$name,
      vertex.label.family = "sans",
@@ -507,25 +504,25 @@ plot(myG,
 par(oPar)
 
 # ... or with a different layout:
-oPar <- par(mar= rep(0,4)) # Turn margins off
+oPar <- par(mar= c(0, 0, 0, 0)) # Turn margins off
 plot(myG,
      layout = igraph::layout_in_circle(myG),
      vertex.color=heat.colors(max(igraph::degree(myG)+1))[igraph::degree(myG)+1],
-     vertex.size = 9 + (2 * igraph::degree(myG)),
-     vertex.label.cex = 0.5 + (0.05 * igraph::degree(myG)),
+     vertex.size = 12 + (5 * igraph::degree(myG)),
+     vertex.label.cex = 0.4 + (0.15 * igraph::degree(myG)),
      edge.width = 2,
      vertex.label = igraph::V(myG)$name,
      vertex.label.family = "sans",
      vertex.label.cex = 0.9)
 par(oPar)
 
-# igraph has a large number of graph-layout functions: see
+# igraph:: has a large number of graph-layout functions: see
 # ?layout_  and try them all.
 
 
 # ==   3.2  Components  ========================================================
 
-# The igraph function components() tells us whether there are components of the
+# The function igrap::components() tells us whether there are components of the
 # graph in which there is no path to other components.
 igraph::components(myG)
 
@@ -548,7 +545,7 @@ names(c1)
 # Let's explore some of the more interesting, topological graph measures. We
 # start by building a somewhat bigger graph. We aren't quite sure whether
 # biological graphs are small-world, or random-geometric, or
-# preferential-attachment ... but igraph has ways to simulate the basic ones
+# preferential-attachment ... but igraph:: has ways to simulate the basic ones
 # (and we could easily simulate our own). Look at the following help pages:
 
 ?igraph::sample_gnm             # see also sample_gnp for the Erdös-Rényi models
@@ -573,10 +570,10 @@ plot(myG,
      xlim = c(min(myGxy[,1]) * 0.99, max(myGxy[,1]) * 1.01),
      ylim = c(min(myGxy[,2]) * 0.99, max(myGxy[,2]) * 1.01),
      vertex.color=heat.colors(max(igraph::degree(myG)+1))[igraph::degree(myG)+1],
-     vertex.size = 20 + (10 * igraph::degree(myG)),
+     vertex.size = 40 + (15 * igraph::degree(myG)),
+     vertex.label.cex = 0.4 + (0.15 * igraph::degree(myG)),
      vertex.label = igraph::V(myG)$name,
-     vertex.label.family = "sans",
-     vertex.label.cex = 0.8)
+     vertex.label.family = "sans")
 par(oPar)                              # restore graphics state
 
 # ==   4.1  Diameter  ==========================================================
@@ -600,17 +597,17 @@ bC <- igraph::centr_betw(myG)  # calculate betweenness centrality
 nodeBetw <- bC$res
 nodeBetw <- round(log(nodeBetw +1)) + 1
 
-oPar <- par(mar= rep(0,4)) # Turn margins off
+oPar <- par(mar= c(0, 0, 0, 0)) # Turn margins off
 plot(myG,
      layout = myGxy,
      rescale = FALSE,
      xlim = c(min(myGxy[,1]) * 0.99, max(myGxy[,1]) * 1.01),
      ylim = c(min(myGxy[,2]) * 0.99, max(myGxy[,2]) * 1.01),
-     vertex.color=heat.colors(max(nodeBetw))[nodeBetw],
-     vertex.size = 20 + (10 * igraph::degree(myG)),
+     vertex.color=heat.colors(max(igraph::degree(myG)+1))[igraph::degree(myG)+1],
+     vertex.size = 40 + (15 * igraph::degree(myG)),
+     vertex.label.cex = 0.4 + (0.15 * igraph::degree(myG)),
      vertex.label = igraph::V(myG)$name,
-     vertex.label.family = "sans",
-     vertex.label.cex = 0.7)
+     vertex.label.family = "sans")
 par(oPar)
 
 # Note that the betweenness - the number of shortest paths that pass through a
@@ -629,7 +626,7 @@ nodeBetw <- bCmyGRG$res
 nodeBetw <- round((log(nodeBetw +1))^2.5) + 1
 
 # colours and size proportional to betweenness
-oPar <- par(mar= rep(0,4)) # Turn margins off
+oPar <- par(mar= c(0, 0, 0, 0)) # Turn margins off
 plot(myGRG,
      layout = cbind(rGAM$x, rGAM$y), # use our node coordinates for layout,
      rescale = FALSE,
@@ -677,18 +674,18 @@ commColors <- rep("#f1eef6", max(igraph::membership(myGRGclusters)))
 commColors[1:5] <- c("#980043", "#dd1c77", "#df65b0", "#c994c7", "#d4b9da")
 
 
-oPar <- par(mar= rep(0,4)) # Turn margins off
+oPar <- par(mar= c(0, 0, 0, 0)) # Turn margins off
 plot(myGRG,
      layout = cbind(rGAM$x, rGAM$y),
      rescale = FALSE,
      xlim = c(min(rGAM$x) * 0.9, max(rGAM$x) * 1.1),
      ylim = c(min(rGAM$y) * 0.9, max(rGAM$y) * 1.1),
      vertex.color=commColors[igraph::membership(myGRGclusters)],
-     vertex.size = 0.1 + (0.1 * igraph::degree(myGRG)),
+     vertex.size = 0.3 + (0.4 * igraph::degree(myGRG)),
      vertex.label = NA)
 par(oPar)
 
-
+# That's all.
 
 
 # [END]
