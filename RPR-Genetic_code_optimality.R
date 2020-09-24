@@ -1,20 +1,15 @@
 # tocID <- "RPR-Genetic_code_optimality.R"
 #
-# ---------------------------------------------------------------------------- #
-#  PATIENCE  ...                                                               #
-#    Do not yet work wih this code. Updates in progress. Thank you.            #
-#    boris.steipe@utoronto.ca                                                  #
-# ---------------------------------------------------------------------------- #
-#
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the RPR-Genetic_code_optimality unit.
 #
-# Version:  1.2
+# Version:  1.3
 #
-# Date:     2017  10  -  2019  01
+# Date:     2017-10  -  2020-09
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.3    2020 Maintenance
 #           1.2    Change from require() to requireNamespace(),
 #                      use <package>::<function>() idiom throughout,
 #                      use Biocmanager:: not biocLite()
@@ -36,20 +31,20 @@
 
 
 #TOC> ==========================================================================
-#TOC>
+#TOC> 
 #TOC>   Section  Title                                          Line
 #TOC> --------------------------------------------------------------
-#TOC>   1        Designing a computational experiment             57
-#TOC>   2        Setting up the tools                             73
-#TOC>   2.1        Natural and alternative genetic codes          76
-#TOC>   2.2        Effect of mutations                           134
-#TOC>   2.2.1          reverse-translate                         145
-#TOC>   2.2.2          Randomly mutate                           170
-#TOC>   2.2.3          Forward- translate                        195
+#TOC>   1        Designing a computational experiment             58
+#TOC>   2        Setting up the tools                             74
+#TOC>   2.1        Natural and alternative genetic codes          77
+#TOC>   2.2        Effect of mutations                           135
+#TOC>   2.2.1          reverse-translate                         146
+#TOC>   2.2.2          Randomly mutate                           171
+#TOC>   2.2.3          Forward- translate                        196
 #TOC>   2.2.4          measure effect                            213
-#TOC>   3        Run the experiment                              260
-#TOC>   4        Task solutions                                  356
-#TOC>
+#TOC>   3        Run the experiment                              267
+#TOC>   4        Task solutions                                  363
+#TOC> 
 #TOC> ==========================================================================
 
 
@@ -148,7 +143,7 @@ swappedGC <- function(GC) {
 #   - we count the number of mutations and evaluate their severity.
 
 
-# ===   2.2.1  reverse-translate
+# ===   2.2.1  reverse-translate                    
 
 # To reverse-translate an amino acid vector, we randomly pick one of its
 # codons from a genetic code, and assemble all codons to a sequence.
@@ -173,7 +168,7 @@ traRev <- function(s, GC) {
 }
 
 
-# ===   2.2.2  Randomly mutate
+# ===   2.2.2  Randomly mutate                      
 
 # To mutate, we split a codon into it's three nucleotides, then randomly replace
 # one of the three with another nucleotide.
@@ -198,7 +193,7 @@ randMut <- function(vC) {
 
 
 
-# ===   2.2.3  Forward- translate
+# ===   2.2.3  Forward- translate                   
 
 traFor <- function(vC, GC) {
   # Parameters:
@@ -212,11 +207,10 @@ traFor <- function(vC, GC) {
     vAA[i] <- GC[vC[i]]         # translate and store
   }
   return(vAA)
+}
 
-  }
 
-
-# ===   2.2.4  measure effect
+# ===   2.2.4  measure effect                       
 
 # How do we evaluate the effect of the mutation? We'll take a simple ad hoc
 # approach: we divide amino acids into hydrophobic, hydrophilic, and neutral
@@ -261,6 +255,13 @@ evalMut <- function(nat, mut) {
 # proline is always bad in secondary structure, charged amino acids are terrible
 # in the folded core of a protein, replacing a small by a large amino acid in
 # the core is very disruptive ... etc.
+#
+# For our experiment, we should not  use a mutation data matrix however:
+# empirical mutation probabilities are superbly suited to estimate evolutionary
+# relationships. Here however, as we are trying to evaluate effects of random
+# mutations on genetic codes, our reasoning would be circular - we would
+# discover that the natural genetic code is optimal ... because it is most
+# similar to the natural genetic code. That would be Cargo Cult bioinformatics.
 
 
 # =    3  Run the experiment  ==================================================
@@ -290,7 +291,7 @@ N <- 200
 valSTDC <- numeric(N)
 
 set.seed(112358)                   # set RNG seed for repeatable randomness
-for (i in 1:N) {
+for (i in 1:N) {                   # this takes a few seconds ...
   x <- randMut(myDNA)              # mutate
   x <- traFor(x, stdCode)     # translate
   valSTDC[i] <- evalMut(myAA, x)    # evaluate
