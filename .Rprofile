@@ -33,10 +33,51 @@ if (! file.exists("./myScripts/.myProfile.R")) {
   cat("    =================")
   cat("\n\n")
 
-} else {
+} else {  # local profile exists ... validate state:
   cat("\n\nLoading local functions ...")
+
   source("./myScripts/.myProfile.R")
-  source(".utilities.R")
+
+  if (! exists("myEMail")) {  # ... has eMail been defined?
+    cat("ERROR !\n")
+    cat("=======\n")
+    cat("The file \"./myScripts/.myProfile.R\" exists, but\n")
+    cat("the variable \"myEMail\" was not loaded.\n")
+    cat("Please contact your instructor to continue.\n\n")
+  }
+  if (! exists("myStudentNumber")) {  # ... has the Student Number been defined?
+    cat("ERROR !\n")
+    cat("=======\n")
+    cat("The file \"./myScripts/.myProfile.R\" exists, but\n")
+    cat("the variable \"myStudentNumber\" was not loaded.\n")
+    cat("Please contact your instructor to continue.\n\n")
+  }
+  if (! grepl("^(100.{7})|(99.{7})$", as.character(myStudentNumber))) {
+    cat("ERROR !\n")                 # is the Student Number valid?
+    cat("=======\n")
+    cat("The file \"./myScripts/.myProfile.R\" exists, but\n")
+    cat("your Student Number could not be validated.\n")
+    cat("Please examine the file \"./myScripts/.myProfile.R\"\n")
+    cat(" and fix the problem or contact your instructor to continue.\n\n")
+  }
+
+  source(".utilities.R")  # local profile appears sane, source utilities
+
+  if (! exists("MYSPE")) {  # if MYSPE has not yet been defined, define it now
+                            # ... and write it into the profile.
+       prf <- readLines("./myScripts/.myProfile.R")
+       iEmail <- grep("^\\s*myStudentNumber\\s*<-", prf)
+       out <- prf[1:iEmail]
+       out <- c(out, sprintf("MYSPE <- %s ",
+                             getMYSPE(myStudentNumber)))
+       out <- c(out, prf[(iEmail+1):length(prf)])
+       writeLines(out, "./myScripts/.myProfile.R")
+
+       cat("\n")
+       cat(sprintf("MYSPE (%s) was added to \"./myScripts/.myProfile.R\"\n\n",
+                   getMYSPE(myStudentNumber)))
+       MYSPE <- getMYSPE(myStudentNumber)  # ... define it for immediate use
+  }
   cat("... done.\n\n")
 }
 
