@@ -1,20 +1,15 @@
 # tocID <- "RPR-Unit_testing.R"
 #
-# ---------------------------------------------------------------------------- #
-#  PATIENCE  ...                                                               #
-#    Do not yet work wih this code. Updates in progress. Thank you.            #
-#    boris.steipe@utoronto.ca                                                  #
-# ---------------------------------------------------------------------------- #
-#
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the RPR-Unit_testing unit.
 #
-# Version:  1.1
+# Version:  1.2
 #
 # Date:     2017  10  -  2019  01
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.2    2020 Updates. Discuss local tests.
 #           1.1    Change from require() to requireNamespace()
 #           1.0    New code
 #
@@ -35,10 +30,11 @@
 #TOC> 
 #TOC>   Section  Title                             Line
 #TOC> -------------------------------------------------
-#TOC>   1        Unit Tests with testthat            46
+#TOC>   1        Unit Tests with testthat            42
 #TOC>   2        Organizing your tests              165
 #TOC>   2.1        Testing scripts                  189
-#TOC>   3        Task solutions                     204
+#TOC>   2.2        Rethinking testing               202
+#TOC>   3        Task solutions                     220
 #TOC> 
 #TOC> ==========================================================================
 
@@ -56,7 +52,7 @@ if (! requireNamespace("testthat", quietly = TRUE)) {
 #  data(package = "testthat")     # available datasets
 
 # testthat is one of those packages that we either use A LOT in a script,
-# or not at all. Therfore it's more reasonable to depart from our usual
+# or not at all. Therefore it's more reasonable to depart from our usual
 # <package>::<function>() idiom, and load the entire library. In fact, if
 # we author packages, it is common practice to load testthat in the part
 # of the package that automates testing.
@@ -122,7 +118,8 @@ expect_error(log(v[1,2]))                # This appears oK, but ...
 expect_error(log(v[1,2]), "non-numeric") # ... it's actually a different error!
 
 # Producing unit tests simply means: we define a function, and then we check
-# whether all test pass. Consider a function that is loaded on startup:
+# whether all test pass. Consider a function that is loaded on startup from
+# the .utilities.R script:
 
 biCode
 
@@ -144,6 +141,9 @@ expect_error(biCode(), "argument \"s\" is missing, with no default")
 # test_that("<descriptive string>, {<code block>})
 
 test_that("NA values are preserved", {
+  # bicode() respects vector length: input and output must have the smae length.
+  # Therefore NA's can't be simply skipped, bust must be properly passed
+  # into output:
   expect_true(is.na((biCode(NA))))
   expect_equal(biCode(c("first", NA, "last")),
                c("FIRST", NA, "LAST."))
@@ -198,6 +198,22 @@ if (FALSE) {
   # ... your tests go here
 
 }
+
+# ==   2.2  Rethinking testing  ================================================
+
+# However, it is important to keep in mind that different objectives lead to
+# different ideas of what works best. There is never a "best" in and of itself,
+# the question is always: "Best for what?" While automated unit testing is a
+# great way to assure the integrity of packages and larger software artefacts as
+# they are being developed, more loosely conceived aggregates of code - like the
+# scripts for this course for example - have different objectives and in this
+# case I find the testthat approach to actually be inferior. The reason is its
+# tendency to physically separate code and tests. Keeping assets, and functions
+# that operate on those assets separated is always poor design. I have found
+# over time that a more stable approach is to move individual functions into
+# their individual scripts, all in one folder, one function (and its helpers)
+# per file, and examples, demos and tests in an if (FALSE) { ... } block, as
+# explained above.
 
 
 
