@@ -23,21 +23,26 @@
 #TOC>
 #TOC>   Section  Title                                       Line
 #TOC> -----------------------------------------------------------
-#TOC>   1        SCRIPTS TO SOURCE                             45
-#TOC>   2        PACKAGES                                      51
-#TOC>   3        SUPPORT FUNCTIONS                             62
-#TOC>   3.1        objectInfo()                                65
-#TOC>   3.2        biCode()                                    93
-#TOC>   3.3        sameSpecies()                              127
-#TOC>   3.4        pBar()                                     146
-#TOC>   3.5        waitTimer()                                168
-#TOC>   3.6        fetchMSAmotif()                            196
-#TOC>   3.7        H() (Shannon entropy)                      240
-#TOC>   4        DATA                                         254
-#TOC>   4.1        REFspecies                                 256
-#TOC>   5        FUNCTIONS TO CUSTOMIZE ASSIGNMENTS           271
-#TOC>   5.1        getMYSPE()                                 274
-#TOC>   5.2        selectPDBrep()                             283
+#TOC>   1        SCRIPTS TO SOURCE                             50
+#TOC>   2        PACKAGES                                      56
+#TOC>   3        DATA & CONSTANTS                              67
+#TOC>   4        SUPPORT FUNCTIONS                            113
+#TOC>   4.01       objectInfo()                               116
+#TOC>   4.02       biCode()                                   144
+#TOC>   4.03       sameSpecies()                              178
+#TOC>   4.04       validateFA()                               198
+#TOC>   4.05       readFASTA()                                247
+#TOC>   4.06       writeFASTA()                               282
+#TOC>   4.07       pBar()                                     315
+#TOC>   4.08       waitTimer()                                337
+#TOC>   4.09       fetchMSAmotif()                            365
+#TOC>   4.10       H() (Shannon entropy)                      409
+#TOC>   5        FUNCTIONS TO CUSTOMIZE ASSIGNMENTS           422
+#TOC>   5.01       seal()                                     424
+#TOC>   5.02       getMYSPE()                                 428
+#TOC>   5.03       selectPDBrep()                             437
+#TOC>   5.04       selectChi2()                               473
+#TOC>   5.05       selectENSP()                               486
 #TOC>
 #TOC> ==========================================================================
 
@@ -59,10 +64,56 @@ if (! requireNamespace("jsonlite", quietly = TRUE)) {
 }
 
 
-# =    3  SUPPORT FUNCTIONS  ===================================================
+# =    3  DATA & CONSTANTS  ====================================================
+
+# cf. https://www.bioinformatics.org/sms/iupac.html
+AAVALID  <- "acdefghiklmnpqrstvwyACDEFGHIKLMNPQRSTVWY*-"
+NUCVALID <- "acgtuACGTU-"
+NUCAMBIG <- "acgtACGTryswkmbdhvnRYSWKMBDHVN-"
+
+# A colorpallette for amino acid properties
+AACOLS <- character()
+AACOLS["R"] <- "#577EFF" # Positive
+AACOLS["K"] <- "#479EEE" #
+AACOLS["H"] <- "#37BFDE" #
+AACOLS["E"] <- "#ffa587" # Negative
+AACOLS["D"] <- "#ff87ad" #
+AACOLS["N"] <- "#9FC6FC" # Hydrophilic
+AACOLS["Q"] <- "#A7CFF5" #
+AACOLS["S"] <- "#AFD8EE" #
+AACOLS["T"] <- "#B7E2E8" #
+AACOLS["Y"] <- "#F5FFD9" # Hydrophobic
+AACOLS["W"] <- "#F1FFDB" #
+AACOLS["F"] <- "#EDFFDD" #
+AACOLS["I"] <- "#E9FFDF" #
+AACOLS["L"] <- "#E5FFE2" #
+AACOLS["M"] <- "#E1FFE4" #
+AACOLS["V"] <- "#DDFFE6" #
+AACOLS["A"] <- "#D9FFE9" #
+AACOLS["G"] <- "#e0e0e0" # Glycine
+AACOLS["C"] <- "#fffb91" # Cysteine
+AACOLS["P"] <- "#e8f7e1" # Proline
+# barplot(rep(1, 20), col = AACOLS)
 
 
-# ==   3.1  objectInfo()  ======================================================
+# 10 species of fungi for reference analysis.
+# http://steipe.biochemistry.utoronto.ca/abc/index.php/Reference_species_for_fungi
+REFspecies <- c("Aspergillus nidulans",
+                "Bipolaris oryzae",
+                "Coprinopsis cinerea",
+                "Cryptococcus neoformans",
+                "Neurospora crassa",
+                "Puccinia graminis",
+                "Saccharomyces cerevisiae",
+                "Schizosaccharomyces pombe",
+                "Ustilago maydis",
+                "Wallemia mellicola")
+
+
+# =    4  SUPPORT FUNCTIONS  ===================================================
+
+
+# ==   4.01  objectInfo()  =====================================================
 objectInfo <- function(x) {
     # Function to combine various information items about R objects
     #
@@ -90,7 +141,7 @@ objectInfo <- function(x) {
 }
 
 
-# ==   3.2  biCode()  ==========================================================
+# ==   4.02  biCode()  =========================================================
 biCode <- function(s) {
   # Make a 5 character "biCode" from a binomial name by concatening
   # the uppercased first three letter of the first word and the first
@@ -124,7 +175,7 @@ biCode <- function(s) {
 }
 
 
-# ==   3.3  sameSpecies()  =====================================================
+# ==   4.03  sameSpecies()  ====================================================
 sameSpecies <- function(a, b) {
   # Parameters: a, b two vectors that contain
   # binomial species names and maybe additional strain information.
@@ -143,7 +194,125 @@ sameSpecies <- function(a, b) {
 }
 
 
-# ==   3.4  pBar()  ============================================================
+
+# ==   4.04  validateFA()  =====================================================
+
+validateFA <- function(txt) {
+  # validates txt according to FASTA assumptions
+  # Parameters:
+  #   txt   char   a putative vector of FASTA formatted text
+  # Value:  invisible(NULL)
+  #
+  # The function is used for its side-effect of throwing an error of
+  # FASTA assumptions are violated in txt.
+  # - At least one header line
+  # - No adjacent header lines
+  # - All header lines followed by at least one sequence line
+  # - All sequence lines have at least one valid character
+  # - Valid characters are AAVALID (which includes valid nucleotides)
+
+  if ( ! any(grepl("^>", txt)) ) {
+    stop("no header lines in input")
+  }
+
+  sel <- grepl("^>", txt)
+  sel <- sel[- length(sel)] & sel[-1]
+  if ( any(sel) ) {
+    i <- which(sel)[1]
+    stop(sprintf("adjacent header lines in input (lines %d and %d)",
+                 i, i+1))
+  }
+
+  selA <- grepl("^>", txt)
+  selB <- grepl(sprintf("[^%s]", AAVALID), txt)
+  if ( any( (! selA) & selB) ) {  # (not header) AND (has invalid character)
+    i <- which( (! selA) & selB)[1]
+    stop(sprintf("invalid character(s) in sequence (cf. line %d)",
+                 i, i+1))
+  }
+
+  sel <- grep("^>", txt) + 1
+  sel <- grepl(sprintf("[%s]+", AAVALID), txt[sel])
+  if ( ! all(sel) ) {
+    i <- which( ! sel)[1]
+    stop(sprintf("a header has no adjacent sequence (line %d)",
+                 grep("^>", txt)[i]))
+  }
+
+  # all good, if we get to here.
+  return(invisible(NULL))
+}
+
+
+# ==   4.05  readFASTA()  ======================================================
+
+readFASTA <- function(FA) {
+  # Read FASTA formatted text, validate it,
+  # return a dataframe of headers and collapsed sequences.
+  # Parameters:
+  #    FA  chr   Input file name (or text connection)
+  # Value:
+  #    data.frame
+  #       $header char  the FASTA header lines
+  #       $ seq   char  the actual sequences
+  #
+  # Note: if length(FA) is one, it is assumed to be a filename
+  #
+  # Example:
+  #   refAPSES <- readFASTA("./data/refAPSES.mfa")
+  #   readFASTA(c("> This", "acdef", "ghi", > That", "k-l"))
+  #
+
+  if (length(FA) == 1) { FA <- readLines(FA) }
+  validateFA(FA)
+  FA <- FA[! grepl("^$", FA)]   # drop all empty lines
+  iHead <- grep("^>", FA) # find all headers
+  myFA <- data.frame(head = FA[iHead],
+                     seq  = character(length(iHead)))
+
+  for (i in seq_along(iHead)) {
+    first <- iHead[i] + 1   # first line of each sequence
+    last  <- ifelse(i < length(iHead), iHead[i + 1] - 1, length(FA)) # ...last
+    myFA$seq[i] <- paste0(FA[first:last], collapse = "")
+  }
+  return(myFA)
+}
+
+
+# ==   4.06  writeFASTA()  =====================================================
+writeFASTA <- function(fa, fn = NULL, width = 60) {
+  # Write the contents of dataframe "fa" as a FASTA formatted file.
+  # Parameters:
+  #    fa      dataframe
+  #      $head chr  vector of FASTA headers,
+  #      $seq  chr  vector of sequences in one-letter code
+  #    fn      chr  filename for output; if NULL (default) the output is
+  #                 returned instead
+  #    width   int   max number of sequence characters per line of output.
+  # Value:
+  #           FASTA formatted character vector IF fn was NULL. invisible(NULL)
+  #           otherwise.
+
+  out <- character()
+  for (i in seq_along(fa$head)) {
+    out <- c(out, fa$head[i])                 # add header line
+    from <- seq(1, nchar(fa$seq[i]), by = width) # starting indices of chunks
+    to <- c((from - 1)[-1], nchar(fa$seq[i]))     # ending indices of chunks
+    out <- c(out, substring(fa$seq[i], from, to)) # add chunks to txt
+    out <- c(out, "")         # add empty line for better readability
+  }
+  out <- out[ - length(out)]  # drop the last empty line
+
+  if (length(fn) == 1) {
+    writeLines(out, fn)
+    return(invisible(NULL))
+  } else {
+    return(out)
+  }
+}
+
+
+# ==   4.07  pBar()  ===========================================================
   pBar <- function(i, l, nCh = 50) {
     # Draw a progress bar in the console
   # i: the current iteration
@@ -165,7 +334,7 @@ sameSpecies <- function(a, b) {
 }
 
 
-# ==   3.5  waitTimer()  =======================================================
+# ==   4.08  waitTimer()  ======================================================
 waitTimer <- function(t, nIntervals = 50) {
   # pause and wait for t seconds and display a progress bar as
   # you are waiting
@@ -193,7 +362,7 @@ waitTimer <- function(t, nIntervals = 50) {
 }
 
 
-# ==   3.6  fetchMSAmotif()  ===================================================
+# ==   4.09  fetchMSAmotif()  ==================================================
 fetchMSAmotif <- function(ali, mot) {
   # Retrieve a subset from ali that spans the sequence in mot.
   # Biostrings package must be installed.
@@ -237,7 +406,7 @@ fetchMSAmotif <- function(ali, mot) {
 }
 
 
-# ==   3.7  H() (Shannon entropy)  =============================================
+# ==   4.10  H() (Shannon entropy)  ============================================
 H <- function(x, N) {
   # calculate the Shannon entropy of the vector x given N possible states
   # (in bits).
@@ -250,31 +419,13 @@ H <- function(x, N) {
 }
 
 
-
-# =    4  DATA  ================================================================
-
-# ==   4.1  REFspecies  ========================================================
-# 10 species of fungi for reference analysis.
-# http://steipe.biochemistry.utoronto.ca/abc/index.php/Reference_species_for_fungi
-REFspecies <- c("Aspergillus nidulans",
-                "Bipolaris oryzae",
-                "Coprinopsis cinerea",
-                "Cryptococcus neoformans",
-                "Neurospora crassa",
-                "Puccinia graminis",
-                "Saccharomyces cerevisiae",
-                "Schizosaccharomyces pombe",
-                "Ustilago maydis",
-                "Wallemia mellicola")
-
-
 # =    5  FUNCTIONS TO CUSTOMIZE ASSIGNMENTS  ==================================
 
-# ==   5.1  seal()  ========================================================
+# ==   5.01  seal()  ===========================================================
 seal <- function(x.1L) { .Call(digest:::digest_impl,x.1L,3L,-1L,-0,-0,-0) }
 
 
-# ==   5.1  getMYSPE()  ========================================================
+# ==   5.02  getMYSPE()  =======================================================
 getMYSPE <- function(x) {
   dat <- readRDS("./data/sDat.rds")
   map <- readRDS("./data/MYSPEmap.rds")
@@ -283,7 +434,7 @@ getMYSPE <- function(x) {
 }
 
 
-# ==   5.2  selectPDBrep()  ====================================================
+# ==   5.03  selectPDBrep()  ===================================================
 selectPDBrep <- function(n, forCredit = FALSE) {
   # Select n PDB IDs from a list of high-resolution, non-homologous, single
   # domain, single chain structure files that represent a CATH topology
@@ -319,7 +470,7 @@ selectPDBrep <- function(n, forCredit = FALSE) {
 }
 
 
-# ==   5.2  selectChi2()  ====================================================
+# ==   5.04  selectChi2()  =====================================================
 selectChi2 <- function() {
   # Select one random Amino acid from those that have a Chi2 angle
 
@@ -332,7 +483,7 @@ selectChi2 <- function() {
 }
 
 
-# ==   5.2  selectENSP()  ====================================================
+# ==   5.05  selectENSP()  =====================================================
 selectENSP <- function(x) {
   oldSeed <- .Random.seed
   set.seed(myStudentNumber)
