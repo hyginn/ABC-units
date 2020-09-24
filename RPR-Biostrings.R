@@ -1,20 +1,15 @@
 # tocID <- "RPR-Biostrings.R"
 #
-# ---------------------------------------------------------------------------- #
-#  PATIENCE  ...                                                               #
-#    Do not yet work wih this code. Updates in progress. Thank you.            #
-#    boris.steipe@utoronto.ca                                                  #
-# ---------------------------------------------------------------------------- #
-#
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the RPR-Biostrings unit.
 #
-# Version:  1.1
+# Version:  1.2
 #
-# Date:     2017  10  -  2019  01
+# Date:     2017-10  -  2020-09
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.2    2020 Updates
 #           1.1    Change from require() to requireNamespace(),
 #                      use <package>::<function>() idiom throughout,
 #                      use Biocmanager:: not biocLite()
@@ -35,33 +30,34 @@
 
 
 #TOC> ==========================================================================
-#TOC>
-#TOC>   Section  Title                                           Line
-#TOC> ---------------------------------------------------------------
-#TOC>   1        The Biostrings Package                            55
-#TOC>   2        Getting Data into Biostrings Objects              86
-#TOC>   3        Working with Biostrings Objects                  108
-#TOC>   3.1        Properties                                     125
-#TOC>   3.2        Subsetting                                     163
-#TOC>   3.3        Operators                                      175
-#TOC>   3.4        Transformations                                182
-#TOC>   4        Getting Data out of Biostrings Objects           189
-#TOC>   5        More                                             198
-#TOC>   5.1        Views                                          200
-#TOC>   5.2        Iranges                                        214
-#TOC>   5.3        StringSets                                     220
-#TOC>
+#TOC> 
+#TOC>   Section  Title                                             Line
+#TOC> -----------------------------------------------------------------
+#TOC>   1        The Biostrings:: Package                            56
+#TOC>   2        Getting Data into Biostrings:: Objects              88
+#TOC>   3        Working with Biostrings:: Objects                  110
+#TOC>   3.1        Properties                                       127
+#TOC>   3.2        Subsetting                                       168
+#TOC>   3.3        Operators                                        180
+#TOC>   3.4        Transformations                                  187
+#TOC>   4        Getting Data out of Biostrings:: Objects           194
+#TOC>   5        More                                               203
+#TOC>   5.1        Views                                            205
+#TOC>   5.2        Iranges                                          219
+#TOC>   5.3        StringSets                                       225
+#TOC> 
 #TOC> ==========================================================================
 
 
-# This is a very brief introduction to the biostrings package, other units will
-# be using more of the biostrings functions.
+# This is a very brief introduction to the Biostrings:: package, other units will
+# be using more of the Biostrings:: functions.
 
 
-# =    1  The Biostrings Package  ==============================================
+# =    1  The Biostrings:: Package  ============================================
 
 
-# First, we install and load the Biostrings package from bioconductor
+# First, we install and load the Biostrings:: package from bioconductor (if we
+# haven't done so already).
 
 if (! requireNamespace("BiocManager", quietly = TRUE)) {
   install.packages("BiocManager")
@@ -75,7 +71,7 @@ browseVignettes("Biostrings")    # available vignettes
 data(package = "Biostrings")     # available datasets
 
 
-# At its core, Biostrings objects are "classes" of type XString (you can think
+# At its core, Biostrings:: objects are "classes" of type XString (you can think
 # of a "class" in R as a special kind of list), that can take on particular
 # flavours for RNA, DNA or amino acid sequence information.
 
@@ -83,13 +79,13 @@ class(Biostrings::RNAString("AUG"))
 class(Biostrings::DNAString("ATG"))
 class(Biostrings::AAString("M"))
 
-# An essential property of Biostrings objects is that they only allow letters
+# An essential property of Biostrings:: objects is that they only allow letters
 # from the applicable IUPAC alphabet:
 Biostrings::RNAString("AUG")
 Biostrings::DNAString("AUG")  # Error! No "U" in IUPAC DNA codes
 
 
-# =    2  Getting Data into Biostrings Objects  ================================
+# =    2  Getting Data into Biostrings:: Objects  ==============================
 
 
 # Example: read FASTA. Extract sequence. Convert to DNAString object.
@@ -111,9 +107,9 @@ identical(biosDNAseq, Xseq)  # ... and indeed the objects are deemed identical.
 
 
 
-# =    3  Working with Biostrings Objects  =====================================
+# =    3  Working with Biostrings:: Objects  ===================================
 
-# Biostrings is a highly engineered package that is tightly integrated into
+# Biostrings:: is a highly engineered package that is tightly integrated into
 # the Bioconductor world - unfortunately that brings with it a somewhat
 # undesirable level of computational overhead and dependencies. Using the
 # package as we normally do - i.e. calling required functions with their
@@ -162,8 +158,11 @@ max(triNuc) / min(triNuc)  # AAA is more than 13 times as frequent as CGT
 # compare to a shuffled sequence:
 (triNuc <- Biostrings::trinucleotideFrequency(sample(biosDNAseq)))
 barplot(sort(triNuc), col="#EEEE4433", add = TRUE)
-
+max(triNuc)
 # Interpret this plot.
+(triNuc <- Biostrings::trinucleotideFrequency(sample(biosDNAseq)))
+barplot(sort(triNuc), col="#EEEE4433")
+max(triNuc)
 
 
 # ==   3.2  Subsetting  ========================================================
@@ -192,7 +191,7 @@ Biostrings::reverseComplement(biosDNAseq[4:15])
 Biostrings::translate(biosDNAseq[4:15])
 
 
-# =    4  Getting Data out of Biostrings Objects  ==============================
+# =    4  Getting Data out of Biostrings:: Objects  ============================
 
 # If you need a character object, use toString():
 
@@ -219,7 +218,7 @@ cat(sprintf("\n%s\t(%d)\t%s", names(myView), width(myView), myView ))
 
 # ==   5.2  Iranges  ===========================================================
 
-# Biostrings Iranges are like Views with a common start point. These can be
+# Biostrings:: Iranges are like Views with a common start point. These can be
 # useful for feature annotations. Instead of start/end you store start/width.
 
 
