@@ -68,7 +68,7 @@ if (! file.exists("./myScripts/.myProfile.R")) {
        prf <- readLines("./myScripts/.myProfile.R")
        iEmail <- grep("^\\s*myStudentNumber\\s*<-", prf)
        out <- prf[1:iEmail]
-       out <- c(out, sprintf("MYSPE <- %s ",
+       out <- c(out, sprintf("MYSPE <- \"%s\" ",
                              getMYSPE(myStudentNumber)))
        out <- c(out, prf[(iEmail+1):length(prf)])
        writeLines(out, "./myScripts/.myProfile.R")
