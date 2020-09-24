@@ -77,6 +77,7 @@ if (! file.exists("./myScripts/.myProfile.R")) {
        cat(sprintf("MYSPE (%s) was added to \"./myScripts/.myProfile.R\"\n\n",
                    getMYSPE(myStudentNumber)))
        MYSPE <- getMYSPE(myStudentNumber)  # ... define it for immediate use
+       rm(prf, iEmail, out)                # cleanup
   }
   cat("... done.\n\n")
 }
