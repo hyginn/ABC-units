@@ -1,20 +1,15 @@
 # tocID <- "BIN-Data_integration.R"
 #
-# ---------------------------------------------------------------------------- #
-#  PATIENCE  ...                                                               #
-#    Do not yet work wih this code. Updates in progress. Thank you.            #
-#    boris.steipe@utoronto.ca                                                  #
-# ---------------------------------------------------------------------------- #
-#
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the BIN-Data_integration unit.
 #
-# Version:  1.1
+# Version:  1.2
 #
-# Date:     2018  10  -  2019  01
+# Date:     2018-10  -  2020-09
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.2    2020 Maintenance and updates
 #           1.1    Change from require() to requireNamespace(),
 #                      use <package>::<function>() idiom throughout
 #           1.0.1  Bugfix: UniProt ID Mapping service API change
@@ -62,8 +57,8 @@
 
 # To begin, we load  httr, which supports sending and receiving data via the
 # http protocol, just like a Web browser.
-if (! requireNamespace("httpr", quietly=TRUE)) {
-  install.packages("httpr")
+if (! requireNamespace("httr", quietly=TRUE)) {
+  install.packages("httr")
 }
 # Package information:
 #  library(help = httr)       # basic information
@@ -80,6 +75,12 @@ myQueryIDs <- "NP_010227 NP_00000 NP_011036"
 # The UniProt ID mapping service API is very straightforward to use: just define
 # the URL of the server and send a list of items labelled as "query" in the body
 # of the request. GET() and POST() are functions from httr.
+
+# Note. A recent bug in the interaction between the server expectations and the
+# curl client libraries requires the following initialization
+httr::set_config(httr::config(http_version = 0))
+# cf. https://stackoverflow.com/questions/44610845/stream-error-in-the-http-2-framing-layer-bigrquery-commands-error-in-r-studio-b
+
 
 URL <- "https://www.uniprot.org/mapping/"
 response <- httr::POST(URL,
@@ -100,14 +101,6 @@ httr::status_code(response)
 myMappedIDs <- read.delim(file = textConnection(httr::content(response)),
                           sep = "\t",
                           stringsAsFactors = FALSE)
-myMappedIDs
-
-# We actually only need columns 1 and 3, and we can also change the names
-# to "From" and "To":
-
-myMappedIDs <- myMappedIDs[ , c(1,3)]
-colnames(myMappedIDs) <- c("From", "To")
-
 myMappedIDs
 
 # If this works as expected, you should see:
@@ -138,6 +131,9 @@ myIDmap <- function (s, mapFrom = "P_REFSEQ_AC", mapTo = "ACC") {
   #    empty data frame if the mapping was unsuccessful. No rows are returned
   #    for IDs that are not mapped.
 
+  # Initialize curl
+  httr::set_config(httr::config(http_version = 0))
+
   URL <- "https://www.uniprot.org/uploadlists/"
   response <- httr::POST(URL,
                          body = list(from = mapFrom,
@@ -149,7 +145,6 @@ myIDmap <- function (s, mapFrom = "P_REFSEQ_AC", mapTo = "ACC") {
     myMap <- read.delim(file = textConnection(httr::content(response)),
                         sep = "\t",
                         stringsAsFactors = FALSE)
-    myMap <- myMap[ , c(1,3)]
     colnames(myMap) <- c("From", "To")
   } else {
     myMap <- data.frame()
@@ -187,8 +182,7 @@ myIDs <- data.frame(uID =   c("P38903", "P31383", "P47177", "P47096", "Q07747",
                               "NP_012683", "NP_012559",
                               "NP_010038", "NP_014882",
                               "NP_012616", "NP_013254",
-                              "NP_014555", "NP_013629"),
-                    stringsAsFactors = FALSE)
+                              "NP_014555", "NP_013629"))
 
 myIDs
 
@@ -212,7 +206,7 @@ myIDs$name[match(myQuery, myIDs$refID)]
 
 
 #
-# Note: if you want to do very many queries in large tables, use the
+# Note: if you want to do very many queries in very large tables, use the
 # fmatch() function in the "fastmatch" package for a considerable
 # speedup.
 

@@ -24,7 +24,7 @@
 #TOC>   2.11       node2text()                      311
 #TOC>   2.12       dbFetchNCBItaxData()             323
 #TOC>   2.13       UniProtIDmap()                   362
-#TOC>   3        TESTS                              399
+#TOC>   3        TESTS                              401
 #TOC> 
 #TOC> ==========================================================================
 
@@ -373,6 +373,9 @@ UniProtIDmap <- function (s, mapFrom = "P_REFSEQ_AC", mapTo = "ACC") {
   #    empty data frame if the mapping was unsuccessful. No rows are returned
   #    for IDs that are not mapped.
 
+  # Initialize curl
+  httr::set_config(httr::config(http_version = 0))
+
   URL <- "https://www.uniprot.org/uploadlists/"
   response <- httr::POST(URL,
                          body = list(from = mapFrom,
@@ -383,7 +386,6 @@ UniProtIDmap <- function (s, mapFrom = "P_REFSEQ_AC", mapTo = "ACC") {
   if (httr::status_code(response) == 200) { # 200: oK
     myMap <- read.delim(file = textConnection(httr::content(response)),
                         sep = "\t")
-    myMap <- myMap[ , c(1,3)]
     colnames(myMap) <- c("From", "To")
   } else {
     myMap <- data.frame()
