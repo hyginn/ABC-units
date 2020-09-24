@@ -1,19 +1,14 @@
 # tocID <- "BIN-SEQA-Composition.R"
 #
-# ---------------------------------------------------------------------------- #
-#  PATIENCE  ...                                                               #
-#    Do not yet work wih this code. Updates in progress. Thank you.            #
-#    boris.steipe@utoronto.ca                                                  #
-# ---------------------------------------------------------------------------- #
-#
 # Purpose: A Bioinformatics Course:
 #              R code accompanying the BIN-SEQA-Comparison unit
 #
-# Version: 1.1
+# Version: 1.2
 #
-# Date:    2017  11  -  2019  01
+# Date:    2017-11  -  2020-09
 # Author:  Boris Steipe (boris.steipe@utoronto.ca)
 #
+#           1.2    2020 Maintenance
 #           1.1    Change from require() to requireNamespace(),
 #                      use <package>::<function>() idiom throughout,
 #                      use Biocmanager:: not biocLite()
@@ -35,18 +30,18 @@
 
 
 #TOC> ==========================================================================
-#TOC>
+#TOC> 
 #TOC>   Section  Title                                      Line
 #TOC> ----------------------------------------------------------
-#TOC>   1        Preparation                                  47
-#TOC>   2        Aggregate properties                         68
-#TOC>   3        Sequence Composition Enrichment             111
-#TOC>   3.1        Barplot, and side-by-side barplot         134
-#TOC>   3.2        Plotting ratios                           169
-#TOC>   3.3        Plotting log ratios                       185
-#TOC>   3.4        Sort by frequency                         200
-#TOC>   3.5        Color by amino acid type                  215
-#TOC>
+#TOC>   1        Preparation                                  48
+#TOC>   2        Aggregate properties                         69
+#TOC>   3        Sequence Composition Enrichment             113
+#TOC>   3.1        Barplot, and side-by-side barplot         136
+#TOC>   3.2        Plotting ratios                           171
+#TOC>   3.3        Plotting log ratios                       188
+#TOC>   3.4        Sort by frequency                         204
+#TOC>   3.5        Color by amino acid type                  221
+#TOC> 
 #TOC> ==========================================================================
 
 
@@ -94,19 +89,20 @@ s <- unlist(s)             # strsplit() returns a list! Why?
 seqinr::s2c(mySeq)
 
 
-seqinr::computePI(s2c(mySeq))  # isoelectric point
-seqinr::pmw(s2c(mySeq))        # molecular weight
-seqinr::AAstat(s2c(mySeq))     # This also plots the distribution of
-                               # values along the sequence
+seqinr::computePI(seqinr::s2c(mySeq))  # isoelectric point
+seqinr::pmw(seqinr::s2c(mySeq))        # molecular weight
+seqinr::AAstat(seqinr::s2c(mySeq))     # This also plots the distribution of
+                                       # values along the sequence
 
 # A true Labor of Love has gone into the
 # compilation of the "aaindex" data:
 
-?aaindex
-data(aaindex)  # "attach" the dataset - i.e. make it accessible as an
-               # R object
+?seqinr::aaindex
+data(aaindex, package = "seqinr")  # "attach" the dataset - i.e. make it
+                                   # accessible as an R object
 
-length(aaindex)
+length(aaindex)  # no seqinr:: needed for the dataset since we just
+                 # "attached" it with data()
 
 # Here are all the index descriptions
 for (i in 1:length(aaindex)) {
@@ -133,7 +129,7 @@ refData        # ... in %
 
 
 # tabulate the amino acid counts in mySeq
-(obsData <- table(s2c(mySeq)))                # counts
+(obsData <- table(seqinr::s2c(mySeq)))        # counts
 (obsData <- 100 * (obsData / sum(obsData)))   # frequencies
 
 
@@ -180,12 +176,13 @@ legend (x = 1, y = 12,
 barplot(obsData / refData,
         col = "#CCCCCC",
         ylab = "Sequence / Average",
+        ylim = c(0, 2.5),
         cex.names = 0.7)
 abline(h = 1, col="#BB0000")
-abline(h = c(1/3, 3), lty = 2, col="#BB000055")
+abline(h = c(1/2, 2), lty = 2, col="#BB000055")
 
 # ... but  ratios are not very good here, since the difference in height on the
-# plot now depends on the order we compare in: ratios of 1/3 and 3 (dotted
+# plot now depends on the order we compare in: ratios of 1/2 and 2 (dotted
 # lines) are exactly the same fold-difference !
 
 # ==   3.3  Plotting log ratios  ===============================================
@@ -196,69 +193,53 @@ abline(h = c(1/3, 3), lty = 2, col="#BB000055")
 barplot(log(obsData / refData),
         col = "#CCCCCC",
         ylab = "log(Sequence / Average)",
+        ylim = log(c(1/3, 3)),
         cex.names = 0.7)
 abline(h = log(1), col="#BB0000")
-abline(h = log(c(1/3, 3)), lty = 2, col="#BB000055")
+abline(h = log(c(1/2, 2)), lty = 2, col="#BB000055")
 
-# Note how the three-fold difference lines are now the same distance from the
+# Note how the two-fold difference lines are now the same distance from the
 # line of equal ratio.
 
 # ==   3.4  Sort by frequency  =================================================
 
 barplot(sort(log(obsData / refData), decreasing = TRUE),
-        ylim = c(-3.5,2),
+        ylim = log(c(1/3, 3)),
         col = "#CCCCCC",
         ylab = "log(Sequence / Average)",
         cex.names = 0.7)
 abline(h = log(1), col="#BB0000")
-abline(h = log(c(1/3, 3)), lty = 2, col="#BB000055")
+abline(h = log(c(1/2, 2)), lty = 2, col="#BB000055")
 
-arrows(4, 1.8, 0, 1.8, length = 0.07)
-text(5.5, 1.8, "Enriched", cex = 0.7)
-arrows(20, 1.8, 24, 1.8, length = 0.07)
-text(19.5, 1.8, "Depleted", pos = 2, cex = 0.7)
+yTxt <- log(0.9)
+arrows(4, yTxt, 0, yTxt, length = 0.07)
+text(5.5, yTxt, "Enriched", cex = 0.7)
+yTxt <- log(1.1)
+arrows(20, yTxt, 24, yTxt, length = 0.07)
+text(19.5, yTxt, "Depleted", pos = 2, cex = 0.7)
 
 # ==   3.5  Color by amino acid type  ==========================================
 
-# color the bars by type.
-# define colors
-AAcol <- character()
-AAcol["A"] <- "#AABBAA"
-AAcol["C"] <- "#FFEE77"
-AAcol["D"] <- "#DD6600"
-AAcol["E"] <- "#DD3300"
-AAcol["F"] <- "#767D38"
-AAcol["G"] <- "#BBBBCC"
-AAcol["H"] <- "#A2A1FD"
-AAcol["I"] <- "#70B6C6"
-AAcol["K"] <- "#4563BB"
-AAcol["L"] <- "#80C6B6"
-AAcol["M"] <- "#AFCC34"
-AAcol["N"] <- "#BB88CC"
-AAcol["P"] <- "#7292B7"
-AAcol["Q"] <- "#8866BB"
-AAcol["R"] <- "#74A0FF"
-AAcol["S"] <- "#9999CC"
-AAcol["T"] <- "#99AADD"
-AAcol["V"] <- "#9DB500"
-AAcol["W"] <- "#76AD48"
-AAcol["Y"] <- "#44CA97"
+# Color the bars by amino acid type. Use AACOLS , defined in the .utilities.R
+# script, or define your own.
 
-barplot(rep(1, 20), names.arg = names(AAcol), col = AAcol, cex.names = 0.5)
+barplot(rep(1, 20), names.arg = names(AACOLS), col = AACOLS, cex.names = 0.5)
 
 lR <- sort(log(obsData / refData), decreasing = TRUE)
 barplot(lR,
-        ylim = c(-3.5,2),
-        col = AAcol[names(lR)],
+        ylim = log(c(1/3, 3)),
+        col = AACOLS[names(lR)],
         ylab = "log(Sequence / Average)",
         cex.names = 0.7)
 abline(h = log(1), col="#00000055")
-abline(h = log(c(1/3, 3)), lty = 2, col="#00000033")
+abline(h = log(c(1/2, 2)), lty = 2, col="#00000033")
 
-arrows(4, 1.8, 0, 1.8, length = 0.07)
-text(5.5, 1.8, "Enriched", cex = 0.7)
-arrows(20, 1.8, 24, 1.8, length = 0.07)
-text(19.5, 1.8, "Depleted", pos = 2, cex = 0.7)
+yTxt <- log(0.9)
+arrows(4, yTxt, 0, yTxt, length = 0.07)
+text(5.5, yTxt, "Enriched", cex = 0.7)
+yTxt <- log(1.1)
+arrows(20, yTxt, 24, yTxt, length = 0.07)
+text(19.5, yTxt, "Depleted", pos = 2, cex = 0.7)
 
 
 # Task:
