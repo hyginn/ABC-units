@@ -1,20 +1,15 @@
 # tocID <- "BIN-ALI-Optimal_sequence_alignment.R"
 #
-# ---------------------------------------------------------------------------- #
-#  PATIENCE  ...                                                               #
-#    Do not yet work wih this code. Updates in progress. Thank you.            #
-#    boris.steipe@utoronto.ca                                                  #
-# ---------------------------------------------------------------------------- #
-#
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the BIN-ALI-Optimal_sequence_alignment unit.
 #
-# Version:  1.6
+# Version:  1.7
 #
-# Date:     2017  09   -   2019  11
+# Date:     2017-09   -   2020-09
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.7    2020 updates
 #           1.6    Maintenance
 #           1.5    Change from require() to requireNamespace(),
 #                    use <package>::<function>() idiom throughout
@@ -41,20 +36,20 @@
 
 
 #TOC> ==========================================================================
-#TOC>
+#TOC> 
 #TOC>   Section  Title                                                      Line
 #TOC> --------------------------------------------------------------------------
-#TOC>   1        Prepare                                                      55
-#TOC>   2        Biostrings Pairwise Alignment                                72
-#TOC>   2.1        Optimal global alignment                                   90
-#TOC>   2.2        Optimal local alignment                                   153
-#TOC>   3        APSES Domain annotation by alignment                        177
-#TOC>   4        Update your database script                                 258
-#TOC>   4.1        Preparing an annotation file ...                          264
-#TOC>   4.1.1          If you HAVE NOT done the BIN-FUNC-Annotation unit     266
-#TOC>   4.1.2          If you HAVE done the BIN-FUNC-Annotation unit         309
-#TOC>   4.2        Execute and Validate                                      333
-#TOC>
+#TOC>   1        Prepare                                                      56
+#TOC>   2        Biostrings Pairwise Alignment                                73
+#TOC>   2.1        Optimal global alignment                                   91
+#TOC>   2.2        Optimal local alignment                                   154
+#TOC>   3        APSES Domain annotation by alignment                        178
+#TOC>   4        Update your database script                                 259
+#TOC>   4.1        Preparing an annotation file ...                          265
+#TOC>   4.1.1          If you HAVE NOT done the BIN-FUNC-Annotation unit     267
+#TOC>   4.1.2          If you HAVE done the BIN-FUNC-Annotation unit         310
+#TOC>   4.2        Execute and Validate                                      334
+#TOC> 
 #TOC> ==========================================================================
 
 
@@ -72,7 +67,7 @@ if (! requireNamespace("seqinr", quietly=TRUE)) {
 # You need to recreate the protein database that you have constructed in the
 # BIN-Storing_data unit.
 
-source("makeProteinDB.R")
+source("./myScripts/makeProteinDB.R")
 
 
 # =    2  Biostrings Pairwise Alignment  =======================================
@@ -312,7 +307,7 @@ aliApses@subject@range@start + aliApses@subject@range@width - 1
 # Then SKIP the next section.
 #
 #
-# ===   4.1.2  If you HAVE done the BIN-FUNC-Annotation unit
+# ===   4.1.2  If you HAVE done the BIN-FUNC-Annotation unit    
 #
 #
 #   You DO already have a file called "<MYSPE>-Annotations.json" in the
