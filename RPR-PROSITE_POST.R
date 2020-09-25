@@ -1,20 +1,15 @@
 # tocID <- "RPR-PROSITE_POST.R"
 #
-# ---------------------------------------------------------------------------- #
-#  PATIENCE  ...                                                               #
-#    Do not yet work wih this code. Updates in progress. Thank you.            #
-#    boris.steipe@utoronto.ca                                                  #
-# ---------------------------------------------------------------------------- #
-#
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the RPR-Scripting_data_downloads unit.
 #
-# Version:  1.1
+# Version:  1.2
 #
-# Date:     2017  10  -  2019  01
+# Date:     2017-10  -  2020-09
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.2    2020 Maintenance
 #           1.1    Change from require() to requireNamespace(),
 #                      use <package>::<function>() idiom throughout,
 #           1.0.1  Updates for slightly changed interfaces
@@ -35,13 +30,13 @@
 
 
 #TOC> ==========================================================================
-#TOC>
+#TOC> 
 #TOC>   Section  Title                                                 Line
 #TOC> ---------------------------------------------------------------------
-#TOC>   1        Constructing a POST command from a Web query            42
-#TOC>   1.1        Task - fetchPrositeFeatures() function               142
-#TOC>   2        Task solutions                                         150
-#TOC>
+#TOC>   1        Constructing a POST command from a Web query            43
+#TOC>   1.1        Task - fetchPrositeFeatures() function               148
+#TOC>   2        Task solutions                                         156
+#TOC> 
 #TOC> ==========================================================================
 
 
@@ -59,9 +54,10 @@ if (! requireNamespace("httr", quietly = TRUE)) {
 
 
 
-# We have reverse engineered the Web form for a ScanProsite request, and can now
-# construct a POST request. The command is similar to GET(), but we need an
-# explicit request body: a list of key/value pairs
+# We have reverse engineered the Web form for a ScanProsite request, and can
+# construct a valid POST request from knowing the required field names. The POST
+# command is similar to GET(), but we need an explicit request body that
+# contains a list of key/value pairs
 
 UniProtID <- "P39678"
 
@@ -79,19 +75,24 @@ response <- httr::POST(URL,
 
 httr::status_code(response)  # If this is not 200, something went wrong and it
                              # makes no sense to continue. If this persists, ask
-                             # on the mailing list what to do.
+                             # on the Discussion Board what to do.
 
 
 # The text contents of the response is available with the
 # content() function:
 httr::content(response, "text")
 
-# ... should show you the same as the page contents that
-# you have seen in the browser. The date we need Now we need to extract
-# the data from the page: we need regular expressions, but
-# only simple ones. First, we strsplit() the response into
-# individual lines, since each of our data elements is on
-# its own line. We simply split on the "\\n" newline character.
+# ... should show you the same as the page contents that you have seen in the
+# browser. Now we need to extract the data from the page. For this simple
+# example we can get away with using regular expressions, but in general we need
+# a real XML parser to parse HTML. We'll cover that in a later unit. Here, we
+# strsplit() the response into individual lines, since each of our data elements
+# is on its own line, and then capture the contents. The way Prosite has
+# formatted their HTML we can simply split on the "\\n" newline character - but
+# they could write the same valid HTML without any newline-characters at all.
+# Understand that we are working with a bit of a "hack" here: exploting
+# empirical assumptions rather than a formal specification. But sometimes quick
+# and dirty is fine, because quick.
 
 lines <- unlist(strsplit(httr::content(response, "text"), "\\n"))
 head(lines)
@@ -105,10 +106,9 @@ patt <- sprintf("\\|%s\\|", UniProtID)
 # ... and select only the lines that match this
 # pattern:
 
-lines <- lines[grep(patt, lines)]
-lines
+( lines <- lines[grep(patt, lines)] )
 
-# ... captures the four lines of output.
+# ... captures the three lines of output.
 
 # Now we break the lines apart into tokens: this is another application of
 # strsplit(), but this time we split either on "pipe" characters, "|" OR on tabs
@@ -137,7 +137,7 @@ for (line in lines) {
                                end   =  as.numeric(tokens[5]),
                                psID  =  tokens[6],
                                psName = tokens[7],
-                               stringsAsFactors = FALSE))
+                               psSeq  = tokens[11]))
 }
 features
 
@@ -149,8 +149,8 @@ features
 
 
 # Task: write a function that takes as input a UniProt ID, fetches the
-# features it contains from ScanProsite and returns a list as given above, or
-# a list of length 0 if there is an error.
+# features it contains from ScanProsite and returns a data frame as given above, or
+# an empty data frame if there is an error.
 
 
 # =    2  Task solutions  ======================================================
@@ -160,7 +160,7 @@ features
 # clicking on  dbFetchPrositeFeatures() in the Environment pane.
 
 # Test:
-dbFetchPrositeFeatures("P39678")
+dbFetchPrositeFeatures("Q5KMQ9")
 
 
 

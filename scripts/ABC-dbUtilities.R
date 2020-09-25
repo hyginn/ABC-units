@@ -21,10 +21,10 @@
 #TOC>   2.08       dbAddAnnotation()                215
 #TOC>   2.09       dbFetchUniProtSeq()              243
 #TOC>   2.10       dbFetchPrositeFeatures()         289
-#TOC>   2.11       node2text()                      333
-#TOC>   2.12       dbFetchNCBItaxData()             345
-#TOC>   2.13       UniProtIDmap()                   384
-#TOC>   3        TESTS                              423
+#TOC>   2.11       node2text()                      339
+#TOC>   2.12       dbFetchNCBItaxData()             351
+#TOC>   2.13       UniProtIDmap()                   390
+#TOC>   3        TESTS                              429
 #TOC> 
 #TOC> ==========================================================================
 
@@ -297,6 +297,7 @@ dbFetchPrositeFeatures <- function(ID) {
   #                    end    num   end of motif
   #                    psID   char  PROSITE motif ID
   #                    psName char  PROSITE motif name
+  #                    psSeq  char  sequence annotated to the feature
   # If the operation is not successful, a 0-length data frame is returned.
 
   URL <- "https://prosite.expasy.org/cgi-bin/prosite/PSScan.cgi"
@@ -313,7 +314,7 @@ dbFetchPrositeFeatures <- function(ID) {
 
     lines <- unlist(strsplit(httr::content(response, "text"), "\\n"))
 
-    patt <- sprintf("\\|%s\\|", UniProtID)
+    patt <- sprintf("\\|%s\\|", ID)
     lines <- lines[grep(patt, lines)]
 
     for (line in lines) {
@@ -323,12 +324,17 @@ dbFetchPrositeFeatures <- function(ID) {
                                      start =  as.numeric(tokens[4]),
                                      end   =  as.numeric(tokens[5]),
                                      psID  =  tokens[6],
-                                     psName = tokens[7]))
+                                     psName = tokens[7],
+                                     psSeq  = tokens[11]))
     }
   }
   return(myFeatures)
 }
 
+if (FALSE) {
+  dbFetchPrositeFeatures("P33520")  # RES1_SCHPO
+
+}
 
 # ==   2.11  node2text()  ======================================================
 node2text <- function(doc, tag) {
