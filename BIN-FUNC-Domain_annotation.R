@@ -1,20 +1,15 @@
 # tocID <- "BIN-FUNC-Domain_annotation.R"
 #
-# ---------------------------------------------------------------------------- #
-#  PATIENCE  ...                                                               #
-#    Do not yet work wih this code. Updates in progress. Thank you.            #
-#    boris.steipe@utoronto.ca                                                  #
-# ---------------------------------------------------------------------------- #
-#
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the BIN-FUNC-Domain_annotation unit.
 #
-# Version:  1.0
+# Version:  1.1
 #
-# Date:     2017  11 13
+# Date:     2017-11  -  2020-09
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.1    2020 Updates
 #           1.0    Live version 2017
 #           0.1    First code copied from 2016 material.
 #
@@ -31,16 +26,16 @@
 
 
 #TOC> ==========================================================================
-#TOC>
-#TOC>   Section  Title                                                               Line
-#TOC> -----------------------------------------------------------------------------------
-#TOC>   1        Update your database script                                           41
-#TOC>   1.1      Preparing an annotation file ...                                      47
-#TOC>   1.1.1    If you HAVE NOT done the BIN-ALI-Optimal_sequence_alignment unit      49
-#TOC>   1.1.2    If you HAVE done the BIN-ALI-Optimal_sequence_alignment               93
-#TOC>   1.2      Execute and Validate                                                 119
-#TOC>   2        Plot Annotations                                                     144
-#TOC>
+#TOC> 
+#TOC>   Section  Title                                                 Line
+#TOC> ---------------------------------------------------------------------
+#TOC>   1        Update your database script                             42
+#TOC>   1.1        Preparing an annotation file ...                      49
+#TOC>   1.1.1          BEFORE  "BIN-ALI-Optimal_sequence_alignment"      52
+#TOC>   1.1.2          AFTER "BIN-ALI-Optimal_sequence_alignment"        97
+#TOC>   1.2        Execute and Validate                                 124
+#TOC>   2        Plot Annotations                                       149
+#TOC> 
 #TOC> ==========================================================================
 
 
@@ -48,12 +43,15 @@
 
 
 # Since you have recorded domain features at the SMART database, we can store
-# the feature annotations in myDB.
+# the feature annotations in myDB ...
+
 
 # ==   1.1  Preparing an annotation file ...  ==================================
+
+
+# ===   1.1.1  BEFORE  "BIN-ALI-Optimal_sequence_alignment"
 #
-# ===  1.1.1  If you HAVE NOT done the BIN-ALI-Optimal_sequence_alignment unit
-#
+#   IF YOU HAVE NOT YET COMPLETED THE BIN-ALI-OPTIMAL_SEQUENCE_ALIGNMENT UNIT:
 #
 #   You DON'T already have a file called "<MYSPE>-Annotations.json" in the
 #   ./data/ directory:
@@ -96,10 +94,11 @@
 # Then SKIP the next section.
 #
 #
-# ===  1.1.2  If you HAVE done the BIN-ALI-Optimal_sequence_alignment
+# ===   1.1.2  AFTER "BIN-ALI-Optimal_sequence_alignment"  
 #
+#   IF YOU HAVE ALREADY COMPLETED THE BIN-ALI-OPTIMAL_SEQUENCE_ALIGNMENT UNIT:
 #
-#   You DO already have a file called "<MYSPE>-Annotations.json" in the
+#   You SHOULD have a file called "<MYSPE>-Annotations.json" in the
 #   ./data/ directory:
 #
 #   - Open the file in the RStudio editor.
@@ -129,8 +128,8 @@
 #     source("makeProteinDB.R")
 #
 #     This should run without errors or warnings. If it doesn't work and you
-#     can't figure out quickly what's happening, ask on the mailing list for
-#     help.
+#     can't figure out quickly what's happening, ask for help on the
+#     Discussion Board.
 #
 #   - Confirm
 #     The following commands should retrieve all of the features that have been
@@ -150,7 +149,7 @@ myDB$feature$name[ftrIDs] # This should list ALL of your annotated features
 # =    2  Plot Annotations  ====================================================
 
 # In this section we will plot domain annotations as colored rectangles on a
-# sequence, as an example for using the R plotting system for generic, data
+# sequence, as an example of using the R plotting system for generic, data
 # driven images.
 
 # We need a small utility function that draws the annotation boxes on a
@@ -158,10 +157,10 @@ myDB$feature$name[ftrIDs] # This should list ALL of your annotated features
 # the y value where it should be plotted and the color of the box, and plot a
 # rectangle using R's rect() function.
 
-drawBox <- function(xStart, xEnd, y, myCol) {
+drawBox <- function(xStart, xEnd, y, myCol, DELTA = 0.2) {
   # Draw a box from xStart to xEnd at y, filled with colour myCol
-  delta <- 0.1
-  rect(xStart, (y - delta), xEnd, (y + delta),
+  # The height of the box is y +- DELTA
+  rect(xStart, (y - DELTA), xEnd, (y + DELTA),
        border = "black", col = myCol)
 }
 
@@ -228,6 +227,8 @@ yMax <- length(iRows) * 1.1
 xMax <- max(nchar(myDB$protein$sequence[iRows])) * 1.1  # longest sequence
 
 # plot an empty frame
+oPar <- par(mar = c(4.2, 0.1, 3, 0.1))  # save the current plot parameters and
+                                      # decrease margins
 plot(1, 1,
      xlim = c(-200, xMax + 100),
      ylim = c(0, yMax),
@@ -236,6 +237,7 @@ plot(1, 1,
      bty = "n",
      main = "Mbp1 orthologue domain annotations",
      xlab = "sequence position",
+     cex.axis = 0.8,
      ylab="")
 axis(1, at = seq(0, xMax, by = 100))
 myCol <- colorRampPalette(c("#f2003c", "#F0A200",
@@ -250,11 +252,12 @@ legend(xMax - 150, 6,
        cex = 0.7,
        fill = myCol)
 
-
 # Finally, iterate over all proteins and call plotProtein()
 for (i in seq_along(iRows)) {
   plotProtein(myDB, myDB$protein$name[iRows[i]], i)
 }
+par(oPar)  # reset the plot parameters
+
 
 # The plot shows what is variable and what is constant about the annotations in
 # a group of related proteins. Your MBP1_MYSPE annotations should appear at the
@@ -264,6 +267,9 @@ for (i in seq_along(iRows)) {
 #    Put a copy of the plot into your journal and interpret it with respect
 #    to MBP1_MYSPE, i.e. and note what you learn about MBP1_MYSPE from the plot.
 
+# Task:
+#    It would be better to align the motif borders, at least approximately (not
+#    all proteins have all motifs). How would you go about doing that?
 
 
 # [END]
