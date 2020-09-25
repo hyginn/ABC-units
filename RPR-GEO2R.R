@@ -1,11 +1,5 @@
 # tocID <- "RPR_GEO2R.R"
 #
-# ---------------------------------------------------------------------------- #
-#  PATIENCE  ...                                                               #
-#    Do not yet work wih this code. Updates in progress. Thank you.            #
-#    boris.steipe@utoronto.ca                                                  #
-# ---------------------------------------------------------------------------- #
-#
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the RPR_GEO2R unit.
 #
@@ -32,6 +26,8 @@
 # If there are portions you don't understand, use R's help system, Google for an
 # answer, or ask your instructor. Don't continue if you don't understand what's
 # going on. That's not how it works ...
+#
+# TO SUBMIT FOR CREDIT....
 #
 # Note: to submit tasks for credit for this unit, report on the sections
 # that have "Task ..." section headers, and report on the lines that are
@@ -68,6 +64,7 @@
 if (! requireNamespace("BiocManager", quietly = TRUE)) {
   install.packages("BiocManager")
 }
+
 if (! requireNamespace("Biobase", quietly = TRUE)) {
   BiocManager::install("Biobase")
 }
@@ -152,47 +149,59 @@ Biobase::sampleNames(GSE3635)[1:10]    # Columns. What are these columns?
 # Access data
 Biobase::exprs(tmp)   # exprs() gives us the actual expression values.
 
+# ==   3.1  Task - understanding the data  ==================================
 
-#TASK> What are the data:
+#TASK> What are the data values:
 #TASK>  ... in each cell?
 #TASK>  ... in each column?
 #TASK>  ... in each row?
 
+
+
 # =    3  Column wise analysis - time points  ==================================
 
-#  Each column represents one experiment.
-#TASK>  What are these experiments?
-
-
-# ==   3.1  Task - Comparison of experiments  ==================================
-
-# Get an overview of the distribution of data values in individual columns
+# Get an overview of the distribution of values in individual columns
 summary(Biobase::exprs(GSE3635)[ , 1])
 summary(Biobase::exprs(GSE3635)[ , 4])
 summary(Biobase::exprs(GSE3635)[ , 7])
 
-# as a boxplot
-cyclicPalette <- colorRampPalette(c("#00AAFF",
-                                    "#DDDD00",
-                                    "#FFAA00",
-                                    "#00AAFF",
-                                    "#DDDD00",
-                                    "#FFAA00",
-                                    "#00AAFF"))
+# This allows us to com pare the columns, comment on the quality of the data,
+# and get a sense for the distribution. We need to know how exactly these
+# numbers were produced: obviously, if we don't know how those numbers were
+# created in the first place, we would produce a major sin of Cargo Cult
+# bioinformatics if we would analyze them.
+
+
+
+# compare them in a a boxplot
+cyclicPalette <- colorRampPalette(c("#14b4c9",
+                                    "#d2d1e6",
+                                    "#e66594",
+                                    "#d2d1e6",
+                                    "#14b4c9",
+                                    "#d2d1e6",
+                                    "#e66594",
+                                    "#d2d1e6",
+                                    "#14b4c9"))
 tCols <- cyclicPalette(13)
 boxplot(Biobase::exprs(GSE3635), col = tCols)
 
 
+# ==   3.1  Task - Comparison of experiments  ==================================
 #TASK>     Study this boxplot. What's going on? Are these expression values?
-#TASK>     What do the numbers that exprs() returns from the dataset mean?
+#TASK>     What do the numbers mean? (Summarize the process and computation
+#TASK>     that has gone i to the preprocessing. You need to understand why
+#TASK>     these columns all have the same mean and range.) Given what common
+#TASK>     sense tells you about the variability of experiments, do you
+#TASK>     believe your understanding is complete?
 
 
 # Lets plot the distributions of values in a more fine-grained manner:
-hT0  <- hist(Biobase::exprs(GSE3635)[ ,  1], breaks = 100)
-hT3  <- hist(Biobase::exprs(GSE3635)[ ,  4], breaks = 100)
-hT6  <- hist(Biobase::exprs(GSE3635)[ ,  7], breaks = 100)
-hT9  <- hist(Biobase::exprs(GSE3635)[ , 10], breaks = 100)
-hT12 <- hist(Biobase::exprs(GSE3635)[ , 13], breaks = 100)
+hT0  <- hist(Biobase::exprs(GSE3635)[ ,  1], breaks = 100, col =  tCols[1])
+hT3  <- hist(Biobase::exprs(GSE3635)[ ,  4], breaks = 100, col =  tCols[4])
+hT6  <- hist(Biobase::exprs(GSE3635)[ ,  7], breaks = 100, col =  tCols[7])
+hT9  <- hist(Biobase::exprs(GSE3635)[ , 10], breaks = 100, col =  tCols[10])
+hT12 <- hist(Biobase::exprs(GSE3635)[ , 13], breaks = 100, col =  tCols[13])
 
 
 plot(  hT0$mids,  hT0$counts,  type = "l", col =  tCols[1], xlim = c(-0.5, 0.5))
@@ -289,7 +298,7 @@ readLines("./data/SGD_features.tab", n = 5)
 #
 #    -  read "./data/SGD_features.tab" into a data frame
 #          called "SGD_features"
-#    -  remove unneeded columns - keep the following information:
+#    -  remove unneeded columns - keep the following data columns:
 #         -   Primary SGDID
 #         -   Feature type
 #         -   Feature qualifier
@@ -312,10 +321,12 @@ readLines("./data/SGD_features.tab", n = 5)
 #    -  confirm: are all rows of the expression data set represented in
 #                  the feature table? Hint: use setdiff() to print all that
 #                  are not.
-#                  Example:  A <- c("duck", "crow", "gull", "tern")
-#                            B <- c("gull", "rook", "tern", "kite", "myna")
-#                            setdiff(A, B)
-#                            setdiff(B, A)
+#                  Example usage of setdiff():
+#                      A <- c("duck", "crow", "gull", "tern")
+#                      B <- c("gull", "rook", "tern", "kite", "myna")
+#
+#                      setdiff(A, B)  #  [1] "duck" "crow"
+#                      setdiff(B, A)  #  [1] "rook" "kite" "myna"
 
 #       If some of the features in the expression set are not listed in the
 #       systematic names, you have to be aware of that, when you try to get
@@ -331,6 +342,8 @@ readLines("./data/SGD_features.tab", n = 5)
 
 # ==   4.2  Selected Expression profiles  ======================================
 
+# The code below assumes that you have read ./data/SGD_features.tab and assigned
+# the resulting data frame to SGD_features, with columns as specified above.
 
 # Here is an expression profile for Mbp1.
 
@@ -484,7 +497,7 @@ for (i in 1:10) {
   points(seq(0, 120, by = 10), Biobase::exprs(GSE3635)[thisID, ], type = "b")
 }
 
-# Our guess that we might discover interesting genes be selecting groups A and B
+# Our guess that we might discover interesting genes by selecting groups A and B
 # like we did was not bad. But limma knows nothing about the biology and though
 # the expression profiles look good, there is no guarantee that these are the
 # most biologically relevant genes. Significantly different in expression
@@ -512,8 +525,8 @@ for (name in toupper(myControls)) {
 
 # ==   5.1  Final task: Gene descriptions  =====================================
 
-#    Print the descriptions of the top ten differentially expressed genes
-#    and comment on what they have in common (or not).
+#TASK> Print the descriptions of the top ten differentially expressed genes
+#TASK> and comment on what they have in common (or not).
 
 
 # =    6  Improving on Discovery by Differential Expression  ===================
@@ -535,9 +548,12 @@ plot(seq(0, 120, by = 10),
      xlab = "time (min)",
      ylab = "expression",
      type = "b",
-     col= "maroon")
-abline(h =  0, col = "#00000055")
-abline(v = 60, col = "#00000055")
+     pch = 16,
+     cex = 1.5,
+     lwd = 2,
+     col= "#40b886")
+abline(h =  0, col = "#0000FF55")
+abline(v = 60, col = "#0000FF55")
 
 # Set up a vector of correlation values
 
@@ -548,7 +564,8 @@ for (i in 1:length(myCorrelations)) {
   myCorrelations[i] <- cor(Cln2Profile, Biobase::exprs(GSE3635)[i, ])
 }
 
-myTopC <- order(myCorrelations, decreasing = TRUE)[1:10]  # top ten
+nTOP <- 20
+myTopC <- order(myCorrelations, decreasing = TRUE)[1:nTOP]
 
 # Number 1
 (ID <- Biobase::featureNames(GSE3635)[myTopC[1]])
@@ -559,12 +576,15 @@ SGD_features[which(SGD_features$sysName == ID), ]
 # control for the experiment.
 
 # Let's plot the rest
-for (i in 2:length(myTopC)) {
+myPal <- colorRampPalette(c("#82f58d", "#E0F2E2", "#f6f6f6"))
+
+for (i in 2:nTOP) {
   ID <- Biobase::featureNames(GSE3635)[myTopC[i]]
   points(seq(0, 120, by = 10),
          Biobase::exprs(GSE3635)[ID, ],
        type = "b",
-       col= "chartreuse")
+       cex = 0.8,
+       col= myPal(nTOP)[i])
   print(SGD_features[which(SGD_features$sysName == ID),
                      c("name", "description")])
 }
@@ -576,13 +596,17 @@ for (i in 2:length(myTopC)) {
 # mean small biological effects? Certainly not!
 
 # And we haven't even looked at the anticorrelated genes yet...
-myBottomC <- order(myCorrelations, decreasing = FALSE)[1:10]  # bottom ten
-for (i in 1:length(myBottomC)) {
+nBOT <- nTOP
+myBottomC <- order(myCorrelations, decreasing = FALSE)[1:nBOT]  # bottom ten
+myPal <- colorRampPalette(c("#ba112a", "#E3C8CC", "#ebebeb"))
+
+for (i in 1:nBOT) {
   ID <- Biobase::featureNames(GSE3635)[myBottomC[i]]
   points(seq(0, 120, by = 10),
          Biobase::exprs(GSE3635)[ID, ],
          type = "b",
-         col= "coral")
+         cex = 0.8,
+         col= myPal(nBOT)[i])
   print(SGD_features[which(SGD_features$sysName == ID),
                      c("name", "description")])
 }
