@@ -32,8 +32,8 @@
 #TOC> 
 #TOC>   Section  Title                                 Line
 #TOC> -----------------------------------------------------
-#TOC>   1        Reading and validating FASTA            45
-#TOC>   1.1        Validating FASTA                      81
+#TOC>   1        Reading and validating FASTA            44
+#TOC>   1.1        Validating FASTA                      80
 #TOC>   2        Parsing FASTA                          225
 #TOC>   3        Interpreting FASTA                     245
 #TOC>   4        Writing FASTA                          272
@@ -218,8 +218,9 @@ FA <- c(">head1",
 validate(FA)     # ... should not create an error
 
 
-# a somewhat more elaborate validateFA() function was loaded with the
-# ./utilities.R script
+# A somewhat more elaborate validateFA() function was loaded with the
+# ./utilities.R script. It needs a bit more bookkeeping, since NCBI multi-
+# fasta files have space-characters in their spacer lines.
 
 # =    2  Parsing FASTA  =======================================================
 
@@ -271,7 +272,7 @@ pie(table(x)[names(AACOLS)], col = AACOLS)
 # =    4  Writing FASTA  =======================================================
 
 
-# Writing FASTA files mostly just the revrese reverse of reading, with one
+# Writing FASTA files is mostly just the reverse of reading, with one
 # twist: we need to break the long sequence string into chunks of the desired
 # width. The FASTA specification calls for a maximum of 120 characters per line,
 # but writing out much less than that is common, since it allows to comfortably

@@ -20,7 +20,7 @@
 
 
 #TOC> ==========================================================================
-#TOC> 
+#TOC>
 #TOC>   Section  Title                                       Line
 #TOC> -----------------------------------------------------------
 #TOC>   1        SCRIPTS TO SOURCE                             50
@@ -43,7 +43,7 @@
 #TOC>   5.03       selectPDBrep()                             438
 #TOC>   5.04       selectChi2()                               474
 #TOC>   5.05       selectENSP()                               487
-#TOC> 
+#TOC>
 #TOC> ==========================================================================
 
 
@@ -206,6 +206,7 @@ validateFA <- function(txt) {
   #
   # The function is used for its side-effect of throwing an error of
   # FASTA assumptions are violated in txt.
+  # - There may be spacer-lines matching "^\\s*$"
   # - At least one header line
   # - No adjacent header lines
   # - All header lines followed by at least one sequence line
@@ -216,32 +217,90 @@ validateFA <- function(txt) {
     stop("no header lines in input")
   }
 
-  sel <- grepl("^>", txt)
-  sel <- sel[- length(sel)] & sel[-1]
+  isHeader <- grepl("^>", txt)
+  isSpacer <- grepl("^\\s*$", txt)
+  txtNoSpc <- txt[! isSpacer]
+
+  # adjacent headers
+  sel <- isHeader[- length(isHeader)] & isHeader[-1]
   if ( any(sel) ) {
     i <- which(sel)[1]
     stop(sprintf("adjacent header lines in input (lines %d and %d)",
                  i, i+1))
   }
 
-  selA <- grepl("^>", txt)
+  # invalid character in a line that is not header or spacer
+  selA <- isHeader | isSpacer
   selB <- grepl(sprintf("[^%s]", AAVALID), txt)
   if ( any( (! selA) & selB) ) {  # (not header) AND (has invalid character)
     i <- which( (! selA) & selB)[1]
-    stop(sprintf("invalid character(s) in sequence (cf. line %d)",
-                 i, i+1))
+    stop(sprintf("invalid character(s) in sequence (cf. line %d)", i))
   }
 
-  sel <- grep("^>", txt) + 1
-  sel <- grepl(sprintf("[%s]+", AAVALID), txt[sel])
-  if ( ! all(sel) ) {
-    i <- which( ! sel)[1]
-    stop(sprintf("a header has no adjacent sequence (line %d)",
-                 grep("^>", txt)[i]))
+  # no spacer should immediately follow a header
+  sel <- c(isSpacer, FALSE) & c(FALSE, isHeader)
+  if ( any(sel) ) {
+    i <- which(sel)[1]
+    stop(sprintf("a header has no adjacent sequence (line %d)", i - 1))
+  }
+
+  # no header alone on the last line
+  if ( which(isHeader)[sum(isHeader)] == length(txt)) {
+    stop(sprintf("a header is alone on the last line (line %d)", length(txt)))
+  }
+
+  # no spacer in a block of sequence
+  # (tested as: not followed by spacer or header)
+
+  if (sum(isSpacer) > 0) {
+    sel <- which(isSpacer) + 1
+    sel <- sel[sel <= length(txt)]
+    if ( ! all(isSpacer[sel] | isHeader[sel]) ) {
+      i <- which(! (isSpacer[sel] | isHeader[sel]))[1]
+      stop(sprintf("a spacer is followed by sequence (line %d)",
+                   which(isSpacer)[i]))
+    }
+
   }
 
   # all good, if we get to here.
   return(invisible(NULL))
+}
+
+if (FALSE) {
+
+  # Should validate
+  fa <- c(">abc", "de")
+  validateFA(fa)
+
+  fa <- c(">abc", "de", "fgh", ">ojz", "ikl")
+  validateFA(fa)
+
+  fa <- c("", ">abc", "de", "fgh", "", ">ojz", "ikl", "")
+  validateFA(fa)
+
+  fa <- c(" ", ">abc", "de", "fgh", "   ", ">ojz", "ikl", "\t")
+  validateFA(fa)
+
+  # should fail
+  fa <- c("abc", "de")
+  validateFA(fa)
+
+  fa <- c(">abc", "de", ">fgh", ">ojz", "ikl")
+  validateFA(fa)
+
+  fa <- c("", ">abc", "de", "f_h", "", ">ojz", "ikl", "")
+  validateFA(fa)
+
+  fa <- c(">abc", " ", "de", "fgh", "   ", ">ojz", "ikl", "\t")
+  validateFA(fa)
+
+  fa <- c(" ", ">abc", "de", "fgh", "   ", ">ojz")
+  validateFA(fa)
+
+  fa <- c(" ", ">abc", "de", "   ", "fgh", ">ojz", "ikl", "\t")
+  validateFA(fa)
+
 }
 
 
