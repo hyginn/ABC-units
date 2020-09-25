@@ -20,11 +20,11 @@
 #TOC>   2.07       dbAddTaxonomy()                  199
 #TOC>   2.08       dbAddAnnotation()                215
 #TOC>   2.09       dbFetchUniProtSeq()              243
-#TOC>   2.10       dbFetchPrositeFeatures()         267
-#TOC>   2.11       node2text()                      311
-#TOC>   2.12       dbFetchNCBItaxData()             323
-#TOC>   2.13       UniProtIDmap()                   362
-#TOC>   3        TESTS                              401
+#TOC>   2.10       dbFetchPrositeFeatures()         289
+#TOC>   2.11       node2text()                      333
+#TOC>   2.12       dbFetchNCBItaxData()             345
+#TOC>   2.13       UniProtIDmap()                   384
+#TOC>   3        TESTS                              423
 #TOC> 
 #TOC> ==========================================================================
 
@@ -241,27 +241,49 @@ dbAddAnnotation <- function(db, jsonDF) {
 
 
 # ==   2.09  dbFetchUniProtSeq()  ==============================================
-dbFetchUniProtSeq <- function(ID) {
+dbFetchUniProtSeq <- function(IDs) {
   # Fetch a protein sequence from UniProt.
   # Parameters:
-  #     ID   char   a UniProt ID (accession number)
+  #     IDs   char  a vector of UniProt IDs (accession number)
   # Value:
-  #     char        the sequence
-  # If the operation is not successful, a 0-length string is returned
+  #     char        a vector of the same length as ID. It contains
+  #                 sequences where the retrieval was successful, NA where
+  #                 it was not successful. The elements are named with
+  #                 the ID, the header lines are set as attribute "header"
 
-  URL <- sprintf("http://www.uniprot.org/uniprot/%s.fasta", ID)
 
-  response <- httr::GET(URL)
+  BASE <- "http://www.uniprot.org/uniprot/"
 
-  mySeq <- character()
-  if (httr::status_code(response) == 200) {
-    x <- as.character(response)
-    x <- strsplit(x, "\n")
-    mySeq <- dbSanitizeSequence(x)
+  sq <- character()
+  hd <- character()
+  for (i in seq_along(IDs)) {
+    URL <- sprintf("%s%s.fasta", BASE, IDs[i])
+    response <- httr::GET(URL)
+    if (httr::status_code(response) == 200) {
+      s <- as.character(response)
+      s <- unlist(strsplit(s, "\n"))
+      x <- dbSanitizeSequence(s)
+    } else {
+      s <- ""
+      x <- NA
+    }
+    hd[i] <- s[1]
+    sq[i] <- x
   }
+  names(sq) <- IDs
+  attr(sq, "headers") <- hd
 
-  return(mySeq)
+  return(sq)
 }
+
+if (FALSE) {
+  inp <- c("P79073", "P0000000", "A0A1W2TKZ7")
+  s <- dbFetchUniProtSeq(inp)
+  s[1:3]
+  str(s)
+  attr(s, "headers")[1]
+}
+
 
 
 # ==   2.10  dbFetchPrositeFeatures()  =========================================

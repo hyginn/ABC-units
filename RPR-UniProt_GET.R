@@ -1,20 +1,16 @@
 # tocID <- "RPR-UniProt_GET.R"
 #
-# ---------------------------------------------------------------------------- #
-#  PATIENCE  ...                                                               #
-#    Do not yet work wih this code. Updates in progress. Thank you.            #
-#    boris.steipe@utoronto.ca                                                  #
-# ---------------------------------------------------------------------------- #
-#
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the RPR-Scripting_data_downloads unit.
 #
-# Version:  1.1
+# Version:  1.2
 #
-# Date:     2017  10  -  2019  01
+# Date:     2017-10  -  2020-09
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.2    2020 Maintenance. Made dbFetchUniProtSeq() vector-safe and
+#                  added FASTA headers as attribute
 #           1.1    Change from require() to requireNamespace(),
 #                      use <package>::<function>() idiom throughout
 #           1.0    First ABC units version
@@ -34,13 +30,13 @@
 
 
 #TOC> ==========================================================================
-#TOC>
+#TOC> 
 #TOC>   Section  Title                                      Line
 #TOC> ----------------------------------------------------------
-#TOC>   1        UniProt files via GET                        41
-#TOC>   1.1        Task - fetchUniProtSeq() function         103
-#TOC>   2        Task solutions                              110
-#TOC>
+#TOC>   1        UniProt files via GET                        43
+#TOC>   1.1        Task - fetchUniProtSeq() function         105
+#TOC>   2        Task solutions                              118
+#TOC> 
 #TOC> ==========================================================================
 
 
@@ -51,7 +47,7 @@
 # FASTA sequence from UniProt. All we need is to construct an URL with the
 # correct UniProt ID.
 
-# An interface between R scripts and We=b servers is provided by the httr
+# An interface between R scripts and Web servers is provided by the httr::
 # package. This sends and receives information via the http protocol, just like
 # a Web browser. Since this is a short and simple request, the GET verb is the
 # right tool:
@@ -108,21 +104,31 @@ httr::status_code(response)
 
 # ==   1.1  Task - fetchUniProtSeq() function  =================================
 
-# Task: write a function that takes as input a UniProt ID, fetches the
-# FASTA sequence, returns only the sequence if the operation is successful, or
-# a vector of length 0 if there is an error.
+# Task: write a function that
+#   - takes as input a vector of UniProt IDs,
+#   - fetches the FASTA sequence for each
+#   - returns a vector of the same length as the input, where an element is:
+#   -  ...  the sequence, if the query was successful
+#   -  ...  NA if there was an error
+#   - each element has the UniProt ID as the name()
+#   - bonus: the output has an attribute "headers" that is a vector of the
+#            FASTA headers ( cf. ?attr )
 
 
 # =    2  Task solutions  ======================================================
 
 
-# I have placed such a function into the dbUtilities script: look it up by
-# clicking on  dbFetchUniProtSeq() in the Environment pane.
+# I have placed such a function - dbFetchUniProtSeq() - into
+# "./scripts/ABC-dbUtilities.R": look it up by clicking on  dbFetchUniProtSeq()
+# in the Environment pane.
 
-# Test:
-dbFetchUniProtSeq("P39678")
-
-
+# Test this:
+( x <- dbFetchUniProtSeq("P39678") )
+names(x)[1]
+attr(x, "headers")[1]
+x[1]
+cat(writeFASTA(data.frame(head = attr(x, "headers")[1], seq  =x[1]),
+               width = 40), sep = "\n")
 
 
 
