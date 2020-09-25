@@ -30,13 +30,13 @@
 
 
 #TOC> ==========================================================================
-#TOC>
+#TOC> 
 #TOC>   Section  Title                          Line
 #TOC> ----------------------------------------------
-#TOC>   1        Amino Acid Properties            41
-#TOC>   2        Mutation Data matrix            158
-#TOC>   3        Background score                199
-#TOC>
+#TOC>   1        Amino Acid Properties            43
+#TOC>   2        Mutation Data matrix            189
+#TOC>   3        Background score                230
+#TOC> 
 #TOC> ==========================================================================
 
 

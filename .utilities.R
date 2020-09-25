@@ -20,30 +20,30 @@
 
 
 #TOC> ==========================================================================
-#TOC>
+#TOC> 
 #TOC>   Section  Title                                       Line
 #TOC> -----------------------------------------------------------
 #TOC>   1        SCRIPTS TO SOURCE                             50
 #TOC>   2        PACKAGES                                      56
 #TOC>   3        DATA & CONSTANTS                              67
-#TOC>   4        SUPPORT FUNCTIONS                            113
-#TOC>   4.01       objectInfo()                               116
-#TOC>   4.02       biCode()                                   144
-#TOC>   4.03       sameSpecies()                              178
-#TOC>   4.04       validateFA()                               198
-#TOC>   4.05       readFASTA()                                247
-#TOC>   4.06       writeFASTA()                               282
-#TOC>   4.07       pBar()                                     315
-#TOC>   4.08       waitTimer()                                337
-#TOC>   4.09       fetchMSAmotif()                            365
-#TOC>   4.10       H() (Shannon entropy)                      409
-#TOC>   5        FUNCTIONS TO CUSTOMIZE ASSIGNMENTS           422
-#TOC>   5.01       seal()                                     424
-#TOC>   5.02       getMYSPE()                                 428
-#TOC>   5.03       selectPDBrep()                             437
-#TOC>   5.04       selectChi2()                               473
-#TOC>   5.05       selectENSP()                               486
-#TOC>
+#TOC>   4        SUPPORT FUNCTIONS                            114
+#TOC>   4.01       objectInfo()                               117
+#TOC>   4.02       biCode()                                   145
+#TOC>   4.03       sameSpecies()                              179
+#TOC>   4.04       validateFA()                               199
+#TOC>   4.05       readFASTA()                                248
+#TOC>   4.06       writeFASTA()                               283
+#TOC>   4.07       pBar()                                     316
+#TOC>   4.08       waitTimer()                                338
+#TOC>   4.09       fetchMSAmotif()                            366
+#TOC>   4.10       H() (Shannon entropy)                      410
+#TOC>   5        FUNCTIONS TO CUSTOMIZE ASSIGNMENTS           423
+#TOC>   5.01       seal()                                     425
+#TOC>   5.02       getMYSPE()                                 429
+#TOC>   5.03       selectPDBrep()                             438
+#TOC>   5.04       selectChi2()                               474
+#TOC>   5.05       selectENSP()                               487
+#TOC> 
 #TOC> ==========================================================================
 
 
