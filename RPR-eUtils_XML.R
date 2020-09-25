@@ -1,20 +1,15 @@
 # tocID <- "RPR-eUtils_and_XML.R"
 #
-# ---------------------------------------------------------------------------- #
-#  PATIENCE  ...                                                               #
-#    Do not yet work wih this code. Updates in progress. Thank you.            #
-#    boris.steipe@utoronto.ca                                                  #
-# ---------------------------------------------------------------------------- #
-#
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the RPR-Scripting_data_downloads unit.
 #
-# Version:  1.1
+# Version:  1.2
 #
-# Date:     2017  10  05
+# Date:     2017-10  -  2020-09
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.2    2020 Updates
 #           1.1    Change from require() to requireNamespace(),
 #                      use <package>::<function>() idiom throughout
 #           1.0    First ABC units version
@@ -47,7 +42,6 @@
 # =    1  Working with NCBI eUtils  ============================================
 
 
-
 # To begin, we load the xml2 package that contains functions
 # we need to receive and parse html data. NCBI's eUtils send information in
 # XML format so we need to be able to parse XML.
@@ -71,7 +65,7 @@ eUtilsBase <- "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/"
 
 
 # Then we assemble an URL that will search for get the
-# unique, NCBI internal identifier,  the GI number,
+# unique, NCBI internal identifier,
 # for our refSeqID...
 URL <- paste(eUtilsBase,
              "esearch.fcgi?",     # ...using the esearch program
@@ -86,16 +80,16 @@ URL
 
 # To fetch a response in R, we use the function read_xml()
 # with our URL as its argument.
-(myXML <- xml2::read_xml(URL))
+( myXML <- xml2::read_xml(URL) )
 
 # This is XML. We can take the response apart into
-# its indvidual components with the as_list() function.
+# its individual components with the as_list() function.
 
 xml2::as_list(myXML)
 
 # Note how the XML "tree" is represented as a list of
 # lists of lists ...
-# If we know exactly what elelement we are looking for,
+# If we know exactly what element we are looking for,
 # we can extract it from this structure:
 xml2::as_list(myXML)[["eSearchResult"]][["IdList"]][["Id"]][[1]]
 
@@ -104,7 +98,7 @@ xml2::as_list(myXML)[["eSearchResult"]][["IdList"]][["Id"]][[1]]
 # and the NCBI changes things A LOT!
 
 # Somewhat more robust is to specify the type of element
-# we want - its the text contained in an <id>...</id>
+# we want - its the text contained in an <Id>...</Id>
 # element, and use the XPath XML parsing language to
 # retrieve it.
 
@@ -128,7 +122,7 @@ node2text <- function(doc, tag) {
 # using node2text() ...
 (GID <- node2text(myXML, "Id"))
 
-# The GI is the pivot for all our data requests at the
+# The GI is the pivot for data requests at the
 # NCBI.
 
 # Let's first get the associated data for this GI
@@ -160,7 +154,7 @@ URL <- paste0(eUtilsBase,
 # clicking on  dbFetchNCBItaxData() in the Environment pane.
 
 # Test:
-dbFetchNCBItaxData("NP_010227")
+dbFetchNCBItaxData("XP_001837394")
 
 
 # [END]
