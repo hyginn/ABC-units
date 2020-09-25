@@ -1,20 +1,15 @@
 # tocID <- "BIN-ALI-Similarity.R"
 #
-# ---------------------------------------------------------------------------- #
-#  PATIENCE  ...                                                               #
-#    Do not yet work wih this code. Updates in progress. Thank you.            #
-#    boris.steipe@utoronto.ca                                                  #
-# ---------------------------------------------------------------------------- #
-#
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the BIN-ALI-Similarity unit.
 #
-# Version:  1.1
+# Version:  1.2
 #
-# Date:     2017  10  -  2019  01
+# Date:     2017-10  -  2020-09
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.2    2020 Updates
 #           1.1    Change from require() to requireNamespace(),
 #                      use <package>::<function>() idiom throughout
 #           1.0    Refactored for 2017; add aaindex, ternary plot.
@@ -22,6 +17,7 @@
 #
 #
 # TODO:
+#   Update ggtern:: ternary plot to use aacol dots under text
 #
 #
 # == DO NOT SIMPLY  source()  THIS FILE! =======================================
@@ -61,7 +57,7 @@ if (! requireNamespace("seqinr", quietly=TRUE)) {
 #  data:
 
 ?aaindex
-data(aaindex)  # load the aaindex list from the package
+data(aaindex, package = "seqinr")  # load the aaindex list from the package
 
 length(aaindex)
 
@@ -124,11 +120,26 @@ names(K$I) <- c("Ala","Arg","Asn","Asp","Cys","Gln","Glu","Gly","His","Ile",
 
 
 # Given these biophysical indices, how similar are the amino acids? We have three-dimensions of measures here. Scatterplots can only display two dimensions ...
-plot(Y$I, V$I, col="white", xlab = "hydrophobicity", ylab = "volume")
-text(Y$I, V$I, names(Y$I))
 
-plot(Y$I, K$I, col="white", xlab = "hydrophobicity", ylab = "pK")
-text(Y$I, K$I, names(Y$I))
+# pull the names from Y$I, convert them to single letter code, and reorder the
+# AACOLS palette accordingly ...
+aac <- AACOLS[toupper(seqinr::a(names(Y$I)))]
+
+plot(Y$I, V$I,
+     xlab = "hydrophobicity", ylab = "volume",
+     pch = 21,
+     cex = 6,
+     col = aac,
+     bg  = aac)
+text(Y$I, V$I, names(Y$I), cex = 0.8)
+
+plot(Y$I, K$I,
+     xlab = "hydrophobicity", ylab = "pK",
+     pch = 21,
+     cex = 6,
+     col = aac,
+     bg  = aac)
+text(Y$I, K$I, names(Y$I), cex = 0.8)
 
 # ... but how do we plot 3D data? Plotting into a 3D cube is possible, but such
 # plots are in general unintuitive and hard to interpret. One alternative is a
@@ -159,6 +170,20 @@ ggtern::ggtern(data = myDat,
 
 # This results in a mapping of amino acids relative to each other that is
 # similar to the Venn diagram you have seen in the notes.
+
+# ... or we could use principal components analysis, to pull out the
+# best projection of the three feature dimensions into two. (Done here without delving
+# into the theory ...)
+prc <- prcomp(myDat)
+plot(prc$x[,1], prc$x[,2], xlab="", ylab="", xaxt="n", yaxt="n",
+     pch=19, cex=6, col=aad, cex.main=0.7,
+     main="Principal Component Analysis of Amino Acid Features")
+text(prc$x[,1], prc$x[,2], names(Y$I), cex = 0.8, col="#00000088")
+
+# This matches the intuition rather well in that "similar" amino acids are close
+# on the plot. But we can't interpret the distances in terms of just one of the
+# parameters. Whatever - nature has a different way to define similarity:
+# mutations to similar amino acids are less likely to break the protein.
 
 
 # =    2  Mutation Data matrix  ================================================

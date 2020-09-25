@@ -71,30 +71,31 @@ AAVALID  <- "acdefghiklmnpqrstvwyACDEFGHIKLMNPQRSTVWY*-"
 NUCVALID <- "acgtuACGTU-"
 NUCAMBIG <- "acgtACGTryswkmbdhvnRYSWKMBDHVN-"
 
-# A colorpallette for amino acid properties
+# A colour palette for amino acid properties
 AACOLS <- character()
-AACOLS["R"] <- "#577EFF" # Positive
-AACOLS["K"] <- "#479EEE" #
-AACOLS["H"] <- "#37BFDE" #
-AACOLS["E"] <- "#ffa587" # Negative
-AACOLS["D"] <- "#ff87ad" #
-AACOLS["N"] <- "#9FC6FC" # Hydrophilic
-AACOLS["Q"] <- "#A7CFF5" #
-AACOLS["S"] <- "#AFD8EE" #
-AACOLS["T"] <- "#B7E2E8" #
-AACOLS["Y"] <- "#F5FFD9" # Hydrophobic
-AACOLS["W"] <- "#F1FFDB" #
-AACOLS["F"] <- "#EDFFDD" #
-AACOLS["I"] <- "#E9FFDF" #
-AACOLS["L"] <- "#E5FFE2" #
-AACOLS["M"] <- "#E1FFE4" #
-AACOLS["V"] <- "#DDFFE6" #
-AACOLS["A"] <- "#D9FFE9" #
-AACOLS["G"] <- "#e0e0e0" # Glycine
-AACOLS["C"] <- "#fffb91" # Cysteine
-AACOLS["P"] <- "#e8f7e1" # Proline
+AACOLS["R"] <- "#5770ff" # Positive
+AACOLS["K"] <- "#4785EE" #
+AACOLS["H"] <- "#37a1de" #
+AACOLS["E"] <- "#ff6f59" # Negative
+AACOLS["D"] <- "#ff7391" #
+AACOLS["N"] <- "#C9D4FF" # Hydrophilic
+AACOLS["Q"] <- "#CADFFC" #
+AACOLS["S"] <- "#CBEAF9" #
+AACOLS["T"] <- "#CDF5F7" #
+AACOLS["Y"] <- "#FBFFC9" # Hydrophobic
+AACOLS["W"] <- "#EDFDC8" #
+AACOLS["F"] <- "#DFFCC8" #
+AACOLS["I"] <- "#D2FBC8" #
+AACOLS["L"] <- "#C4FAC7" #
+AACOLS["M"] <- "#B7F9C7" #
+AACOLS["V"] <- "#A9F8C7" #
+AACOLS["A"] <- "#9CF7C7" #
+AACOLS["G"] <- "#d2d2d2" # Glycine
+AACOLS["C"] <- "#fff963" # Cysteine
+AACOLS["P"] <- "#edc06d" # Proline
+AACOLS <- gsub("$", "80", AACOLS)  # Make the colors 50% transparent
 # barplot(rep(1, 20), col = AACOLS)
-
+# colorRampPalette(c("#fbffc9","#9cf7c7"))(8)
 
 # 10 species of fungi for reference analysis.
 # http://steipe.biochemistry.utoronto.ca/abc/index.php/Reference_species_for_fungi
