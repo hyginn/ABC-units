@@ -1,20 +1,15 @@
 # tocID <- "BIN-ALI-MSA.R"
 #
-# ---------------------------------------------------------------------------- #
-#  PATIENCE  ...                                                               #
-#    Do not yet work wih this code. Updates in progress. Thank you.            #
-#    boris.steipe@utoronto.ca                                                  #
-# ---------------------------------------------------------------------------- #
-#
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the BIN-ALI-MSA unit.
 #
-# Version:  1.2
+# Version:  1.3
 #
-# Date:     2017  10  -  2019  01
+# Date:     2017-10  -  2020-09
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.3    2020 updates
 #           1.2    Change from require() to requireNamespace(),
 #                      use <package>::<function>() idiom throughout
 #           1.1    Added fetchMSAmotif()
@@ -35,25 +30,25 @@
 
 
 #TOC> ==========================================================================
-#TOC>
+#TOC> 
 #TOC>   Section  Title                                              Line
 #TOC> ------------------------------------------------------------------
-#TOC>   1        Preparations                                         54
-#TOC>   2        Aligning full length MBP1 proteins                   96
-#TOC>   2.1        Preparing Sequences                               107
-#TOC>   2.2        Compute the MSA                                   132
-#TOC>   3        Analyzing an MSA                                    153
-#TOC>   4        Comparing MSAs                                      224
-#TOC>   4.1        Importing an alignment to msa                     233
-#TOC>   4.1.1          importing an .aln file                        242
-#TOC>   4.1.2          Creating an MsaAAMultipleAlignment object     273
-#TOC>   4.2        More alignments                                   324
-#TOC>   4.3        Computing comparison metrics                      336
-#TOC>   5        Profile-Profile alignments                          473
-#TOC>   6        Sequence Logos                                      546
-#TOC>   6.1        Subsetting an alignment by motif                  555
-#TOC>   6.2        Plot a Sequence Logo                              604
-#TOC>
+#TOC>   1        Preparations                                         55
+#TOC>   2        Aligning full length MBP1 proteins                   97
+#TOC>   2.1        Preparing Sequences                               108
+#TOC>   2.2        Compute the MSA                                   133
+#TOC>   3        Analyzing an MSA                                    154
+#TOC>   4        Comparing MSAs                                      225
+#TOC>   4.1        Importing an alignment to msa                     234
+#TOC>   4.1.1          importing an .aln file                        243
+#TOC>   4.1.2          Creating an MsaAAMultipleAlignment object     274
+#TOC>   4.2        More alignments                                   325
+#TOC>   4.3        Computing comparison metrics                      337
+#TOC>   5        Profile-Profile alignments                          475
+#TOC>   6        Sequence Logos                                      548
+#TOC>   6.1        Subsetting an alignment by motif                  557
+#TOC>   6.2        Plot a Sequence Logo                              606
+#TOC> 
 #TOC> ==========================================================================
 
 
@@ -211,9 +206,9 @@ for (i in seq_along(highScoringRanges$lengths)) {
 # threshold (experiment with that a bit), but once we are satisfied, we can use
 # the boundaries to print the MSA alignments separately for domains.
 # Unfortunately the msa package provides no native way to extract blocks of the
-# alignment for further processing, but your .utilities file loads a function to
-# write alignment objects and sequence sets to .aln formatted output. Have a
-# look:
+# alignment for further processing, but your .utilities.R script contains a
+# function to write alignment objects and sequence sets to .aln formatted
+# output. Have a look:
 
 writeALN
 
@@ -245,7 +240,7 @@ for (i in seq_along(highScoringRanges$lengths)) {
 #   -  adjust the sequence names
 #   -  convert to msaAAMultipleAlignment object
 
-# ===   4.1.1  importing an .aln file
+# ===   4.1.1  importing an .aln file                   
 
 # The seqinr package has a function to read CLUSTAL W formatted .aln files ...
 if (! requireNamespace("seqinr", quietly=TRUE)) {
@@ -391,6 +386,7 @@ boxplot(list(CLUSTAL.W = msaWScores,
              CLUSTAL.O = msaOScores,
              T.COFFEE  = msaTScores,
              MUSCLE    = msaMScores),
+        cex.axis = 0.8,
         col = c("#7D556488", "#74628F88", "#5E78A188", "#3DAEB288"))
 
 # CLUSTAL W and CLUSTAL O don't look all that different. T-Coffee tends to have
@@ -503,7 +499,7 @@ DECIPHER::AlignProfiles(msaW@unmasked, msaM@unmasked)
 m <- as.character(msaM)
 w <- as.character(msaW)[names(m)]
 
-(ppa <- DECIPHER::AlignProfiles(msa::AAStringSet(w), msa::AAStringSet(m)))
+(ppa <- DECIPHER::AlignProfiles(AAStringSet(w), AAStringSet(m)))
 
 # Conveniently, AlignProfiles() returns an AAStringSet, so we can use our
 # writeALN function to show it. Here is an arbitrary block, from somewhere in
@@ -609,12 +605,12 @@ writeALN(fetchMSAmotif(msaM, wing))
 
 # ==   6.2  Plot a Sequence Logo  ==============================================
 
-# There are now several good options to plot sequence logos in R, these include
-# dagLogo, DiffLogo, Logolas, and motifStack. For our example we will use
-# ggseqlogo written by by Omar Waghi, a former UofT BCB student who is now at
-# the EBI.
+# The Bioconductor seqLogo:: packager handles only DNA sequences, but there are
+# now several good options to plot sequence logos in R, these include dagLogo,
+# DiffLogo, Logolas, and motifStack. For our example we will use ggseqlogo
+# written by by Omar Waghi, a former UofT BCB student who is now at the EBI.
 
-if (! requireNamspace("ggseqlogo", quietly=TRUE)) {
+if (! requireNamespace("ggseqlogo", quietly=TRUE)) {
   install.packages(("ggseqlogo"))
 }
 # Package information:
