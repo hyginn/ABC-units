@@ -1,20 +1,15 @@
-# tocID <- "BIN-FUNC_Semantic_similarity.R"
-#
-# ---------------------------------------------------------------------------- #
-#  PATIENCE  ...                                                               #
-#    Do not yet work wih this code. Updates in progress. Thank you.            #
-#    boris.steipe@utoronto.ca                                                  #
-# ---------------------------------------------------------------------------- #
+# tocID <- "BIN-FUNC-Semantic_similarity.R"
 #
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the BIN-FUNC_Semantic_similarity unit.
 #
-# Version:  1.1
+# Version:  1.2
 #
-# Date:     2017  11  -  2019  01
+# Date:     2017-11  -  2020-09
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.2    2020 Maintenance
 #           1.1    Change from require() to requireNamespace(),
 #                      use <package>::<function>() idiom throughout,
 #                      use Biocmanager:: not biocLite()
@@ -34,14 +29,14 @@
 
 
 #TOC> ==========================================================================
-#TOC>
+#TOC> 
 #TOC>   Section  Title                                                Line
 #TOC> --------------------------------------------------------------------
-#TOC>   1        Preparations: Packages, AnnotationDB, Setup            42
-#TOC>   2        Fetch GO Annotations                                   98
-#TOC>   3        Semantic Similarities                                 107
-#TOC>   4        GO Term Enrichment in Gene Sets                       125
-#TOC>
+#TOC>   1        Preparations: Packages, AnnotationDB, Setup            43
+#TOC>   2        Fetch GO Annotations                                  100
+#TOC>   3        Semantic Similarities                                 109
+#TOC>   4        GO Term Enrichment in Gene Sets                       127
+#TOC> 
 #TOC> ==========================================================================
 
 
@@ -68,7 +63,8 @@ if (! requireNamespace("GOSim", quietly = TRUE)) {
 
 library(GOSim)
 
-# GOSim loads human annotations by default. We load yeast annotations instead...
+# GOSim loads human annotations in  org.Hs.eg.db  by default. We load yeast
+# annotations instead...
 if (! requireNamespace("org.Sc.sgd.db", quietly = TRUE)) {
   BiocManager::install("org.Sc.sgd.db")
 }
