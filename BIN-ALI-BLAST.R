@@ -1,20 +1,15 @@
 # tocID <- "BIN-ALI-BLAST.R"
 #
-# ---------------------------------------------------------------------------- #
-#  PATIENCE  ...                                                               #
-#    Do not yet work wih this code. Updates in progress. Thank you.            #
-#    boris.steipe@utoronto.ca                                                  #
-# ---------------------------------------------------------------------------- #
-#
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the BIN-ALI-BLAST unit.
 #
-# Version:  1.2
+# Version:  1.3
 #
-# Date:     2017  10  -  2019  01
+# Date:     2017-10  -  2020-09
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.3    2020 Maintenance
 #           1.2    Change from require() to requireNamespace(),
 #                      use <package>::<function>() idiom throughout
 #           1.1    Fixed parsing logic.
@@ -35,13 +30,13 @@
 
 
 #TOC> ==========================================================================
-#TOC>
+#TOC> 
 #TOC>   Section  Title                               Line
 #TOC> ---------------------------------------------------
-#TOC>   1        Defining the APSES domain             42
-#TOC>   2        Executing the BLAST search            64
-#TOC>   3        Analysing results                     86
-#TOC>
+#TOC>   1        Defining the APSES domain             43
+#TOC>   2        Executing the BLAST search            73
+#TOC>   3        Analysing results                     95
+#TOC> 
 #TOC> ==========================================================================
 
 
@@ -50,10 +45,18 @@
 # Load your protein database
 source("makeProteinDB.R")
 
-# Get the APSES domain sequence for MBP1_MYSPE feature annotation. (You have
-# entered this data in the BIN-ALI-Optimal_sequence_alignment unit.)
+# Get the APSES domain sequence via your MBP1_MYSPE feature annotation. (You
+# have entered this data into your database in the
+# BIN-ALI-Optimal_sequence_alignment unit.)
 
-(proID <- myDB$protein$ID[myDB$protein$name == "MBP1_<MYSSPE>"]) # <<< EDIT
+( myOrth <- sprintf("MBP1_%s", biCode(MYSPE)) ) # If this is not the correct
+                                                # name of the Mbp1 orthologue
+                                                # of Mbp1 in your protein
+                                                # database, DON'T continue. We
+                                                # need to fix this problem.
+                                                # Get in touch.
+
+(proID <- myDB$protein$ID[myDB$protein$name == myOrth])
 (ftrID <- myDB$feature$ID[myDB$feature$name == "APSES fold"])
 (fanID <- myDB$annotation$ID[myDB$annotation$proteinID == proID &
                                myDB$annotation$featureID == ftrID])
