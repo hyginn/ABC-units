@@ -1,0 +1,131 @@
+
+
+```{css, echo = FALSE}
+
+.striped tr:nth-child(even) {
+  background: #eaf1ff;
+}
+.striped {
+  padding: 5px;
+}
+```
+<small>Random Phobias - .Rmd sample code for BCH441 at the University of Toronto. (c) Boris Steipe 2020 -->
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Phobias! ##
+We all have some, but we could always use more. How to know them all? With this code we access the [Wikipedia list of phobias](https://en.wikipedia.org/wiki/List_of_phobias), scrape the contents and assemble a dataframe. Then we write a function to retrieve a random phobia, which we can subsequently ponder on - either to delight in the fact that we don't have that fear, or to add to our daily quota of anxieties <small>(like our well-founded [fear of bad programming practice](http://xkcd.com/292/))</small>.
+
+To load the list, we will "screenscrape" the contents of Wikipedia's [List of Phobias](https://en.wikipedia.org/wiki/List_of_phobias). First, we install the `rvest` library and the `xml2` library from CRAN, if we don't have it.
+```{r packages}
+if (! requireNamespace("rvest", quietly=TRUE)) {
+  install.packages("rvest")
+}
+if (! requireNamespace("xml2", quietly=TRUE)) {
+  install.packages("xml2")
+}
+```
+As we customarily do, we avoid using the `library()` function to make the package contents accessible, but use the `package::` syntax instead. This makes our code more explicit and maintainable.
+
+`xml2` handles reading and parsing of documents. The `rvest` package was designed for screenscraping and has functions to make our life very easy: it accesses the response of an `xml2` query, looks for all HTML formatted tables, parses them with an XPATH expression and returns them as lists from which we can get data frames.
+
+```{r getPageData, cache=TRUE}
+webPage <- xml2::read_html("https://en.wikipedia.org/wiki/List_of_phobias")
+allTables <- rvest::html_table(webPage, fill = TRUE)
+```
+
+There are ```r length(allTables)``` tables in the list, but the ones we are interested in are data frames with two columns named `Phobia` and `Condition`.
+
+```{r collateTables, cache=TRUE}
+phobiaTable <- data.frame(Phobia = character(), Condition = character())
+for (i in seq_along(allTables)) {
+  df <- allTables[[i]]
+  if (all(colnames(df) == c("Phobia", "Condition"))) {
+    phobiaTable <- rbind(phobiaTable, df)
+  }
+}
+```
+
+Done, we collected ```r nrow(phobiaTable)``` phobias. Let's randomly select a few and print them.
+
+<p>&nbsp;
+<p>
+
+```{r , ref.label="randRow", echo=FALSE}
+```
+
+**Table**: seven random phobias<br/>
+```{r renderPhobiaTable, echo=FALSE, results='asis'}
+sel <- sample(1:nrow(phobiaTable), 7)
+knitr::kable(phobiaTable[sel, ], table.attr = "class=\"striped\"", format = "html")
+```
+
+<p>&nbsp;
+<p>
+To pick a single random phobia from the list, we take a (pseudo) random sample of size 1 from the number of rows in the `phobiaFrame` object. Our function thus returns a random row from a matrix or dataframe, and it uses an optional argument: `seed`. This can either be Boolean `FALSE` (the default), or an integer that is used in R's `set.seed()` function.
+
+```{r randRow}
+randRow <- function(M, seed = FALSE) {
+  # Return a random row from a dataframe M.
+  if (seed) {
+    oldseed <- .Random.seed                # play nice and save the RNG state ...
+    set.seed(as.integer(seed))
+  }
+  r <- M[sample(1:nrow(M), 1), ]           # fetch one random row
+  if (seed) { .Random.seed  <- oldseed }   # ... restore the RNG state
+  return(r)
+}
+```
+<p>&nbsp;
+<p>
+With this useful tool we can ponder on our favourite phobia of the day. For today, let it be **`r randRow(phobiaTable, seed=1123581321)[2]`**, the `r randRow(phobiaTable, seed=1123581321)[1]`.
+
+_`r randRow(phobiaTable, seed=1123581321)[1]`_! Really!!? Awful.
+
+<p>&nbsp;
+<p>
+
+Finally: let's plot a histogram of phobia name lengths just to illustrate plots. A little preprocessing is required, since some names collate synonyms, like _"Hypnophobia, somniphobia"_. We'll break these up.
+
+```{r preProcess}
+
+# select only single-word phobias that end with "phobia"
+sel <- ! grepl(" ", phobiaTable$Phobia) & grepl(".phobia$", phobiaTable$Phobia)
+names <- phobiaTable$Phobia[sel]
+
+# extract the ones we did _not_ select
+x <- phobiaTable$Phobia[! sel]
+# use strsplit() to split them apart and flatten the resulting list
+x <- unlist(strsplit(x, ", "))
+x <- unlist(strsplit(x, " "))
+x <- unlist(strsplit(x, "/"))
+# use the same selection as above, and append the result to our "names""
+sel <- ! grepl(" ", x) & grepl(".phobia$", x)
+names <- c(names, x[sel])
+
+```
+
+Done, we collected ```r length(names)``` names for phobias. Here is a histogram of their lengths.
+
+```{r showHist}
+
+x <- nchar(names)
+pShort <- names[which(x == min(x))[1]]  # pull out the shortest name ...
+pLong  <- names[which(x == max(x))[1]]  # ... and the longest name too.
+hist(x,
+     main = "Length of phobia-names",
+     sub = sprintf("Shortest: %s (%d), Longest: %s (%d)",
+                   pShort, nchar(pShort), pLong, nchar(pLong)),
+     cex.sub = 0.8,
+     xlab = "name",
+     ylab = "counts",
+     col ="#aef5ee")
+
+```
+
+That's all.
+
+<!-- [END] -->
