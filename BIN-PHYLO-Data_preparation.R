@@ -1,20 +1,15 @@
 # tocID <- "BIN-PHYLO-Data_preparation.R"
 #
-# ---------------------------------------------------------------------------- #
-#  PATIENCE  ...                                                               #
-#    Do not yet work wih this code. Updates in progress. Thank you.            #
-#    boris.steipe@utoronto.ca                                                  #
-# ---------------------------------------------------------------------------- #
-#
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the BIN-PHYLO-Data_preparation unit.
 #
-# Version:  1.1
+# Version:  1.2
 #
-# Date:     2017  10  -  2019  01
+# Date:     2017-10  -  2020-09
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.2    2020 Maintenance
 #           1.1    Change from require() to requireNamespace(),
 #                      use <package>::<function>() idiom throughout,
 #                      use Biocmanager:: not biocLite()
@@ -35,15 +30,15 @@
 
 
 #TOC> ==========================================================================
-#TOC>
+#TOC> 
 #TOC>   Section  Title                                     Line
 #TOC> ---------------------------------------------------------
-#TOC>   1        Preparations                                44
-#TOC>   2        Fetching sequences                          76
-#TOC>   3        Multiple Sequence Alignment                117
-#TOC>   4        Reviewing and Editing Alignments           136
-#TOC>   4.1        Masking workflow                         152
-#TOC>
+#TOC>   1        Preparations                                45
+#TOC>   2        Fetching sequences                          77
+#TOC>   3        Multiple Sequence Alignment                118
+#TOC>   4        Reviewing and Editing Alignments           137
+#TOC>   4.1        Masking workflow                         153
+#TOC> 
 #TOC> ==========================================================================
 
 
@@ -54,7 +49,7 @@
 # been made to the reference files. If you have worked with the prerequiste
 # units, you should have a script named "makeProteinDB.R" that will create the
 # myDB object with a protein and feature database. Ask for advice if not.
-source("makeProteinDB.R")
+source("myScripts/makeProteinDB.R")
 
 # Load packages we need
 
@@ -172,16 +167,16 @@ for (i in 1:nrow(APSESMsa)) {
 }
 
 # inspect the result
-msaMatrix[1:7, 1:14]
+msaMatrix[1:7, 30:40]
 
 # Now let's make a logical vector with an element for each column that selects
 # which columns should be masked out.
 
 # The number of hyphens in a column is easy to count. Consider:
 
-    msaMatrix[ , 20]
-    msaMatrix[ , 20] == "-"
-sum(msaMatrix[ , 20] == "-")
+    msaMatrix[ , 20]             # column 20
+    msaMatrix[ , 20] == "-"      # TRUE for all gap characters
+sum(msaMatrix[ , 20] == "-")     # adds 1 for each TRUE
 
 # Thus filling our logical vector is simple:
 
@@ -192,7 +187,7 @@ colMask <- logical(ncol(msaMatrix))
 limit <- round(nrow(APSESMsa) * (2/3))
 
 # iterate over all columns, and write TRUE if there are less-or-equal to "limit"
-# hyphens, FALSE if there are more - i.e. TRUE columns will be used fr analysis
+# hyphens, FALSE if there are more - i.e. TRUE columns will be used for analysis
 # and FALSE columns will be rejected.
 for (i in 1:ncol(msaMatrix)) {
   count <- sum(msaMatrix[ , i] == "-")
@@ -230,9 +225,9 @@ writeALN(APSESphyloSet)
 # several indels from the KILA_ESCCO outgroup sequence.
 
 
-# We save the aligned, masked domains to a file in multi-FASTA format.
-writeMFA(APSESphyloSet, myCon = "APSESphyloSet.mfa")
-
+# We save the aligned, masked domains to a file in the data/ directory,
+# in multi-FASTA format.
+writeMFA(APSESphyloSet, myCon = "data/APSESphyloSet.mfa")
 
 
 
