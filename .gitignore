@@ -10,8 +10,9 @@ dev/
 # Session Data files
 # .RData
 
-# Files produced in assifnments
+# Files produced in assingments
 data/APSESphyloSet.mfa
+data/APSEStreeRproml.rds
 
 # Example code in package build process
 *-Ex.R
