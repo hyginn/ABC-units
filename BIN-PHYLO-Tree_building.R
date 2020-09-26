@@ -1,11 +1,5 @@
 # tocID <- "BIN-PHYLO-Tree_building.R"
 #
-# ---------------------------------------------------------------------------- #
-#  PATIENCE  ...                                                               #
-#    Do not yet work wih this code. Updates in progress. Thank you.            #
-#    boris.steipe@utoronto.ca                                                  #
-# ---------------------------------------------------------------------------- #
-#
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the BIN-PHYLO-Tree_building unit.
 #
@@ -15,7 +9,8 @@
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
-#           1.2    deprecate save()/load() for saveRDS()/readRDS()
+#           1.2    deprecate save()/load() for saveRDS()/readRDS(); Mac:
+#                  instructions to authorize proml.app
 #           1.1    Change from require() to requireNamespace(),
 #                      use <package>::<function>() idiom throughout,
 #           1.0    First 2017 version
@@ -86,6 +81,23 @@ if (! requireNamespace("Rphylip", quietly = TRUE)) {
 # directly to that subdirectory to find the program it needs:
 # PROMLPATH <- "/Applications/phylip-3.695/exe/proml.app/Contents/MacOS"
 
+# However, RPHYLIP will not be able to run PHYLIP applications immediately,
+# because they have not been "signed" by the PHYLIP developers. The process
+# will terminate by your system, with a warning.
+
+#   -  Navigate to the phylip folder in your ~/Applications directory
+#   -  Descend into the "exe" folder and find  proml.app
+#   -  Ctrl-click  proml.app  and choose "Open". A dialogue will show that
+#      says: "macOS cannot verify the developer of “proml.app”.
+#             Are you sure you want to open it?"
+#   -  Click open to continue. You may need to allow access to the terminal
+#      as well. When the proml terminal session open, you can type
+#      Ctrl-c to abort the program and close the window.
+#
+#   This adds proml.app to the list of known-good programs and you will not
+#   need to repeat this process.
+#
+
 # ===   1.1.2  ... on Windows
 # On Windows you need to know where the programs have been installed, and you
 # need to specify a path that is correct for the Windows OS. Find the folder
@@ -114,11 +126,17 @@ list.files(PROMLPATH)    # lists the files [1] "proml"   "proml.command"
 # If "proml" is NOT among the files that the last command returns, you
 # can't continue. Ask on the mailing list for advice.
 
+# If everything is good, you can add the line that defines PROMLPATH to
+# myScripts/.myProfile.R - the path will then be automatically set when
+# you quit RStudio and return.
+
+
 # ==   1.2  Building a maximum likelihood tree  ================================
 # Now read the mfa file you have saved in the BIB-PHYLO-Data_preparation unit,
 # as a "proseq" object with the read.protein() function of the RPhylip package:
 
-apsIn <- Rphylip::read.protein("APSESphyloSet.mfa")
+apsIn <- Rphylip::read.protein("data/APSESphyloSet.mfa")
+str(apsIn)
 
 # ... and you are ready to build a tree.
 
@@ -130,7 +148,7 @@ apsIn <- Rphylip::read.protein("APSESphyloSet.mfa")
 # as you can throw at it. Calculating a tree of 48 APSES domains
 # with default parameters of Rproml() runs for more than half a day
 # on my computer. But we have only twelve sequences here, so the
-# process will take us about 5 to 10 minutes. Run this, and anjoy a good cup
+# process will take us about 5 to 15 minutes. Run this, and anjoy a good cup
 # of coffee while you are waiting.
 
 apsTree <- Rphylip::Rproml(apsIn, path=PROMLPATH)
@@ -140,7 +158,7 @@ apsTree <- Rphylip::Rproml(apsIn, path=PROMLPATH)
 plot(apsTree)
 
 # save your tree:
-saveRDS(apsTree, file = "APSEStreeRproml.rds")
+saveRDS(apsTree, file = "data/APSEStreeRproml.rds")
 
 # If this did not work, ask for advice.
 
