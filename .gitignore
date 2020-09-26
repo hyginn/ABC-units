@@ -2,6 +2,7 @@
 .Ds_store
 instructor/
 dev/
+myScripts/
 
 # History files
 .Rhistory
