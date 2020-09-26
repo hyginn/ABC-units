@@ -10,6 +10,9 @@ dev/
 # Session Data files
 # .RData
 
+# Files produced in assifnments
+data/APSESphyloSet.mfa
+
 # Example code in package build process
 *-Ex.R
 
