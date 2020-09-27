@@ -20,30 +20,31 @@
 
 
 #TOC> ==========================================================================
-#TOC>
+#TOC> 
 #TOC>   Section  Title                                       Line
 #TOC> -----------------------------------------------------------
-#TOC>   1        SCRIPTS TO SOURCE                             50
-#TOC>   2        PACKAGES                                      56
-#TOC>   3        DATA & CONSTANTS                              67
-#TOC>   4        SUPPORT FUNCTIONS                            114
-#TOC>   4.01       objectInfo()                               117
-#TOC>   4.02       biCode()                                   145
-#TOC>   4.03       sameSpecies()                              179
-#TOC>   4.04       validateFA()                               199
-#TOC>   4.05       readFASTA()                                248
-#TOC>   4.06       writeFASTA()                               283
-#TOC>   4.07       pBar()                                     316
-#TOC>   4.08       waitTimer()                                338
-#TOC>   4.09       fetchMSAmotif()                            366
-#TOC>   4.10       H() (Shannon entropy)                      410
-#TOC>   5        FUNCTIONS TO CUSTOMIZE ASSIGNMENTS           423
-#TOC>   5.01       seal()                                     425
-#TOC>   5.02       getMYSPE()                                 429
-#TOC>   5.03       selectPDBrep()                             438
-#TOC>   5.04       selectChi2()                               474
-#TOC>   5.05       selectENSP()                               487
-#TOC>
+#TOC>   1        SCRIPTS TO SOURCE                             51
+#TOC>   2        PACKAGES                                      57
+#TOC>   3        DATA & CONSTANTS                              68
+#TOC>   4        SUPPORT FUNCTIONS                            115
+#TOC>   4.01       objectInfo()                               118
+#TOC>   4.02       biCode()                                   146
+#TOC>   4.03       sameSpecies()                              180
+#TOC>   4.04       validateFA()                               200
+#TOC>   4.05       readFASTA()                                308
+#TOC>   4.06       writeFASTA()                               343
+#TOC>   4.07       pBar()                                     376
+#TOC>   4.08       waitTimer()                                398
+#TOC>   4.09       fetchMSAmotif()                            426
+#TOC>   4.10       H() (Shannon entropy)                      470
+#TOC>   4.11       CX() (ChimeraX remote command)             483
+#TOC>   5        FUNCTIONS TO CUSTOMIZE ASSIGNMENTS           545
+#TOC>   5.01       seal()                                     547
+#TOC>   5.02       getMYSPE()                                 551
+#TOC>   5.03       selectPDBrep()                             560
+#TOC>   5.04       selectChi2()                               596
+#TOC>   5.05       selectENSP()                               609
+#TOC> 
 #TOC> ==========================================================================
 
 
@@ -476,6 +477,68 @@ H <- function(x, N) {
   if (length(t) > N ) { stop("N can't be smaller than observed states.") }
   h <- sum(- (t / length(x)) * log2(t / length(x)))
   return(h)
+}
+
+
+# ==   4.11  CX() (ChimeraX remote command)  ===================================
+CX <- function(cmd, port = CXPORT, quietly = FALSE, capture = FALSE) {
+  # send a command to ChimeraX listening on port CXPORT via its REST
+  # interface.
+  # Parameters:
+  #   cmd      char     a ChireaX commandline command
+  #   port     int      the portnumber on which ChimeraX is listening
+  #   quietly  logical  if FALSE, cat() the contents of the response
+  #   capture  logical  if TRUE, return the contents of the response
+  #
+  # Value:  the reply by ChineraX, or invisible(NULL)
+
+  CXREST <- sprintf("http://127.0.0.1:%s/run?", CXPORT)
+
+  cmd <- gsub("(^\\s+)|(\\s+$)", "", cmd)  # trim whitespace
+  # percent encode reserved characters
+  cmd <- gsub("%", "%25", cmd)            #   %
+  cmd <- gsub("#", "%23", cmd)            #   #
+  cmd <- gsub("/", "%2F", cmd)            #   /
+  cmd <- gsub(":", "%3A", cmd)            #   :
+  cmd <- gsub("@", "%40", cmd)            #   @
+  cmd <- gsub(",", "%2C", cmd)            #   ,
+  cmd <- gsub("\\*", "%2A", cmd)          #   *
+  cmd <- gsub("\\?", "%3F", cmd)          #   ?
+  cmd <- gsub("!", "%21", cmd)            #   !
+  cmd <- gsub("=", "%3D", cmd)            #   =
+  cmd <- gsub("\\(", "%28", cmd)          #   (
+  cmd <- gsub("\\)", "%29", cmd)          #   )
+  cmd <- gsub("\\[", "%5B", cmd)          #   [
+  cmd <- gsub("\\]", "%5D", cmd)          #   ]
+  cmd <- gsub("&", "%26", cmd)            #   &
+  cmd <- gsub("\\+", "%2B", cmd)          #   +
+
+  cmd <- gsub("\\s+", "+", cmd)            # whitespace to "+"
+  cmd <- URLencode(cmd)                    # encode special characters
+  cmd <- paste0(CXREST, "command=", cmd, collapse = "")
+
+  r <- httr::GET(cmd)
+
+  if (! r$status_code == 200) {
+    stop("ChimeraX returned status code %d", r$status_code)
+  }
+
+  if (length(r$content) == 0) {
+    reply <- ""
+  } else {
+    reply <- rawToChar(r$content)
+  }
+
+  if (quietly == FALSE) {
+    cat(reply)
+  }
+
+  if (capture == TRUE) {
+    return(reply)
+  } else {
+    return(invisible(NULL))
+  }
+
 }
 
 
