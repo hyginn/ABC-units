@@ -3,11 +3,13 @@
 # Purpose: A Bioinformatics Course:
 #              R code accompanying the BIN-Storing_data unit
 #
-# Version: 1.2
+# Version: 1.3
 #
 # Date:    2017-10  -  2020-09
 # Author:  Boris Steipe (boris.steipe@utoronto.ca)
 #
+# V 1.3    Made file locations more consistent. All student-edited files
+#          go into the myScripts directory
 # V 1.2    2020 updates. Finally removed stringAsFactors  :-)
 # V 1.1    Add instructions to retrieve UniProt ID from ID mapping service.
 # V 1.0    First live version, complete rebuilt. Now using JSON data sources.
@@ -32,26 +34,26 @@
 #TOC> 
 #TOC>   Section  Title                                                   Line
 #TOC> -----------------------------------------------------------------------
-#TOC>   1        A Relational Datamodel in R: review                       59
-#TOC>   1.1        Building a sample database structure                    99
-#TOC>   1.1.1          completing the database                            205
-#TOC>   1.2        Querying the database                                  238
-#TOC>   1.3        Task: submit for credit (part 1/2)                     269
-#TOC>   2        Implementing the protein datamodel                       291
-#TOC>   2.1        JSON formatted source data                             317
-#TOC>   2.2        "Sanitizing" sequence data                             358
-#TOC>   2.3        Create a protein table for our data model              380
-#TOC>   2.3.1          Initialize the database                            382
-#TOC>   2.3.2          Add data                                           394
-#TOC>   2.4        Complete the database                                  414
-#TOC>   2.4.1          Examples of navigating the database                441
-#TOC>   2.5        Updating the database                                  473
-#TOC>   3        Add your own data                                        485
-#TOC>   3.1        Find a protein                                         493
-#TOC>   3.2        Put the information into JSON files                    523
-#TOC>   3.3        Create an R script to create your own database         546
-#TOC>   3.3.1          Check and validate                                 569
-#TOC>   3.4        Task: submit for credit (part 2/2)                     614
+#TOC>   1        A Relational Datamodel in R: review                       61
+#TOC>   1.1        Building a sample database structure                   101
+#TOC>   1.1.1          completing the database                            207
+#TOC>   1.2        Querying the database                                  240
+#TOC>   1.3        Task: submit for credit (part 1/2)                     271
+#TOC>   2        Implementing the protein datamodel                       293
+#TOC>   2.1        JSON formatted source data                             319
+#TOC>   2.2        "Sanitizing" sequence data                             360
+#TOC>   2.3        Create a protein table for our data model              382
+#TOC>   2.3.1          Initialize the database                            384
+#TOC>   2.3.2          Add data                                           396
+#TOC>   2.4        Complete the database                                  416
+#TOC>   2.4.1          Examples of navigating the database                443
+#TOC>   2.5        Updating the database                                  475
+#TOC>   3        Add your own data                                        487
+#TOC>   3.1        Find a protein                                         495
+#TOC>   3.2        Put the information into JSON files                    525
+#TOC>   3.3        Create an R script to create your own database         567
+#TOC>   3.3.1          Check and validate                                 590
+#TOC>   3.4        Task: submit for credit (part 2/2)                     635
 #TOC> 
 #TOC> ==========================================================================
 
@@ -523,23 +525,42 @@ myDB$taxonomy$species[sel]
 # ==   3.2  Put the information into JSON files  ===============================
 
 
-# - Next make a copy of the file "./data/MBP1_SACCE.json" in your project
+# - Next make a copy of the file "./data/MBP1_SACCE.json" in the "data"
 #     directory and give it a new name that corresponds to MYSPE - e.g. if
 #     MYSPE is called "Crptycoccus neoformans", your file should be called
 #     "MBP1_CRYNE.json"; in that case "MBP1_CRYNE" would also be the
 #     "name" of your protein. Open the file in the RStudio editor and replace
 #     all of the MBP1_SACCE data with the corresponding data of your protein.
 #
-#     The UniProt ID may not be discoverable from the NCBI page. To retrieve
+#     Note: The UniProt ID may not be listed on the NCBI page. To retrieve
 #     it, navigate to http://www.uniprot.org/mapping/ , paste your RefSeq ID
 #     into the query field, make sure "RefSeqProtein" is selected for "From"
 #     and "UniProtKB" is selected for "To", and click "Go". In case this does
 #     not retrieve a single UniProt ID, contact me.
 #
+#     Save your .json file into your myScripts directory.
+#
+#     Confirm this step:
+if (file.exists(sprintf("./myScripts/MBP1_%s.json", biCode(MYSPE)))) {
+  cat("Excellent - all good to continue.\n")
+} else {
+  stop(sprintf(" The file \"./myScripts/MBP1_%s.json\" does not exist",
+       biCode(MYSPE)))
+}
+#
+#
 # - Do a similar thing for the MYSPE taxonomy entry. Copy
 #     "./data/refTaxonomy.json" and make a new file named "MYSPEtaxonomy.json".
 #     Create a valid JSON file with only one single entry - that of MYSPE.
 #
+#     Confirm this step:
+if (file.exists(sprintf("./myScripts/%staxonomy.json", biCode(MYSPE)))) {
+  cat("Excellent - all good to continue.\n")
+} else {
+  stop(sprintf(" The file \"./myScripts/%staxonomy.json\" does not exist",
+               biCode(MYSPE)))
+}
+
 # - Validate your two files online at https://jsonlint.com/
 
 
@@ -552,14 +573,14 @@ myDB$taxonomy$species[sel]
 #     source("./scripts/ABC-createRefDB.R")
 # - than add the two commands that add your protein and taxonomy data,
 #     they should look like:
-#     myDB <- dbAddProtein(    myDB, fromJSON("MBP1_<code>.json"))
-#     myDB <- dbAddTaxonomy(   myDB, fromJSON("MYSPEtaxonomy.json"))
+#     myDB <- dbAddProtein(    myDB, fromJSON("./myScripts/MBP1_<MYSPE>.json"))
+#     myDB <- dbAddTaxonomy(   myDB, fromJSON("./myScripts/MYSPEtaxonomy.json"))
 #
 # - save the file in the ./myScripts/ folder and source() it:
 #     source("./myScripts/makeProteinDB.R")
 
 # This command needs to be executed whenever you recreate
-# the database. In particular, whenver you have added or modified data
+# the database. In particular, whenever you have added or modified data
 # in any of the JSON files. Later you will add more information ...
 
 # Remember this principle. Don't rely on objects in memory - you might
