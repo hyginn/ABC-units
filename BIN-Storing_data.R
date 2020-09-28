@@ -3,11 +3,12 @@
 # Purpose: A Bioinformatics Course:
 #              R code accompanying the BIN-Storing_data unit
 #
-# Version: 1.3
+# Version: 1.3.1
 #
 # Date:    2017-10  -  2020-09
 # Author:  Boris Steipe (boris.steipe@utoronto.ca)
 #
+# V 1.3.1  add overlooked  jsonlite:: prefix to fromJson()
 # V 1.3    Made file locations more consistent. All student-edited files
 #          go into the myScripts directory
 # V 1.2    2020 updates. Finally removed stringAsFactors  :-)
@@ -34,26 +35,26 @@
 #TOC> 
 #TOC>   Section  Title                                                   Line
 #TOC> -----------------------------------------------------------------------
-#TOC>   1        A Relational Datamodel in R: review                       61
-#TOC>   1.1        Building a sample database structure                   101
-#TOC>   1.1.1          completing the database                            207
-#TOC>   1.2        Querying the database                                  240
-#TOC>   1.3        Task: submit for credit (part 1/2)                     271
-#TOC>   2        Implementing the protein datamodel                       293
-#TOC>   2.1        JSON formatted source data                             319
-#TOC>   2.2        "Sanitizing" sequence data                             360
-#TOC>   2.3        Create a protein table for our data model              382
-#TOC>   2.3.1          Initialize the database                            384
-#TOC>   2.3.2          Add data                                           396
-#TOC>   2.4        Complete the database                                  416
-#TOC>   2.4.1          Examples of navigating the database                443
-#TOC>   2.5        Updating the database                                  475
-#TOC>   3        Add your own data                                        487
-#TOC>   3.1        Find a protein                                         495
-#TOC>   3.2        Put the information into JSON files                    525
-#TOC>   3.3        Create an R script to create your own database         567
-#TOC>   3.3.1          Check and validate                                 590
-#TOC>   3.4        Task: submit for credit (part 2/2)                     635
+#TOC>   1        A Relational Datamodel in R: review                       62
+#TOC>   1.1        Building a sample database structure                   102
+#TOC>   1.1.1          completing the database                            208
+#TOC>   1.2        Querying the database                                  241
+#TOC>   1.3        Task: submit for credit (part 1/2)                     272
+#TOC>   2        Implementing the protein datamodel                       294
+#TOC>   2.1        JSON formatted source data                             320
+#TOC>   2.2        "Sanitizing" sequence data                             361
+#TOC>   2.3        Create a protein table for our data model              383
+#TOC>   2.3.1          Initialize the database                            385
+#TOC>   2.3.2          Add data                                           397
+#TOC>   2.4        Complete the database                                  417
+#TOC>   2.4.1          Examples of navigating the database                444
+#TOC>   2.5        Updating the database                                  476
+#TOC>   3        Add your own data                                        488
+#TOC>   3.1        Find a protein                                         496
+#TOC>   3.2        Put the information into JSON files                    526
+#TOC>   3.3        Create an R script to create your own database         568
+#TOC>   3.3.1          Check and validate                                 596
+#TOC>   3.4        Task: submit for credit (part 2/2)                     641
 #TOC> 
 #TOC> ==========================================================================
 
@@ -573,15 +574,20 @@ if (file.exists(sprintf("./myScripts/%staxonomy.json", biCode(MYSPE)))) {
 #     source("./scripts/ABC-createRefDB.R")
 # - than add the two commands that add your protein and taxonomy data,
 #     they should look like:
-#     myDB <- dbAddProtein(    myDB, fromJSON("./myScripts/MBP1_<MYSPE>.json"))
-#     myDB <- dbAddTaxonomy(   myDB, fromJSON("./myScripts/MYSPEtaxonomy.json"))
 #
-# - save the file in the ./myScripts/ folder and source() it:
-#     source("./myScripts/makeProteinDB.R")
-
-# This command needs to be executed whenever you recreate
-# the database. In particular, whenever you have added or modified data
-# in any of the JSON files. Later you will add more information ...
+# myDB <- dbAddProtein(myDB,
+#                      jsonlite::fromJSON("./myScripts/MBP1_<MYSPE>.json"))
+# myDB <- dbAddTaxonomy(myDB,
+#                       jsonlite::fromJSON("./myScripts/<MYSPE>taxonomy.json"))
+#
+#
+# - save the .json file in the ./myScripts/ folder and source() it:
+#
+#     source("./myScripts/makeProteinDB.R")  # <<<- This command ...
+#
+# ... needs to be executed whenever you recreate the database. In particular,
+# whenever you have added or modified data in any of the JSON files. Later you
+# will add more information.
 
 # Remember this principle. Don't rely on objects in memory - you might
 # "break" them with a code experiment. But always have a script with
