@@ -32,7 +32,7 @@
 #TOC>   1        ChimeraX REMOTE SCRIPTING                40
 #TOC>   1.1        Defining a Port                        58
 #TOC>   1.2        Open ChimeraX                          80
-#TOC>   2        WORKED EXAMPLE: SUPERPOSITION           100
+#TOC>   2        WORKED EXAMPLE: SUPERPOSITION           112
 #TOC> 
 #TOC> ==========================================================================
 
@@ -96,6 +96,18 @@ CX("camera sbs")
 CX("lighting soft")
 CX("color sequential #1 & protein target abc palette powderblue:orchid:white")
 
+# The command echos Chimera's response if the parameter "quietly" is
+# FALSE (default), and we can silence output with quietly = TRUE :
+CX("info models #1 attribute num_residues")
+CX("info models #1 attribute num_residues", quietly = TRUE)
+
+# Either way, the command also returns Chimera's responses "invisibly";
+# i.e. we can use the results by assigning the output to a variable:
+hBonds <- CX("hbonds #1 & protein makePseudobonds false log true", quietly=TRUE)
+x <- read.table(file = textConnection(hBonds), skip = 9,
+                blank.lines.skip = TRUE, fill = TRUE)
+hist(x[,13], main="H-bonds", xlab="D···A (Å)", ylab="counts", col="#c9dcff")
+
 
 # =    2  WORKED EXAMPLE: SUPERPOSITION  =======================================
 
@@ -103,31 +115,35 @@ CX("color sequential #1 & protein target abc palette powderblue:orchid:white")
 # to explore possible DNA binding regions in 1BM8
 
 # The model for 1BM8 is already open as model 1  (#1)
-CX("hide #1 cartoons")        # hide chain a cartoon representation
-CX("open 1DUX")
+CX("hide #1 cartoons")        # hide model 1 cartoon representation
+CX("open 1DUX")               # assume this is opened as model #2
 CX("hide #2")                 # hide everything ...
-CX("show #2/a,b,c cartoons")  # ... and show cartoons of chains a, b (DNA) and c
-CX("view #2/c")               # re-center the display
-CX("select #2/a,b")           # select the DNA chains
-CX("color sel lightblue")
-CX("surface sel enclose sel") # joint surface of both chains
+CX("select #2/C")             # chain c (protein)
+CX("show sel cartoons")       # ... and show cartoons of chain c (protein)
+CX("color sequential sel target c palette steelblue:darkmagenta")
+CX("view #2/C")               # re-center the display
+CX("cofr #2/C:62@CA")         # set pivot to an interface residue
+CX("select #2/A,B & nucleic-acid") # chains A, B are the cognate DNA
+CX("style sel stick")
+CX("show sel target ab")      # show atoms/bonds
+CX("color sequential #2/A & nucleic-acid target ab palette teal:lightcyan")
+CX("color sequential #2/B & nucleic-acid target ab palette teal:lightcyan")
+CX("surface sel enclose sel") # compute joint accessible surface of both chains
 CX("transparency 50")
-CX("select #2/c")             # select the protein chain
-CX("color sequential sel target c palette palegreen:lightblue")
+CX("select clear")
 
 # Now superimpose the 1BM8 chain onto 1DUX chain C
 CX("show #1 cartoons")
 CX("matchmaker #1/A to #2/C pairing ss")  # the actual superposition
-CX("select clear")
 
 # study the general layout, and the position of the 1mb8 secondary structure
 # elements relative to 1DUX
 
 # Let's examine side chain orientations in more detail
-CX("hide #2/c cartoons")  # hide the 1DUX protein
+CX("hide #2/C cartoons")  # hide the 1DUX protein
 
 # select all residues in 1BM8 that are within 3.5 A of the DNA chains (a, b)
-CX("select zone #2/a,b 3.5 #1 & protein residues true")
+CX("select zone #2/A,B 3.5 #1 & protein residues true")
 CX("~select sel & H")  # de-select H atoms
 CX("show sel target ab")
 CX("size stickRadius 0.4")

@@ -20,7 +20,7 @@
 
 
 #TOC> ==========================================================================
-#TOC> 
+#TOC>
 #TOC>   Section  Title                                       Line
 #TOC> -----------------------------------------------------------
 #TOC>   1        SCRIPTS TO SOURCE                             51
@@ -44,7 +44,7 @@
 #TOC>   5.03       selectPDBrep()                             560
 #TOC>   5.04       selectChi2()                               596
 #TOC>   5.05       selectENSP()                               609
-#TOC> 
+#TOC>
 #TOC> ==========================================================================
 
 
@@ -481,36 +481,35 @@ H <- function(x, N) {
 
 
 # ==   4.11  CX() (ChimeraX remote command)  ===================================
-CX <- function(cmd, port = CXPORT, quietly = FALSE, capture = FALSE) {
+CX <- function(cmd, port = CXPORT, quietly = FALSE) {
   # send a command to ChimeraX listening on port CXPORT via its REST
   # interface.
   # Parameters:
   #   cmd      char     a ChireaX commandline command
   #   port     int      the portnumber on which ChimeraX is listening
   #   quietly  logical  if FALSE, cat() the contents of the response
-  #   capture  logical  if TRUE, return the contents of the response
   #
-  # Value:  the reply by ChineraX, or invisible(NULL)
+  # Value:  the reply by ChimeraX, invisibly.
 
   CXREST <- sprintf("http://127.0.0.1:%s/run?", CXPORT)
 
   cmd <- gsub("(^\\s+)|(\\s+$)", "", cmd)  # trim whitespace
   # percent encode reserved characters
-  cmd <- gsub("%", "%25", cmd)            #   %
-  cmd <- gsub("#", "%23", cmd)            #   #
-  cmd <- gsub("/", "%2F", cmd)            #   /
-  cmd <- gsub(":", "%3A", cmd)            #   :
-  cmd <- gsub("@", "%40", cmd)            #   @
-  cmd <- gsub(",", "%2C", cmd)            #   ,
+  cmd <- gsub("%",   "%25", cmd)          #   %
+  cmd <- gsub("#",   "%23", cmd)          #   #
+  cmd <- gsub("/",   "%2F", cmd)          #   /
+  cmd <- gsub(":",   "%3A", cmd)          #   :
+  cmd <- gsub("@",   "%40", cmd)          #   @
+  cmd <- gsub(",",   "%2C", cmd)          #   ,
   cmd <- gsub("\\*", "%2A", cmd)          #   *
   cmd <- gsub("\\?", "%3F", cmd)          #   ?
-  cmd <- gsub("!", "%21", cmd)            #   !
-  cmd <- gsub("=", "%3D", cmd)            #   =
+  cmd <- gsub("!",   "%21", cmd)          #   !
+  cmd <- gsub("=",   "%3D", cmd)          #   =
   cmd <- gsub("\\(", "%28", cmd)          #   (
   cmd <- gsub("\\)", "%29", cmd)          #   )
   cmd <- gsub("\\[", "%5B", cmd)          #   [
   cmd <- gsub("\\]", "%5D", cmd)          #   ]
-  cmd <- gsub("&", "%26", cmd)            #   &
+  cmd <- gsub("&",   "%26", cmd)          #   &
   cmd <- gsub("\\+", "%2B", cmd)          #   +
 
   cmd <- gsub("\\s+", "+", cmd)            # whitespace to "+"
@@ -533,11 +532,7 @@ CX <- function(cmd, port = CXPORT, quietly = FALSE, capture = FALSE) {
     cat(reply)
   }
 
-  if (capture == TRUE) {
-    return(reply)
-  } else {
-    return(invisible(NULL))
-  }
+  return(invisible(reply))
 
 }
 
