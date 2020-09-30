@@ -36,8 +36,6 @@ if (! file.exists("./myScripts/.myProfile.R")) {
 } else {  # local profile exists ... validate state:
   cat("\n\nLoading local functions ...")
 
-  source("./myScripts/.myProfile.R")
-
   if (! exists("myEMail")) {  # ... has eMail been defined?
     cat("ERROR !\n")
     cat("=======\n")
@@ -62,6 +60,8 @@ if (! file.exists("./myScripts/.myProfile.R")) {
   }
 
   source(".utilities.R")  # local profile appears sane, source utilities
+
+  source("./myScripts/.myProfile.R")
 
   if (! exists("MYSPE")) {  # if MYSPE has not yet been defined, define it now
                             # ... and write it into the profile.
