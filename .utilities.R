@@ -38,12 +38,12 @@
 #TOC>   4.09       fetchMSAmotif()                            426
 #TOC>   4.10       H() (Shannon entropy)                      470
 #TOC>   4.11       CX() (ChimeraX remote command)             483
-#TOC>   5        FUNCTIONS TO CUSTOMIZE ASSIGNMENTS           545
-#TOC>   5.01       seal()                                     547
-#TOC>   5.02       getMYSPE()                                 551
-#TOC>   5.03       selectPDBrep()                             560
-#TOC>   5.04       selectChi2()                               596
-#TOC>   5.05       selectENSP()                               609
+#TOC>   5        FUNCTIONS TO CUSTOMIZE ASSIGNMENTS           540
+#TOC>   5.01       seal()                                     542
+#TOC>   5.02       getMYSPE()                                 546
+#TOC>   5.03       selectPDBrep()                             557
+#TOC>   5.04       selectChi2()                               593
+#TOC>   5.05       selectENSP()                               606
 #TOC>
 #TOC> ==========================================================================
 
@@ -547,8 +547,10 @@ seal <- function(x.1L) { .Call(digest:::digest_impl,x.1L,3L,-1L,-0,-0,-0) }
 getMYSPE <- function(x) {
   dat <- readRDS("./data/sDat.rds")
   map <- readRDS("./data/MYSPEmap.rds")
-  key <- gsub(".+(....).$", "\\1", x)
-  return(dat$species[map[key, "iMYSPE"]])
+  key <- gsub(".+(....).$","\\1", x)
+  x <- dat$species[map[key,"iMYSPE"]]
+  names(x) <- dat$taxID[map[key,"iMYSPE"]]
+  return(x)
 }
 
 
