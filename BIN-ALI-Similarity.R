@@ -203,8 +203,8 @@ if (! requireNamespace("Biostrings", quietly=TRUE)) {
 #  browseVignettes("Biostrings")  # available vignettes
 #  data(package = "Biostrings")   # available datasets
 
-# Let's load the BLOSUM62 mutation data matrix from the package
-data(BLOSUM62)
+# Let's attach the BLOSUM62 mutation data matrix from the package
+data(BLOSUM62, package = "Biostrings")
 
 # ... and see what it contains. (You've seen this matrix before.)
 BLOSUM62

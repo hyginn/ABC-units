@@ -38,16 +38,16 @@
 #TOC>   2.1        Preparing Sequences                               108
 #TOC>   2.2        Compute the MSA                                   133
 #TOC>   3        Analyzing an MSA                                    154
-#TOC>   4        Comparing MSAs                                      225
-#TOC>   4.1        Importing an alignment to msa                     234
-#TOC>   4.1.1          importing an .aln file                        243
-#TOC>   4.1.2          Creating an MsaAAMultipleAlignment object     274
-#TOC>   4.2        More alignments                                   325
-#TOC>   4.3        Computing comparison metrics                      337
-#TOC>   5        Profile-Profile alignments                          475
-#TOC>   6        Sequence Logos                                      548
-#TOC>   6.1        Subsetting an alignment by motif                  557
-#TOC>   6.2        Plot a Sequence Logo                              606
+#TOC>   4        Comparing MSAs                                      226
+#TOC>   4.1        Importing an alignment to msa                     235
+#TOC>   4.1.1          importing an .aln file                        244
+#TOC>   4.1.2          Creating an MsaAAMultipleAlignment object     275
+#TOC>   4.2        More alignments                                   326
+#TOC>   4.3        Computing comparison metrics                      338
+#TOC>   5        Profile-Profile alignments                          476
+#TOC>   6        Sequence Logos                                      549
+#TOC>   6.1        Subsetting an alignment by motif                  558
+#TOC>   6.2        Plot a Sequence Logo                              607
 #TOC> 
 #TOC> ==========================================================================
 
@@ -56,10 +56,10 @@
 
 # You need to reload you protein database, including changes that might
 # have been made to the reference files. If you have worked with the
-# prerequiste units, you should have a script named "makeProteinDB.R"
+# prerequisite units, you should have a script named "./myScripts/makeProteinDB.R"
 # that will create the myDB object with a protein and feature database.
 # Ask for advice if not.
-source("makeProteinDB.R")
+source("./myScripts/makeProteinDB.R")
 
 
 if (! requireNamespace("BiocManager", quietly=TRUE)) {
@@ -168,7 +168,8 @@ msa::print(msaM, show=c("alignment", "complete"), showConsensus=FALSE)
 #        in a column from n sequences;
 #   -  therefore the column score is 8 * (11^2 - 11) / 2 == 440
 
-data("BLOSUM62")  # fetch the BLOSUM62 package from the Biostrings package
+# attach the BLOSUM62 package from the Biostrings package
+data(BLOSUM62, package = "Biostrings")
 
 msaMScores <- msa::msaConservationScore(msaM, substitutionMatrix = BLOSUM62)
 plot(msaMScores, type = "l", col = "#205C5E", xlab = "Alignment Position")
@@ -423,7 +424,7 @@ legend("topright",
        cex = 0.7,
        bty = "n")
 
-# The desnity plots confirm in more detail that CLUSTAL W misses some of the
+# The density plots confirm in more detail that CLUSTAL W misses some of the
 # higher-scoring possibilities, that wherever CLUSTAL O is bad, it is quite bad,
 # that T-COFFEE has fewer poorly scoring columns but misses some of the better
 # scoring possibilities, and that MUSCLE appears to do best overall.
