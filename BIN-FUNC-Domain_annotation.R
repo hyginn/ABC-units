@@ -279,13 +279,13 @@ par(oPar)  # reset the plot parameters
 # = 1 SHARING DATA ======
 
 # It's particularly interesting to compare such annotations across many
-# homologous proteins. I have created a file on the student Wiki that you can
+# homologous proteins. I have created a file on the Student Wiki that you can
 # edit, and then download the data from the entire class directly to your
 # RStudio project.
 #
 # Task:
 # =====
-#   Navigate to
+#   TBC ...
 
 
 # [END]
