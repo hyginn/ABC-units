@@ -293,7 +293,7 @@ aliApses@subject@range@start + aliApses@subject@range@width - 1
 #     "start" and "end" features to the coordinates you just discovered for the
 #     APSES domain in your sequence.
 #
-#   - Save your file.
+#   - Save the file in your myScripts/ directory
 #
 ##   - Validate your file online at https://jsonlint.com/
 #
