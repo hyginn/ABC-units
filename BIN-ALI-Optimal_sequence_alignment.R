@@ -3,12 +3,13 @@
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the BIN-ALI-Optimal_sequence_alignment unit.
 #
-# Version:  1.7
+# Version:  1.7.1
 #
-# Date:     2017-09   -   2020-09
+# Date:     2017-09   -   2020-10
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.7.1  add jsonlite:: to fromjJSON() in code sample
 #           1.7    2020 updates
 #           1.6    Maintenance
 #           1.5    Change from require() to requireNamespace(),
@@ -39,16 +40,16 @@
 #TOC> 
 #TOC>   Section  Title                                                      Line
 #TOC> --------------------------------------------------------------------------
-#TOC>   1        Prepare                                                      56
-#TOC>   2        Biostrings Pairwise Alignment                                73
-#TOC>   2.1        Optimal global alignment                                   91
-#TOC>   2.2        Optimal local alignment                                   154
-#TOC>   3        APSES Domain annotation by alignment                        178
-#TOC>   4        Update your database script                                 259
-#TOC>   4.1        Preparing an annotation file ...                          265
-#TOC>   4.1.1          If you HAVE NOT done the BIN-FUNC-Annotation unit     267
-#TOC>   4.1.2          If you HAVE done the BIN-FUNC-Annotation unit         310
-#TOC>   4.2        Execute and Validate                                      334
+#TOC>   1        Prepare                                                      57
+#TOC>   2        Biostrings Pairwise Alignment                                74
+#TOC>   2.1        Optimal global alignment                                   92
+#TOC>   2.2        Optimal local alignment                                   155
+#TOC>   3        APSES Domain annotation by alignment                        179
+#TOC>   4        Update your database script                                 260
+#TOC>   4.1        Preparing an annotation file ...                          266
+#TOC>   4.1.1          If you HAVE NOT done the BIN-FUNC-Annotation unit     268
+#TOC>   4.1.2          If you HAVE done the BIN-FUNC-Annotation unit         313
+#TOC>   4.2        Execute and Validate                                      337
 #TOC> 
 #TOC> ==========================================================================
 
@@ -300,8 +301,10 @@ aliApses@subject@range@start + aliApses@subject@range@width - 1
 #     annotation when you recreate the database. Open the script in the
 #     RStudio editor, and add the following command at the end:
 #
-#     myDB <- dbAddAnnotation(myDB, fromJSON("<MYSPE>-Annotations.json"))
-#
+#     myDB <- dbAddAnnotation(myDB,
+#                             jsonlite::fromJSON("<MYSPE>-Annotations.json"))
+#                                                 ^^^^^^^
+#                                                edit this!
 #   - save and close the file.
 #
 # Then SKIP the next section.
