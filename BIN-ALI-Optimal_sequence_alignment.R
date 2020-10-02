@@ -9,7 +9,7 @@
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
-#           1.7.1  add jsonlite:: to fromjJSON() in code sample
+#           1.7.1  add jsonlite:: to fromjJSON() in code sample and ./myScripts/
 #           1.7    2020 updates
 #           1.6    Maintenance
 #           1.5    Change from require() to requireNamespace(),
@@ -37,7 +37,7 @@
 
 
 #TOC> ==========================================================================
-#TOC> 
+#TOC>
 #TOC>   Section  Title                                                      Line
 #TOC> --------------------------------------------------------------------------
 #TOC>   1        Prepare                                                      57
@@ -50,7 +50,7 @@
 #TOC>   4.1.1          If you HAVE NOT done the BIN-FUNC-Annotation unit     268
 #TOC>   4.1.2          If you HAVE done the BIN-FUNC-Annotation unit         313
 #TOC>   4.2        Execute and Validate                                      337
-#TOC> 
+#TOC>
 #TOC> ==========================================================================
 
 
@@ -302,7 +302,7 @@ aliApses@subject@range@start + aliApses@subject@range@width - 1
 #     RStudio editor, and add the following command at the end:
 #
 #     myDB <- dbAddAnnotation(myDB,
-#                             jsonlite::fromJSON("<MYSPE>-Annotations.json"))
+#                 jsonlite::fromJSON("./myScripts/<MYSPE>-Annotations.json"))
 #                                                 ^^^^^^^
 #                                                edit this!
 #   - save and close the file.
@@ -310,7 +310,7 @@ aliApses@subject@range@start + aliApses@subject@range@width - 1
 # Then SKIP the next section.
 #
 #
-# ===   4.1.2  If you HAVE done the BIN-FUNC-Annotation unit    
+# ===   4.1.2  If you HAVE done the BIN-FUNC-Annotation unit
 #
 #
 #   You DO already have a file called "<MYSPE>-Annotations.json" in the
