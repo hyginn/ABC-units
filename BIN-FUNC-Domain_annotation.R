@@ -3,18 +3,20 @@
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the BIN-FUNC-Domain_annotation unit.
 #
-# Version:  1.1
+# Version:  1.2
 #
-# Date:     2017-11  -  2020-09
+# Date:     2017-11  -  2020-10
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.2    Consistently: data in ./myScripts/ ;
+#                    begin SHARING DATA section
 #           1.1    2020 Updates
 #           1.0    Live version 2017
 #           0.1    First code copied from 2016 material.
 #
 # TODO:
-#
+#           Complete SHARING DATA section ...
 #
 # == DO NOT SIMPLY  source()  THIS FILE! =======================================
 #
@@ -26,7 +28,7 @@
 
 
 #TOC> ==========================================================================
-#TOC> 
+#TOC>
 #TOC>   Section  Title                                                 Line
 #TOC> ---------------------------------------------------------------------
 #TOC>   1        Update your database script                             42
@@ -35,7 +37,7 @@
 #TOC>   1.1.2          AFTER "BIN-ALI-Optimal_sequence_alignment"        97
 #TOC>   1.2        Execute and Validate                                 124
 #TOC>   2        Plot Annotations                                       149
-#TOC> 
+#TOC>
 #TOC> ==========================================================================
 
 
@@ -54,10 +56,10 @@
 #   IF YOU HAVE NOT YET COMPLETED THE BIN-ALI-OPTIMAL_SEQUENCE_ALIGNMENT UNIT:
 #
 #   You DON'T already have a file called "<MYSPE>-Annotations.json" in the
-#   ./data/ directory:
+#   ./myScripts/ directory:
 #
 #   - Make a copy of the file "./data/refAnnotations.json" and put it in your
-#     project directory.
+#     myScripts/ directory.
 #
 #   - Give it a name that is structured like "<MYSPE>-Annotations.json" - e.g.
 #     if MYSPE is called "Crptycoccus neoformans", your file should be called
@@ -79,27 +81,30 @@
 #     and change the "start" and "end" features to the coordinates you
 #     recorded in the SMART database.
 #
-#   - Save your file.
+#   - Save your file in the ./myScripts/ folder.
 #
 #   - Validate your file online at https://jsonlint.com/
 #
-#   - Update your "makeProteinDB.R" script to load your new
+#   - Update your "./myScripts/makeProteinDB.R" script to load your new
 #     annotation when you recreate the database. Open the script in the
 #     RStudio editor, and add the following command at the end:
 #
-#     myDB <- dbAddAnnotation(myDB, fromJSON("<MYSPE>-Annotations.json"))
+#     myDB <- dbAddAnnotation(myDB,
+#         jsonlite::fromJSON("./myScripts/<MYSPE>-Annotations.json"))
+#                                         ^^^^^^^
+#                                        edit this!
 #
 #   - save and close the file.
 #
 # Then SKIP the next section.
 #
 #
-# ===   1.1.2  AFTER "BIN-ALI-Optimal_sequence_alignment"  
+# ===   1.1.2  AFTER "BIN-ALI-Optimal_sequence_alignment"
 #
 #   IF YOU HAVE ALREADY COMPLETED THE BIN-ALI-OPTIMAL_SEQUENCE_ALIGNMENT UNIT:
 #
 #   You SHOULD have a file called "<MYSPE>-Annotations.json" in the
-#   ./data/ directory:
+#  ./myScripts/ directory:
 #
 #   - Open the file in the RStudio editor.
 #
@@ -109,7 +114,7 @@
 #   - Add a comma after every line except for the last one
 #
 #   - Edit the annotations but include only features that are in the
-#     myDB$feature table. Check which features are in the databse by executing
+#     myDB$feature table. Check which features are in the database by executing
 #
 #        myDB$feature$name
 #
@@ -125,7 +130,7 @@
 #
 #   - source() your database creation script:
 #
-#     source("makeProteinDB.R")
+#     source("./myScripts/makeProteinDB.R")
 #
 #     This should run without errors or warnings. If it doesn't work and you
 #     can't figure out quickly what's happening, ask for help on the
@@ -228,7 +233,7 @@ xMax <- max(nchar(myDB$protein$sequence[iRows])) * 1.1  # longest sequence
 
 # plot an empty frame
 oPar <- par(mar = c(4.2, 0.1, 3, 0.1))  # save the current plot parameters and
-                                      # decrease margins
+                                        # decrease margins
 plot(1, 1,
      xlim = c(-200, xMax + 100),
      ylim = c(0, yMax),
@@ -270,6 +275,17 @@ par(oPar)  # reset the plot parameters
 # Task:
 #    It would be better to align the motif borders, at least approximately (not
 #    all proteins have all motifs). How would you go about doing that?
+
+# = 1 SHARING DATA ======
+
+# It's particularly interesting to compare such annotations across many
+# homologous proteins. I have created a file on the student Wiki that you can
+# edit, and then download the data from the entire class directly to your
+# RStudio project.
+#
+# Task:
+# =====
+#   Navigate to
 
 
 # [END]
