@@ -269,10 +269,10 @@ aliApses@subject@range@start + aliApses@subject@range@width - 1
 #
 #
 #   You DON'T already have a file called "<MYSPE>-Annotations.json" in the
-#   ./data/ directory:
+#   ./myScripts/ directory:
 #
 #   - Make a copy of the file "./data/refAnnotations.json" and put it in your
-#     project directory.
+#     myScripts/ directory.
 #
 #   - Give it a name that is structured like "<MYSPE>-Annotations.json" - e.g.
 #     if MYSPE is called "Crptycoccus neoformans", your file should be called
@@ -297,7 +297,7 @@ aliApses@subject@range@start + aliApses@subject@range@width - 1
 #
 ##   - Validate your file online at https://jsonlint.com/
 #
-#   - Update your "makeProteinDB.R" script to load your new
+#   - Update your "./myScripts/makeProteinDB.R" script to load your new
 #     annotation when you recreate the database. Open the script in the
 #     RStudio editor, and add the following command at the end:
 #
@@ -314,7 +314,7 @@ aliApses@subject@range@start + aliApses@subject@range@width - 1
 #
 #
 #   You DO already have a file called "<MYSPE>-Annotations.json" in the
-#   ./data/ directory:
+#   ./myScripts/ directory:
 #
 #   - Open the file in the RStudio editor.
 #
@@ -338,7 +338,7 @@ aliApses@subject@range@start + aliApses@subject@range@width - 1
 #
 #   - source() your database creation script:
 #
-#     source("makeProteinDB.R")
+#  source("./myScripts/makeProteinDB.R")
 #
 #     This should run without errors or warnings. If it doesn't work and you
 #     can't figure out quickly what's happening, ask on the mailing list for
