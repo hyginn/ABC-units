@@ -4,12 +4,13 @@
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the BIN-PPI-Analysis unit.
 #
-# Version:   1.2
+# Version:   1.3
 #
-# Date:     2017-08  -  2020-09
+# Date:     2017-08  -  2020-10
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.3    Bugfix: called the wrong function on ENSPsel in l. 220
 #           1.2    2020 Updates; Rewrite for new STRINg V11;
 #                  Deprecate save()/load() for saveRDS()/readRDS()
 #           1.1    Change from require() to requireNamespace(),
@@ -32,7 +33,7 @@
 
 
 #TOC> ==========================================================================
-#TOC> 
+#TOC>
 #TOC>   Section  Title                                           Line
 #TOC> ---------------------------------------------------------------
 #TOC>   1        Setup and data                                    49
@@ -42,7 +43,7 @@
 #TOC>   2.3        Betweenness Centrality                         183
 #TOC>   3        biomaRt                                          230
 #TOC>   4        Task for submission                              301
-#TOC> 
+#TOC>
 #TOC> ==========================================================================
 
 
@@ -215,9 +216,9 @@ head(sBC)
 # IMPORTANT, IF YOU INTEND TO SUBMIT YOUR ANALYSIS FOR CREDIT
 # We are going to use these IDs to produce some output for a submitted task:
 # therefore I need you to execute the following line, note the "seal" that this
-# returns, and not change ENSPsel later:
+# returns, and not change myENSPsel later:
 
-myENSPsel <- seal(ENSPsel)
+myENSPsel <- selectENSP(ENSPsel)
 
 #  Next, to find what these proteins are...
 
@@ -283,7 +284,7 @@ biomaRt::getBM(filters = "ensembl_peptide_id",
 CPdefs <- list()  # Since we don't know how many matches one of our queries
 # will return, we'll put the result dataframes into a list.
 
-for (ID in ENSPsel) {
+for (ID in myENSPsel) {
   CPdefs[[ID]] <- biomaRt::getBM(filters = "ensembl_peptide_id",
                                  attributes = c("hgnc_symbol",
                                                 "wikigene_description",
