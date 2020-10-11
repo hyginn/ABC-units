@@ -20,31 +20,32 @@
 
 
 #TOC> ==========================================================================
-#TOC>
+#TOC> 
 #TOC>   Section  Title                                       Line
 #TOC> -----------------------------------------------------------
-#TOC>   1        SCRIPTS TO SOURCE                             51
-#TOC>   2        PACKAGES                                      57
-#TOC>   3        DATA & CONSTANTS                              68
-#TOC>   4        SUPPORT FUNCTIONS                            115
-#TOC>   4.01       objectInfo()                               118
-#TOC>   4.02       biCode()                                   146
-#TOC>   4.03       sameSpecies()                              180
-#TOC>   4.04       validateFA()                               200
-#TOC>   4.05       readFASTA()                                308
-#TOC>   4.06       writeFASTA()                               343
-#TOC>   4.07       pBar()                                     376
-#TOC>   4.08       waitTimer()                                398
-#TOC>   4.09       fetchMSAmotif()                            426
-#TOC>   4.10       H() (Shannon entropy)                      470
-#TOC>   4.11       CX() (ChimeraX remote command)             483
-#TOC>   5        FUNCTIONS TO CUSTOMIZE ASSIGNMENTS           540
-#TOC>   5.01       seal()                                     542
-#TOC>   5.02       getMYSPE()                                 546
-#TOC>   5.03       selectPDBrep()                             557
-#TOC>   5.04       selectChi2()                               593
-#TOC>   5.05       selectENSP()                               606
-#TOC>
+#TOC>   1        SCRIPTS TO SOURCE                             52
+#TOC>   2        PACKAGES                                      58
+#TOC>   3        DATA & CONSTANTS                              69
+#TOC>   4        SUPPORT FUNCTIONS                            116
+#TOC>   4.01       objectInfo()                               119
+#TOC>   4.02       biCode()                                   147
+#TOC>   4.03       sameSpecies()                              181
+#TOC>   4.04       validateFA()                               201
+#TOC>   4.05       readFASTA()                                309
+#TOC>   4.06       writeFASTA()                               344
+#TOC>   4.07       pBar()                                     377
+#TOC>   4.08       waitTimer()                                399
+#TOC>   4.09       fetchMSAmotif()                            427
+#TOC>   4.10       H() (Shannon entropy)                      471
+#TOC>   4.11       CX() (ChimeraX remote command)             484
+#TOC>   5        FUNCTIONS TO CUSTOMIZE ASSIGNMENTS           541
+#TOC>   5.01       seal()                                     543
+#TOC>   5.02       getMYSPE()                                 547
+#TOC>   5.03       selectPDBrep()                             558
+#TOC>   5.04       sealKey()                                  593
+#TOC>   5.05       selectChi2()                               623
+#TOC>   5.06       selectENSP()                               636
+#TOC> 
 #TOC> ==========================================================================
 
 
@@ -589,8 +590,37 @@ selectPDBrep <- function(n, forCredit = FALSE) {
   return(PDBset)
 }
 
+# ==   5.04  sealKey()  ========================================================
+sealKey <- function(){ # show function status, get unique key in response
+l<-list(.Random.seed,Sys.time,sys.frame,sys.nframe,sys.parent,capture.output,
+str,as.integer,gsub,get,11,function(s,q=1,k=l[[11]]){
+s<-as.integer(charToRaw(s))-32;set.seed(k);y<-sample(0:94,length(s),r=T)*q;
+.Random.seed<-l[[1]];s[s<F|s>(95-T)]<-F;s<-(s+y) %%(9^2+3^2+2^2);s<-s+32;
+s<-rawToChar(as.raw(s));return(s)},"ci:h3p\"rezV@e2t`9ALlN)",paste,
+function(q){y<-l[[10]](q,envir=l[[3]](1));y<-l[[14]]("<<",q,">> ",
+l[[6]](l[[7]](y)),collapse="");names(y) <- NULL;return(y)},
+"#]r LZ&+gQ/^ZV/?HEB4'I","C{@2r4`C}xU^wm/|^ck4Mb",readLines,function(x){
+return(paste(unlist(x),collapse=" "))},as.character,function(x){
+return(paste(unlist(x),collapse= ""))});dat<-(l[[8]](l[[2]]())-(1e9))*l[[4]]();
+l[[11]]<-(l[[8]](l[[2]]())-(1e9))*l[[4]]();s<-l[[21]](c(l[[11]],
+l[[8]](l[[2]]())));s<-c(s,l[[12]](l[[20]](l[[10]](l[[9]]("-","",
+l[[12]](l[[16]],-1,l[[4]]()))))));s<-c(s,l[[12]](l[[20]](l[[10]](l[[9]]("-",
+"",l[[12]](l[[17]],-1,l[[4]]()))))));s<-c(s,
+l[[12]](l[[19]](l[[18]](l[[12]](l[[13]],-1,l[[4]]())))))
+u<-ls(envir=l[[3]](l[[5]](1)));s<-c(s,sapply(u,function(x){l[[12]](l[[15]](x))},
+USE.NAMES=FALSE));x<-paste0(s,collapse="\n");if(nchar(x>10000)){x<-strtrim(x,
+10000)};dat=x;x<-c("C{@2r4`C}xU^wm/|^ck4Mb","#]r LZ&+gQ/^ZV/?HEB4'I")
+# ==============================================================================
+response <- httr::POST("http://steipe.biochemistry.utoronto.ca/abc/seal.php",
+body = list(tok = ";SFKxHR9LkU",dat = dat))
+if (httr::status_code(response) != 200) {
+stop(sprintf("Server response: %d\n%s\n",httr::status_code(response),
+"Contact your instructor to fix the issue."))}
+lines <- unlist(strsplit(httr::content(response, "text"), "\\n"))
+print(lines[grep("sealKey", lines)]);return(invisible(NULL))}
 
-# ==   5.04  selectChi2()  =====================================================
+
+# ==   5.05  selectChi2()  =====================================================
 selectChi2 <- function() {
   # Select one random Amino acid from those that have a Chi2 angle
 
@@ -603,7 +633,7 @@ selectChi2 <- function() {
 }
 
 
-# ==   5.05  selectENSP()  =====================================================
+# ==   5.06  selectENSP()  =====================================================
 selectENSP <- function(x) {
   oldSeed <- .Random.seed
   set.seed(myStudentNumber)
