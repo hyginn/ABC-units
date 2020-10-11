@@ -19,7 +19,6 @@
 #           1.0    First live version
 #           0.1    First code copied from 2016 material.
 #
-#
 # TODO:
 #
 #
