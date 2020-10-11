@@ -20,7 +20,7 @@
 
 
 #TOC> ==========================================================================
-#TOC> 
+#TOC>
 #TOC>   Section  Title                                              Line
 #TOC> ------------------------------------------------------------------
 #TOC>   01       INITIALIZE                                           67
@@ -49,18 +49,18 @@
 #TOC>   08       LEGENDS                                            1054
 #TOC>   08.1       basic legends                                    1057
 #TOC>   08.2       Color bars                                       1061
-#TOC>   09       LAYOUT                                             1168
-#TOC>   10       TEXT                                               1203
-#TOC>   11       DRAWING ON PLOTS                                   1224
-#TOC>   12       IMAGES                                             1291
-#TOC>   13       CONTOUR LINES                                      1296
-#TOC>   14       3D PLOTS                                           1301
-#TOC>   15       GRAPHS AND NETWORKS                                1306
-#TOC>   16       OTHER GRPAHICS PACKAGES                            1311
-#TOC>   17       INTERACTIVE PLOTS                                  1335
-#TOC>   17.1       locator()                                        1339
-#TOC>   17.2       plotly::                                         1342
-#TOC> 
+#TOC>   09       LAYOUT                                             1180
+#TOC>   10       TEXT                                               1215
+#TOC>   11       DRAWING ON PLOTS                                   1243
+#TOC>   12       IMAGES                                             1310
+#TOC>   13       CONTOUR LINES                                      1315
+#TOC>   14       3D PLOTS                                           1320
+#TOC>   15       GRAPHS AND NETWORKS                                1325
+#TOC>   16       OTHER GRPAHICS PACKAGES                            1330
+#TOC>   17       INTERACTIVE PLOTS                                  1354
+#TOC>   17.1       locator()                                        1358
+#TOC>   17.2       plotly::                                         1361
+#TOC>
 #TOC> ==========================================================================
 
 
@@ -352,7 +352,7 @@ hist(SC$mdl$peaks,                         # gene expression first peaks
      col = myPal(81))                      # get 81 color values from myPal()
 
 
-# ===   03.4.1  overlaying histograms                    
+# ===   03.4.1  overlaying histograms
 
 # Histograms can be plotted one-over another to compare them
 # Example: when do genes with different GO term annotations first peak?
@@ -498,7 +498,7 @@ points(t, SC$xpr[169, ], type = "b", cex = 0.7, col = "#EE5500CC")
 plot(SC$xpr[169, ], SC$xpr[1124, ])  # these two profiles are anticorrelated
 
 
-# =    05  ENCODING INFORMATION: SYMBOL, SIZE, COLOR  ==========================
+# =    05  ENCODING INFORMATION: SYMBOL, SIZE, COLOuR  =========================
 
 # We have many options to encode information in scatter plots (and others), in order to be able to visualize and discover patterns and relationships. The most important ones are the type of symbol to use, its size, and its color.
 
@@ -679,7 +679,7 @@ legend ("bottom",
         box.col = "#DDDDDD",
         bg = "#FFFFFF")
 
-# ===   05.1.1  Line types                               
+# ===   05.1.1  Line types
 
 # Basically all plots take arguments lty to define the line type, and lwd
 # to define line width
@@ -700,6 +700,68 @@ for (i in 1:10) {
   segments(1,y,5,y, lwd=(0.3*i)^2)
   text(6, y, paste("lwd = ", (0.3*i)^2), col="grey60", adj=0, cex=0.75)
 }
+
+
+
+# ==   05.1  cex ("character expansion" size)  =============================
+
+# The size of characters can be controlled with the cex parameter. cex takes a
+# vector of numbers, mapped to the vecors of plotted elements. The usual R
+# conventions of vector recycling apply, so if cex s only a single number, it is
+# applied to all plotted elements. Here is an example plotting expression
+# amplitudes in a comparison of pre-replication vs. replication phase
+# expression.
+
+
+tPre <- c("t.0",  "t.5",  "t.10")   # Pre replication-phase time points
+tMid <- c("t.25", "t.30", "t.35")   # Midway between replication and duplication
+
+x <- rowMeans(SC$xpr[ , tPre])      # row means average out fluctuations
+y <- rowMeans(SC$xpr[ , tMid])
+plot(x, y)
+
+myAmps <- SC$mdl$A                  # fetch the correlations of the fitted
+                                    # low correlations are not well modeled
+                                    # with a periodic function
+
+hist(myAmps, breaks = 40)           # examine the distribution
+hist(log(myAmps), breaks = 40)      # sometimes log() is be better suited
+                                    # to map to symbol size
+
+# useful cex sizes are approximately between 0.5 and 5
+# Example:
+N <- 10
+cexMin <- 0.5
+cexMax <- 5.0
+myCex <- seq(cexMax, cexMin, length.out=N)  # Vector of cex values of length N
+# We plot these points from largest to smallest, so we don't overplot
+x1 <- runif(N)
+y1 <- runif(N)
+plot(x1, y1, xlim = 0:1, ylim = 0:1, xlab = "", ylab = "", pch = 16,
+     cex = myCex, col= colorRampPalette(c("#F4F0F8", "#3355DD"))(N))
+
+# Note that the smallest cex at 0.5 is _really_ small.
+points(x1[N], y1[N], cex = 3.0, col = "#FF000077") # Here it is!
+
+# To rescale a vector into the desired interval (lo, up) we write a little
+# function. First we normalize the vector into the interval (0, 1), then we
+# multiply it by up-lo, and add lo.
+#
+
+reScale <- function(x, lo = 0, up = 1) {
+  return((((x-min(x)) / (max(x)-min(x))) * (up-lo)) + lo  )
+}
+
+# with this, our coding amplitudes as plot character size becomes quite easy:
+plot(x, y, pch=16,
+     cex = reScale(myAmps, lo=0.5, up=5),  # <<<---- That's all we need
+     col="#4499BB22")
+abline(a = 0, b = 1, col = "#DD333344")
+abline(h = 0, col = "#33333344")
+abline(v = 0, col = "#33333344")
+
+# ToDo: add titles, scale legend, and interpretation
+
 
 # =    06  COLOUR  =============================================================
 
@@ -808,7 +870,7 @@ N <- 40
 barplot(rep(1, N), col = col2hex(myCols,pal=TRUE,N=N) )
 
 
-# ===   06.3.1  Inbuilt palettes                         
+# ===   06.3.1  Inbuilt palettes
 
 # In R, a palette is a function (!) that takes a number as its argument and
 # returns that number of colors, those colors can then be used to color points
@@ -884,7 +946,7 @@ RColorBrewer::display.brewer.all(colorblindFriendly = TRUE)
 plotPal(RColorBrewer::brewer.pal(11, "PuOr"), N = 11)
 
 
-# ===   06.3.2  Custom palettes                          
+# ===   06.3.2  Custom palettes
 #
 # Bespoke palettes are easily created with colorRampPalette(). The function
 # returns a palette, i.e. a function (not a vector of colors). You assign the
@@ -934,7 +996,7 @@ plotPal(myOutliers)
 # also an option to extract palettes from user-supplied images.
 
 
-# ===   06.3.3  Transparency: The Alpha Channel          
+# ===   06.3.3  Transparency: The Alpha Channel
 
 # R colours are actually specified as quartets: the fourth value
 # the "Alpha channel" defines the transparency. Setting this to
@@ -942,7 +1004,7 @@ plotPal(myOutliers)
 # crowded plots, or for creating overlays.
 
 
-x <- SC$xpr[, "t.10"] # towards the begiining of the cycle
+x <- SC$xpr[, "t.10"] # towards the beginning of the cycle
 y <- SC$xpr[, "t.50"] # towards the end of the cycle
 
 # compare:
@@ -978,7 +1040,6 @@ abline(h = 0, col = "#FFFFFF", lwd = 0.5)
 abline(v = 0, col = "#FFFFFF", lwd = 0.5)
 
 # ToDo: expand to "real" density plots (cf. )
-
 
 # ==   06.4  abline(), lines()  and segments()  ================================
 
@@ -1065,8 +1126,8 @@ grid()
 # Example: plotting expression levels in two cell-cycle phases against each other, and applying a divergent color spectrum that displays the model correlations: genes with low correlations have expression profiles that can not be well approximated with a periodic function.
 
 
-tRep <- c("t.15", "t.20", "t.25", "t.30")   # Replication-phase time points
-tDup <- c("t.40", "t.45", "t.50", "t.55")   # Duplication-phase time points
+tRep <- c("t.15", "t.20", "t.25")   # Replication-phase time points
+tDup <- c("t.40", "t.45", "t.50")   # Duplication-phase time points
 x <- rowMeans(SC$xpr[ , tRep])
 y <- rowMeans(SC$xpr[ , tDup])
 plot(x, y)
@@ -1090,6 +1151,8 @@ hist(myCors,
 
 N <- 10  # We'll map into N  intervals
 
+
+#$$$
 # The usual way to scale a vector x to the [0,1] interval
 # is:  x-min / max-min
 idx <- (myCors - min(myCors)) / (max(myCors) - min(myCors))
@@ -1119,7 +1182,9 @@ basePlot <- function() {
        main = m,
        xlab = "mean Expression in Replication phase",
        ylab = "mean Expression in Duplication phase",
-       sub = "Colour by Correlation to Fitted Periodic Function",
+       sub = paste("Coloured by Correlation of",
+                   "Expression Profile (xpr) to",
+                   "Fitted Periodic Function (mdl)."),
        cex.main = 0.9,
        cex.lab = 0.7,
        cex.sub = 0.7,
@@ -1144,6 +1209,7 @@ corLabels <- sprintf("%4.2f",           # craft the labels to plot
                          length.out = length(corCols)))
 
 oPar <- par(mar=c(5,4,4,7))  # more space on the margin
+par("xpd" = FALSE)
 basePlot()
 
 # we need to figure out where to put the legend. par("usr") gives us the coordinates of the last plot window. We'll space the legend between 1.05 and 1.1 times the plot width, and centred along the y-axis with a height of 0.8 times the plot height.
@@ -1158,12 +1224,21 @@ yt <- yb + (0.8 * dy)                # top
 plotrix::color.legend(xl, yb, xr, yt,
                       corLabels,
                       corCols,
-                      align = "rb",         # labels to the right of the bar
+                      align = "rb",       # labels to the right of the bar
                       cex = 0.8,
                       gradient = "y")     # vertical gradient
 
+# Almost perfect. Except we need a title for the color bar.
+# in this case the title is "r:" ... but the "r" should be in italics.
+par("xpd" = TRUE)  # enable plotting into the margin
+text(xr + (0.01 * dx), yt + 0.015 * dy,
+     expression(italic(r)["xpr,mdl"]),
+     adj = c(0, 0),
+     cex = 0.9)
+
 par(oPar)
 
+# ToDo - this is a common plot prototype - cast it into a function
 
 # =    09  LAYOUT  =============================================================
 
@@ -1203,6 +1278,7 @@ plot(x,y) # confirm reset
 # =    10  TEXT  ===============================================================
 
 
+# ToDo: sprintf()
 
 # Plotting arbitrary text
 # use the text() function to plot characters and strings to coordinates
@@ -1218,6 +1294,12 @@ text(x3-0.4, y3, extra, col="slateblue", cex=0.75, vfont=c("serif", "plain"))
 
 
 # ToDo: writing into the margin ...
+#   par("mar")
+#   par("xpd")
+#   par("srt")
+#
+# ToDo: plotmath()   # demo(plotmath)
+# ToDo: expression()
 
 
 
