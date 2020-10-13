@@ -2,17 +2,18 @@
 #
 # Purpose: Database utilities for ABC learning units.
 #
-# Version 2.1
+# Version 2.2
 #
 # Date:     2017-11  -  2020-10
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
-#           2.1    Add JSON export functions
-#           2.0    Test all JSON import and prevent addition of duplicates. This
+#           2.2  Bugfixes
+#           2.1  Add JSON export functions
+#           2.0  Test all JSON import and prevent addition of duplicates. This
 #                  is necessary for import of data from the public page
-#           1.1    2020 Updates
-#           1.0    Live version 2017
+#           1.1  2020 Updates
+#           1.0  Live version 2017
 #
 # Notes:
 #   There are no functions to modify or delete entries. To do either,
@@ -33,26 +34,26 @@
 #TOC> 
 #TOC>   Section  Title                                   Line
 #TOC> -------------------------------------------------------
-#TOC>   1        INITIALISATIONS AND PARAMETERS            60
-#TOC>   2        PACKAGES                                  65
-#TOC>   3        FUNCTIONS                                 81
-#TOC>   3.01       dbSanitizeSequence()                    84
-#TOC>   3.02       dbConfirmUnique()                      119
-#TOC>   3.03       dbInit()                               137
-#TOC>   3.04       dbAutoincrement()                      177
-#TOC>   3.05       dbAddProtein()                         190
-#TOC>   3.06       dbAddFeature()                         222
-#TOC>   3.07       dbAddTaxonomy()                        253
-#TOC>   3.08       dbAddAnnotation()                      288
-#TOC>   3.09       dbFetchUniProtSeq()                    335
-#TOC>   3.10       dbFetchPrositeFeatures()               381
-#TOC>   3.11       node2text()                            431
-#TOC>   3.12       dbFetchNCBItaxData()                   443
-#TOC>   3.13       UniProtIDmap()                         482
-#TOC>   3.14       dbProt2JSON()                          521
-#TOC>   3.15       dbSeq2JSON()                           606
-#TOC>   3.16       dbRow2JSON()                           636
-#TOC>   4        TESTS                                    656
+#TOC>   1        INITIALISATIONS AND PARAMETERS            61
+#TOC>   2        PACKAGES                                  66
+#TOC>   3        FUNCTIONS                                 82
+#TOC>   3.01       dbSanitizeSequence()                    85
+#TOC>   3.02       dbConfirmUnique()                      120
+#TOC>   3.03       dbInit()                               138
+#TOC>   3.04       dbAutoincrement()                      178
+#TOC>   3.05       dbAddProtein()                         191
+#TOC>   3.06       dbAddFeature()                         224
+#TOC>   3.07       dbAddTaxonomy()                        255
+#TOC>   3.08       dbAddAnnotation()                      290
+#TOC>   3.09       dbFetchUniProtSeq()                    337
+#TOC>   3.10       dbFetchPrositeFeatures()               383
+#TOC>   3.11       node2text()                            433
+#TOC>   3.12       dbFetchNCBItaxData()                   445
+#TOC>   3.13       UniProtIDmap()                         484
+#TOC>   3.14       dbProt2JSON()                          523
+#TOC>   3.15       dbSeq2JSON()                           608
+#TOC>   3.16       dbRow2JSON()                           637
+#TOC>   4        TESTS                                    657
 #TOC> 
 #TOC> ==========================================================================
 
@@ -197,6 +198,7 @@ dbAddProtein <- function(db, jsonDF) {
   #                           fromJSON()
 
   for (i in seq_len(nrow(jsonDF))) {
+    isValid <- TRUE
     if (jsonDF$name[i] %in% db$protein$name) {
       cat(sprintf("Note: Protein No. %d in the input is \"%s\", but %s.\n",
                   i, jsonDF$name[i],
@@ -237,7 +239,7 @@ dbAddFeature <- function(db, jsonDF) {
       isValid <- FALSE
     }
 
-    if (isVALID) {
+    if (isValid) {
       x <- data.frame(ID          = dbAutoincrement(db$feature),
                       name        = jsonDF$name[i],
                       description = jsonDF$description[i],
@@ -306,11 +308,11 @@ dbAddAnnotation <- function(db, jsonDF) {
 
     sel <- db$annotation$proteinID == pID &
            db$annotation$featureID == fID &
-           db$annotation$start == as.integer(jsonDF$start[idx]) &
-           db$annotation$end   == as.integer(jsonDF$end[idx])
+           db$annotation$start == as.integer(jsonDF$start[i]) &
+           db$annotation$end   == as.integer(jsonDF$end[i])
 
     if (any(sel)) {
-      cat(sprintf("Note: annotation No. %d in the input has %s%s%\n",
+      cat(sprintf("Note: annotation No. %d in the input has %s%s\n",
                   i,
                   "the same protein name, feature name, start, and end ",
                   "as one that already exists in the database. ",
@@ -630,7 +632,6 @@ dbSeq2JSON <- function(s, nIndents = 4, width = 70) {
   out <- c(out, sprintf("%s]", ind))
   return(paste0(out, collapse = "\n"))
 }
-cat(dbSeq2JSON(myDB$protein$sequence[1]))
 
 
 # ==   3.16  dbRow2JSON()  =====================================================
