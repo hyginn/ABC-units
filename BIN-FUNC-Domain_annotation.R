@@ -3,12 +3,14 @@
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the BIN-FUNC-Domain_annotation unit.
 #
-# Version:  1.2
+# Version:  1.3
 #
 # Date:     2017-11  -  2020-10
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.3    Add code for database export to JSON and instructions
+#                  for uploading annotations to the Public Student Wiki page
 #           1.2    Consistently: data in ./myScripts/ ;
 #                    begin SHARING DATA section
 #           1.1    2020 Updates
@@ -28,16 +30,18 @@
 
 
 #TOC> ==========================================================================
-#TOC>
+#TOC> 
 #TOC>   Section  Title                                                 Line
 #TOC> ---------------------------------------------------------------------
-#TOC>   1        Update your database script                             42
-#TOC>   1.1        Preparing an annotation file ...                      49
-#TOC>   1.1.1          BEFORE  "BIN-ALI-Optimal_sequence_alignment"      52
-#TOC>   1.1.2          AFTER "BIN-ALI-Optimal_sequence_alignment"        97
-#TOC>   1.2        Execute and Validate                                 124
-#TOC>   2        Plot Annotations                                       149
-#TOC>
+#TOC>   1        Update your database script                             48
+#TOC>   1.1        Preparing an annotation file ...                      55
+#TOC>   1.1.1          BEFORE  "BIN-ALI-Optimal_sequence_alignment"      58
+#TOC>   1.1.2          AFTER "BIN-ALI-Optimal_sequence_alignment"       106
+#TOC>   1.2        Execute and Validate                                 133
+#TOC>   2        Plot Annotations                                       158
+#TOC>   3        SHARING DATA                                           283
+#TOC>   3.1        Post MBP1_MYSPE as JSON data                         298
+#TOC> 
 #TOC> ==========================================================================
 
 
@@ -99,7 +103,7 @@
 # Then SKIP the next section.
 #
 #
-# ===   1.1.2  AFTER "BIN-ALI-Optimal_sequence_alignment"
+# ===   1.1.2  AFTER "BIN-ALI-Optimal_sequence_alignment"  
 #
 #   IF YOU HAVE ALREADY COMPLETED THE BIN-ALI-OPTIMAL_SEQUENCE_ALIGNMENT UNIT:
 #
@@ -276,16 +280,47 @@ par(oPar)  # reset the plot parameters
 #    It would be better to align the motif borders, at least approximately (not
 #    all proteins have all motifs). How would you go about doing that?
 
-# = 1 SHARING DATA ======
+# =    3  SHARING DATA  ========================================================
 
 # It's particularly interesting to compare such annotations across many
-# homologous proteins. I have created a file on the Student Wiki that you can
+# homologous proteins. I have created a page on the Student Wiki () that you can
 # edit, and then download the data from the entire class directly to your
 # RStudio project.
 #
+
+# I have provided a function that extracts all information that refers to a
+# single protein from the database, and prints it out as well-formatted JSON,
+# suitable to be pasted into our shareable Wiki-page. There is a fair amount of
+# bookkeeping involved, but the code is not otherwise very enlightening so I
+# will spare you the details - it's in "./scripts/ABC-dbUtilities.R" if you
+# would want to have a look.
+
+# ==   3.1  Post MBP1_MYSPE as JSON data  ======================================
+
 # Task:
 # =====
-#   TBC ...
+# 1: Run the following code:
+
+cat("{{Vspace}}",
+    "<!-- ==== BEGIN  PROTEIN ==== -->",
+    "<pre>",
+    dbProt2JSON(sprintf("MBP1_%s", biCode(MYSPE))),
+    "</pre>",
+    "<!-- ===== END PROTEIN ====== -->",
+    "", sep = "\n"
+)
+
+# 2: Copy the entire output,
+# 3: Navigate to
+#      http://steipe.biochemistry.utoronto.ca/abc/students/index.php/Public
+#    ... edit the page, and paste your output at the top.
+# 4: Save your edits.
+
+# Next, once we have collected a number of protein annotations, we can access
+# the page and import the data into our database.
+#
+# Code to come soon ...
+
 
 
 # [END]
