@@ -31,7 +31,7 @@
 
 
 #TOC> ==========================================================================
-#TOC> 
+#TOC>
 #TOC>   Section  Title                                   Line
 #TOC> -------------------------------------------------------
 #TOC>   1        INITIALISATIONS AND PARAMETERS            61
@@ -54,7 +54,7 @@
 #TOC>   3.15       dbSeq2JSON()                           608
 #TOC>   3.16       dbRow2JSON()                           637
 #TOC>   4        TESTS                                    657
-#TOC> 
+#TOC>
 #TOC> ==========================================================================
 
 
@@ -212,7 +212,7 @@ dbAddProtein <- function(db, jsonDF) {
                       name        = jsonDF$name[i],
                       RefSeqID    = jsonDF$RefSeqID[i],
                       UniProtID   = jsonDF$UniProtID[i],
-                      taxonomyID  = jsonDF$taxonomyID[i],
+                      taxonomyID  = as.integer(jsonDF$taxonomyID[i]),
                       sequence    = dbSanitizeSequence(jsonDF$sequence[i]))
       db$protein <- rbind(db$protein, x)
     }
