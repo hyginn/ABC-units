@@ -42,18 +42,18 @@
 #TOC>   3.03       dbInit()                               138
 #TOC>   3.04       dbAutoincrement()                      178
 #TOC>   3.05       dbAddProtein()                         191
-#TOC>   3.06       dbAddFeature()                         224
-#TOC>   3.07       dbAddTaxonomy()                        255
-#TOC>   3.08       dbAddAnnotation()                      290
-#TOC>   3.09       dbFetchUniProtSeq()                    337
-#TOC>   3.10       dbFetchPrositeFeatures()               383
-#TOC>   3.11       node2text()                            433
-#TOC>   3.12       dbFetchNCBItaxData()                   445
-#TOC>   3.13       UniProtIDmap()                         484
-#TOC>   3.14       dbProt2JSON()                          523
-#TOC>   3.15       dbSeq2JSON()                           608
-#TOC>   3.16       dbRow2JSON()                           637
-#TOC>   4        TESTS                                    657
+#TOC>   3.06       dbAddFeature()                         227
+#TOC>   3.07       dbAddTaxonomy()                        258
+#TOC>   3.08       dbAddAnnotation()                      293
+#TOC>   3.09       dbFetchUniProtSeq()                    340
+#TOC>   3.10       dbFetchPrositeFeatures()               386
+#TOC>   3.11       node2text()                            436
+#TOC>   3.12       dbFetchNCBItaxData()                   448
+#TOC>   3.13       UniProtIDmap()                         487
+#TOC>   3.14       dbProt2JSON()                          526
+#TOC>   3.15       dbSeq2JSON()                           611
+#TOC>   3.16       dbRow2JSON()                           640
+#TOC>   4        TESTS                                    660
 #TOC> 
 #TOC> ==========================================================================
 
@@ -208,6 +208,9 @@ dbAddProtein <- function(db, jsonDF) {
     }
 
     if (isValid) {
+      if (length(jsonDF$name) == 1) { # jsonlite:: oversimplifies
+        jsonDF$sequence <- paste(jsonDF$sequence, collapse = "")
+      }
       x <- data.frame(ID          = dbAutoincrement(db$protein),
                       name        = jsonDF$name[i],
                       RefSeqID    = jsonDF$RefSeqID[i],
