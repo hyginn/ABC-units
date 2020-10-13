@@ -614,7 +614,7 @@ dbSeq2JSON <- function(s, nIndents = 4, width = 70) {
   ind <- paste0(rep(" ", nIndents), collapse = "")
 
   out <- character()
-  out <- c(out, sprintf("%s\"sequence\" : [", ind))
+  out <- c(out, sprintf("%s\"sequence\": [", ind))
 
   for (i in seq_along(s)) {
     l <- nchar(s[i])
