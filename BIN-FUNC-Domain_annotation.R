@@ -3,12 +3,13 @@
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the BIN-FUNC-Domain_annotation unit.
 #
-# Version:  1.3
+# Version:  1.4
 #
 # Date:     2017-11  -  2020-10
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.4    Add code for shared data import from the Wiki
 #           1.3    Add code for database export to JSON and instructions
 #                  for uploading annotations to the Public Student Wiki page
 #           1.2    Consistently: data in ./myScripts/ ;
@@ -18,7 +19,7 @@
 #           0.1    First code copied from 2016 material.
 #
 # TODO:
-#           Complete SHARING DATA section ...
+#           Put the domain plot into a function
 #
 # == DO NOT SIMPLY  source()  THIS FILE! =======================================
 #
@@ -33,14 +34,15 @@
 #TOC> 
 #TOC>   Section  Title                                                 Line
 #TOC> ---------------------------------------------------------------------
-#TOC>   1        Update your database script                             48
-#TOC>   1.1        Preparing an annotation file ...                      55
-#TOC>   1.1.1          BEFORE  "BIN-ALI-Optimal_sequence_alignment"      58
-#TOC>   1.1.2          AFTER "BIN-ALI-Optimal_sequence_alignment"       106
-#TOC>   1.2        Execute and Validate                                 133
-#TOC>   2        Plot Annotations                                       158
-#TOC>   3        SHARING DATA                                           283
-#TOC>   3.1        Post MBP1_MYSPE as JSON data                         298
+#TOC>   1        Update your database script                             50
+#TOC>   1.1        Preparing an annotation file ...                      57
+#TOC>   1.1.1          BEFORE  "BIN-ALI-Optimal_sequence_alignment"      60
+#TOC>   1.1.2          AFTER "BIN-ALI-Optimal_sequence_alignment"       108
+#TOC>   1.2        Execute and Validate                                 135
+#TOC>   2        Plot Annotations                                       160
+#TOC>   3        SHARING DATA                                           286
+#TOC>   3.1        Post MBP1_MYSPE as JSON data                         302
+#TOC>   3.2        Import shared MBP1_MYSPE from the Wiki               325
 #TOC> 
 #TOC> ==========================================================================
 
@@ -256,10 +258,11 @@ myCol <- colorRampPalette(c("#f2003c", "#F0A200",
                           space="Lab",
                           interpolate="linear")(nrow(myDB$feature))
 myCol <- paste0(myCol, "55")
-legend(xMax - 150, 6,
+legend(xMax - 150, 7,
        legend = myDB$feature$name,
        cex = 0.7,
-       fill = myCol)
+       fill = myCol,
+       bty = "n")
 
 # Finally, iterate over all proteins and call plotProtein()
 for (i in seq_along(iRows)) {
@@ -295,6 +298,7 @@ par(oPar)  # reset the plot parameters
 # will spare you the details - it's in "./scripts/ABC-dbUtilities.R" if you
 # would want to have a look.
 
+
 # ==   3.1  Post MBP1_MYSPE as JSON data  ======================================
 
 # Task:
@@ -303,24 +307,128 @@ par(oPar)  # reset the plot parameters
 
 cat("{{Vspace}}",
     "<!-- ==== BEGIN  PROTEIN ==== -->",
-    "<pre>",
+    "<pre class=\"protein-data\">",
     dbProt2JSON(sprintf("MBP1_%s", biCode(MYSPE))),
     "</pre>",
     "<!-- ===== END PROTEIN ====== -->",
     "", sep = "\n"
 )
 
-# 2: Copy the entire output,
+# 2: Copy the entire output from the console.
 # 3: Navigate to
 #      http://steipe.biochemistry.utoronto.ca/abc/students/index.php/Public
 #    ... edit the page, and paste your output at the top.
 # 4: Save your edits.
 
-# Next, once we have collected a number of protein annotations, we can access
-# the page and import the data into our database.
-#
-# Code to come soon ...
 
+
+# ==   3.2  Import shared MBP1_MYSPE from the Wiki  ============================
+
+# Once we have collected a number of protein annotations, we can access the
+# Wiki-page and import the data into our database. The Wiki page is  an html
+# document with lots of MediaWiki specific stuff - but the contents we are
+# interested in is enclosed in <pre class="protein-data"> ... </pre> tags. These
+# work like normal HTML <pre> tags, but we have defined a special class for them
+# to make it easy to parse out the contents we want. The rvest:: package in
+# combination with xml2:: provides us with all the tools we need for such
+# "Webscraping" of data....
+
+if (! requireNamespace("rvest", quietly=TRUE)) {
+  install.packages("rvest")
+}
+
+if (! requireNamespace("xml2", quietly=TRUE)) {
+  install.packages("xml2")
+}
+
+# Here's the process:
+# The URL is an "open" page on the student Wiki. Users that are not logged in
+# can view the contents, but you can only edit if you are logged in.
+myURL <- "http://steipe.biochemistry.utoronto.ca/abc/students/index.php/Public"
+
+# First thing is to retrieve the HTML from the url...
+x <- xml2::read_html(myURL)
+
+# This retrieves the page source, but that still needs to be parsed into its
+# logical elements. HTML is a subset of XML and such documents are structured as
+# trees, that have "nodes" which are demarcated with "tags". rvest::html_nodes()
+# parses out the document structure and then uses a so-called "xpath" expression
+# to select nodes we are interested in. Now, xpath is one of those specialized
+# languages of which there are a few more to learn than one would care for. You
+# MUST know how to format sprintf() expressions, and you SHOULD be competent
+# with regular expressions. But if you want to be really competent in your work,
+# basic HTML and CSS is required ... and enough knowledge about xpath to be able
+# to search on Stackoverflow for what you need for parsing data out of Web
+# documents...
+
+# The expression we use below is:
+#   - get any node anywhere in the tree ("//*") ...
+#   - that has a particular attribute("[@ ... ]").
+#   - The attribute we want is that the class of the node is "protein-data";
+#      that is the class we have defined for our <pre> tags.
+# As a result of this selection, we get a list of pointers to the document tree.
+y <- rvest::html_nodes(x, xpath ='//*[@class="protein-data"]')
+
+# Next we fetch the actual payload - the text - from the tree:
+# rvest::html_text() gets the text from the list of pointers. The result is a
+# normal list of character strings.
+z <- rvest::html_text(y)
+
+# Finally we can iterate over the list, and add all proteins we don't already
+# have to our database. There may well be items that are rejected because they
+# are already present in the database - for example, unless somebody has
+# annotated new features, all of the features are already there. Don't worry -
+# that is intended; we don't want duplicate entries.
+
+for (thisJSON in z) {
+  thisData <- jsonlite::fromJSON(thisJSON)
+  if (! thisData$protein$name %in% myDB$protein$name) {
+    myDB <- dbAddProtein(myDB, thisData$protein)
+    myDB <- dbAddTaxonomy(myDB, thisData$taxonomy)
+    myDB <- dbAddFeature(myDB, thisData$feature)
+    myDB <- dbAddAnnotation(myDB, thisData$annotation)
+  }
+}
+
+# Finally, we can repeat our domain plot with the results - which now includes the shared proteins:
+
+iRows <- grep("^MBP1_", myDB$protein$name)
+yMax <- length(iRows) * 1.1
+xMax <- max(nchar(myDB$protein$sequence[iRows])) * 1.1  # longest sequence
+
+# plot an empty frame
+oPar <- par(mar = c(4.2, 0.1, 3, 0.1))
+plot(1, 1,
+     xlim = c(-200, xMax + 100),
+     ylim = c(0, yMax),
+     type = "n",
+     axes = FALSE,
+     bty = "n",
+     main = "Mbp1 orthologue domain annotations",
+     xlab = "sequence position",
+     cex.axis = 0.8,
+     ylab="")
+axis(1, at = seq(0, xMax, by = 100))
+myCol <- colorRampPalette(c("#f2003c", "#F0A200",
+                            "#f0ea00", "#62C923",
+                            "#0A9A9B", "#1958C3",
+                            "#8000D3", "#D0007F"),
+                          space="Lab",
+                          interpolate="linear")(nrow(myDB$feature))
+myCol <- paste0(myCol, "55")
+legend(xMax - 150, 7,
+       legend = myDB$feature$name,
+       cex = 0.7,
+       fill = myCol,
+       bty = "n")
+
+for (i in seq_along(iRows)) {
+  plotProtein(myDB, myDB$protein$name[iRows[i]], i)
+}
+par(oPar)  # reset the plot parameters
+
+# ... the more proteins we can compare, the more we learn about the
+# architectural principles of this family's domains.
 
 
 # [END]
