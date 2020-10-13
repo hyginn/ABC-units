@@ -1,11 +1,5 @@
 # tocID <- "RPR-SX-PDB.R"
 #
-# ---------------------------------------------------------------------------- #
-#  PATIENCE  ...                                                               #
-#    Do not yet work wih this code. Updates in progress. Thank you.            #
-#    boris.steipe@utoronto.ca                                                  #
-# ---------------------------------------------------------------------------- #
-#
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the RPR-SX-PDB unit.
 #
@@ -38,22 +32,22 @@
 
 
 #TOC> ==========================================================================
-#TOC>
+#TOC> 
 #TOC>   Section  Title                                      Line
 #TOC> ----------------------------------------------------------
-#TOC>   1        Introduction to the bio3D package            62
-#TOC>   2        A Ramachandran plot                         153
-#TOC>   3        Density plots                               229
-#TOC>   3.1        Density-based colours                     243
-#TOC>   3.2        Plotting with smoothScatter()             262
-#TOC>   3.3        Plotting hexbins                          277
-#TOC>   3.4        Plotting density contours                 305
-#TOC>   3.4.1          ... as overlay on a coloured grid     338
-#TOC>   3.4.2          ... as filled countour                355
-#TOC>   3.4.3          ... as a perspective plot             386
-#TOC>   4        cis-peptide bonds                           404
-#TOC>   5        H-bond lengths                              419
-#TOC>
+#TOC>   1        Introduction to the bio3D package            63
+#TOC>   2        A Ramachandran plot                         155
+#TOC>   3        Density plots                               231
+#TOC>   3.1        Density-based colours                     245
+#TOC>   3.2        Plotting with smoothScatter()             264
+#TOC>   3.3        Plotting hexbins                          279
+#TOC>   3.4        Plotting density contours                 307
+#TOC>   3.4.1          ... as overlay on a coloured grid     340
+#TOC>   3.4.2          ... as filled countour                357
+#TOC>   3.4.3          ... as a perspective plot             388
+#TOC>   4        cis-peptide bonds                           406
+#TOC>   5        H-bond lengths                              421
+#TOC> 
 #TOC> ==========================================================================
 
 
@@ -360,7 +354,7 @@ abline(h = 0, lwd = 0.5, col = "#00000044")
 abline(v = 0, lwd = 0.5, col = "#00000044")
 
 
-# ===   3.4.2  ... as filled countour
+# ===   3.4.2  ... as filled countour           
 
 filled.contour(dPhiPsi,
                xlim = c(-180, 180), ylim = c(-180, 180),
@@ -391,7 +385,7 @@ filled.contour(dPhiPsi,
                     abline(v = 0, lwd = 0.5, col = "#00000044")
                   })
 
-# ===   3.4.3  ... as a perspective plot
+# ===   3.4.3  ... as a perspective plot        
 
 persp(dPhiPsi,
       xlab = "phi",

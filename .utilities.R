@@ -1,6 +1,6 @@
 # tocID <- "./.utilities.R"
 #
-# Miscellaneous R code to suppport the project
+# Miscellaneous R code to support the project
 #
 # Version: 1.4
 # Date:    2017-09 - 2020-09
@@ -20,7 +20,7 @@
 
 
 #TOC> ==========================================================================
-#TOC> 
+#TOC>
 #TOC>   Section  Title                                       Line
 #TOC> -----------------------------------------------------------
 #TOC>   1        SCRIPTS TO SOURCE                             52
@@ -45,7 +45,7 @@
 #TOC>   5.04       sealKey()                                  593
 #TOC>   5.05       selectChi2()                               623
 #TOC>   5.06       selectENSP()                               636
-#TOC> 
+#TOC>
 #TOC> ==========================================================================
 
 
@@ -574,7 +574,7 @@ selectPDBrep <- function(n, forCredit = FALSE) {
     seed <- as.integer(Sys.time())
     cat("NOTE: This selection will not validate for a course submission.\n")
     cat("      If you intend to use it for an assignment task, invoke\n")
-    cat("      this function like \"selectPDBrep(n, forCredit = TRUE)\".\n\n")
+    cat("      it like \"selectPDBrep(n = 15, forCredit = TRUE)\".\n\n")
   }
 
   pdbRep <- readRDS("./data/pdbRep.rds")  # loads pdbRep
