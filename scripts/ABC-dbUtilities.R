@@ -31,7 +31,7 @@
 
 
 #TOC> ==========================================================================
-#TOC>
+#TOC> 
 #TOC>   Section  Title                                   Line
 #TOC> -------------------------------------------------------
 #TOC>   1        INITIALISATIONS AND PARAMETERS            61
@@ -54,7 +54,7 @@
 #TOC>   3.15       dbSeq2JSON()                           608
 #TOC>   3.16       dbRow2JSON()                           637
 #TOC>   4        TESTS                                    657
-#TOC>
+#TOC> 
 #TOC> ==========================================================================
 
 
@@ -197,7 +197,7 @@ dbAddProtein <- function(db, jsonDF) {
   #     jsonDF  data frame  protein data imported into a data frame with
   #                           fromJSON()
 
-  for (i in seq_len(nrow(jsonDF))) {
+  for (i in seq_along(jsonDF$name)) {
     isValid <- TRUE
     if (jsonDF$name[i] %in% db$protein$name) {
       cat(sprintf("Note: Protein No. %d in the input is \"%s\", but %s.\n",
@@ -229,7 +229,7 @@ dbAddFeature <- function(db, jsonDF) {
   #     db   list   a database created with dbInit()
   #     jsonDF  data frame  feature data imported into a data frame with
   #                           fromJSON()
-  for (i in seq_len(nrow(jsonDF))) {
+  for (i in seq_along(jsonDF$name)) {
     isValid <- TRUE
     if (jsonDF$name[i] %in% db$feature$name) {
       cat(sprintf("Note: Feature No. %d in the input is \"%s\", but %s.\n",
@@ -260,7 +260,7 @@ dbAddTaxonomy <- function(db, jsonDF) {
   #     db      list         A database created with dbInit()
   #     jsonDF  data frame   Taxonomy data imported into a data frame with
   #                            fromJSON()
-  for (i in seq_len(nrow(jsonDF))) {
+  for (i in seq_along(jsonDF$species)) {
     isValid <- TRUE
 
     if (jsonDF$species[i] %in% db$taxonomy$species) {
@@ -295,7 +295,7 @@ dbAddAnnotation <- function(db, jsonDF) {
   #     db   list   a database created with dbInit()
   #     jsonDF  data frame  annotation data imported into a data frame with
   #                           fromJSON()
-  for (i in seq_len(nrow(jsonDF))) {
+  for (i in seq_along(jsonDF$pName)) {
     isValid <- TRUE
 
     sel <- jsonDF$pName[i] == db$protein$name
