@@ -926,13 +926,14 @@ plotPal("Spectral")
 plotPal("OrRd")
 plotPal("Cold")
 plotPal("Mint")
+plotPal("Berlin")
 
 # If you are curious, you can execute the code below, then select the line that
 # draws the plot and press ctrl+enter repeatedly to step through the entire
 # set of palettes.
 
 # i <- 0
-# i<-i+1; plotPal(hcl.pals()[i])
+# plotPal(hcl.pals()[( i<-i+1 )])
 
 # Worthy of special mention are the color-Brewer palettes, in particular for
 # their accessibility considerations. Do consider that not all of us view colors
