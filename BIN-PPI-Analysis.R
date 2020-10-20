@@ -4,12 +4,13 @@
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the BIN-PPI-Analysis unit.
 #
-# Version:   1.3
+# Version:   1.4
 #
 # Date:     2017-08  -  2020-10
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.4    Update vector ID's for betweenness centrality.
 #           1.3    Bugfix: called the wrong function on ENSPsel in l. 220
 #           1.2    2020 Updates; Rewrite for new STRINg V11;
 #                  Deprecate save()/load() for saveRDS()/readRDS()
@@ -32,17 +33,17 @@
 
 
 #TOC> ==========================================================================
-#TOC>
+#TOC> 
 #TOC>   Section  Title                                           Line
 #TOC> ---------------------------------------------------------------
-#TOC>   1        Setup and data                                    49
-#TOC>   2        Functional Edges in the Human Proteome            85
-#TOC>   2.1        Cliques                                        128
-#TOC>   2.2        Communities                                    169
-#TOC>   2.3        Betweenness Centrality                         183
-#TOC>   3        biomaRt                                          230
-#TOC>   4        Task for submission                              301
-#TOC>
+#TOC>   1        Setup and data                                    50
+#TOC>   2        Functional Edges in the Human Proteome            86
+#TOC>   2.1        Cliques                                        129
+#TOC>   2.2        Communities                                    170
+#TOC>   2.3        Betweenness Centrality                         184
+#TOC>   3        biomaRt                                          231
+#TOC>   4        Task for submission                              302
+#TOC> 
 #TOC> ==========================================================================
 
 
@@ -201,8 +202,8 @@ names(BC$res) <- as.character(1:length(BC$res))
 sBC <- sort(BC$res, decreasing = TRUE)
 head(sBC)
 
-# This ordered vector means: node 3,862 has the highest betweeness centrality,
-# node 1,720 has the second highest.. etc.
+# This ordered vector means: node 3 has the highest betweeness centrality,
+# node 721 has the second highest, etc.
 
 (BCsel <- as.numeric(names(sBC)[1:10]))
 
