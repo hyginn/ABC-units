@@ -32,7 +32,7 @@
 
 
 #TOC> ==========================================================================
-#TOC> 
+#TOC>
 #TOC>   Section  Title                                                   Line
 #TOC> -----------------------------------------------------------------------
 #TOC>   1        A Relational Datamodel in R: review                       62
@@ -55,7 +55,7 @@
 #TOC>   3.3        Create an R script to create your own database         568
 #TOC>   3.3.1          Check and validate                                 596
 #TOC>   3.4        Task: submit for credit (part 2/2)                     641
-#TOC> 
+#TOC>
 #TOC> ==========================================================================
 
 
@@ -205,7 +205,7 @@ str(philDB)
 # go back, re-read, play with it, and ask for help. These are the foundations.
 
 
-# ===   1.1.1  completing the database                       
+# ===   1.1.1  completing the database
 
 
 # Next I'll add one more person, and create the other two tables:
@@ -288,7 +288,9 @@ for (ID in pID) {
 #       ... etc.
 #
 #    Show the output of your code. Make sure the code itself is enclosed
-#    in <pre> ... </pre> tags.
+#    in <pre> ... </pre> tags. DO NOT POST A SCREENSHOT OF YOUR OUTPUT,
+#    BUT COPY THE EXACT, COMPLETE  OUTPUT, PASTE IT INTO YOUR SUBMISSION,
+#    AND FORMAT IT CORRECTLY.
 
 
 # =    2  Implementing the protein datamodel  ==================================
@@ -382,7 +384,7 @@ dbSanitizeSequence(x)
 
 # ==   2.3  Create a protein table for our data model  =========================
 
-# ===   2.3.1  Initialize the database                       
+# ===   2.3.1  Initialize the database
 
 
 # The function dbInit contains all the code to return a list of empty
@@ -394,7 +396,7 @@ myDB <- dbInit()
 str(myDB)
 
 
-# ===   2.3.2  Add data                                      
+# ===   2.3.2  Add data
 
 
 # fromJSON() returns a dataframe that we can readily process to add data
@@ -441,7 +443,7 @@ source("./scripts/ABC-createRefDB.R")
 str(myDB)
 
 
-# ===   2.4.1  Examples of navigating the database           
+# ===   2.4.1  Examples of navigating the database
 
 
 # You can look at the contents of the tables in the usual way we access
@@ -518,7 +520,8 @@ myDB$taxonomy$species[sel]
 # identities) with the N-terminus of the query - i.e. the Query sequence of
 # the first ~ 100 amino acids.
 
-# -  Follow the link to the protein data page, linked from "Accession".
+# -  If you are submitting this unit for credit, you will need to paste the
+#    relevant section of the BLAST results into your submission page (see task). # -  Follow the link to the protein data page, linked from "Accession".
 # -  From there, in a separate tab, open the link to the taxonomy database page
 #      for MYSPE which is linked from the "ORGANISM" record.
 
@@ -593,7 +596,7 @@ if (file.exists(sprintf("./myScripts/%staxonomy.json", biCode(MYSPE)))) {
 # "break" them with a code experiment. But always have a script with
 # which you can create what you need.
 
-# ===   3.3.1  Check and validate                            
+# ===   3.3.1  Check and validate
 
 
 # Is your protein named according to the pattern "MBP1_MYSPE"? It should be.
@@ -641,8 +644,13 @@ myDB$protein$RefSeqID[sel]
 # ==   3.4  Task: submit for credit (part 2/2)  ================================
 
 
-# - On your submission page, note the E-value of your protein and link
-#     to its NCBI protein database page.
+# - On your submission page, copy/paste the BLAST result headers from the
+#     "Alignments" tab, to demonstrate that the data justifies your choice of
+#     protein; you don't need to paste the whole alignment, just the header(s).
+#     Note the relevant values separately: eValue, coverage, %ID etc. and link
+#     to your protein's NCBI protein database page. (Note: in case there are
+#     more than one high-scoring segments included for the SAME protein, you
+#     need to show the results for all of its high-scoring segments.)
 # - Copy and paste the contents of your two JSON files on your submission
 #     page on the Student Wiki. Make sure they are enclosed in <pre> ... </pre>
 #     tags.
