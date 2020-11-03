@@ -6,10 +6,12 @@
 #
 # Version:  1.4
 #
-# Date:     2017-10  -  2020-09
+# Date:     2017-10  -  2020-11
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.5    Extensive additions on Poisson and binomial distributions
+#                    and regression fits
 #           1.4    2020 Maintenance
 #           1.3    Change from require() to requireNamespace(),
 #                      use <package>::<function>() idiom throughout,
@@ -30,24 +32,35 @@
 
 
 #TOC> ==========================================================================
-#TOC>
-#TOC>   Section  Title                                                         Line
-#TOC> -----------------------------------------------------------------------------
-#TOC>   1        Introduction                                                    54
-#TOC>   2        Three fundamental distributions                                117
-#TOC>   2.1        The Poisson Distribution                                     120
-#TOC>   2.2        The uniform distribution                                     174
-#TOC>   2.3        The Normal Distribution                                      194
-#TOC>   3        quantile-quantile comparison                                   235
-#TOC>   3.1        qqnorm()                                                     245
-#TOC>   3.2        qqplot()                                                     311
-#TOC>   4        Quantifying the difference                                     328
-#TOC>   4.1        Chi2 test for discrete distributions                         363
-#TOC>   4.2        Kullback-Leibler divergence                                  454
-#TOC>   4.2.1          An example from tossing dice                             465
-#TOC>   4.2.2          An example from lognormal distributions                  588
-#TOC>   4.3        Kolmogorov-Smirnov test for continuous distributions         631
-#TOC>
+#TOC> 
+#TOC>   Section  Title                                                      Line
+#TOC> --------------------------------------------------------------------------
+#TOC>   1        Introduction                                                 67
+#TOC>   2        Three fundamental distributions                             130
+#TOC>   2.1        The Poisson Distribution                                  133
+#TOC>   2.2        The hypergeometric distribution                           227
+#TOC>   2.2.1          Digression: qqplot() and residuals                    375
+#TOC>   2.2.2          Fitting functions                                     433
+#TOC>   2.2.2.1        Fit a normal distribution (using nls() )              503
+#TOC>   2.2.2.2        Fit a normal distribution (using nlrob()) )           520
+#TOC>   2.2.2.3        Extreme Value distributions: Gumbel                   547
+#TOC>   2.2.2.4        Extreme Value distributions: Weibull                  570
+#TOC>   2.2.2.5        Logistic distribution                                 613
+#TOC>   2.2.2.6        Log-Logistic distribution                             643
+#TOC>   2.2.2.7        Fitting a negative binomial distribution              673
+#TOC>   2.2.2.8        Fitting a binomial distribution                       726
+#TOC>   2.3        The uniform distribution                                  774
+#TOC>   2.4        The Normal Distribution                                   794
+#TOC>   3        quantile-quantile comparison                                835
+#TOC>   3.1        qqnorm()                                                  845
+#TOC>   3.2        qqplot()                                                  911
+#TOC>   4        Quantifying the difference                                  928
+#TOC>   4.1        Chi2 test for discrete distributions                      963
+#TOC>   4.2        Kullback-Leibler divergence                              1054
+#TOC>   4.2.1          An example from tossing dice                         1065
+#TOC>   4.2.2          An example from lognormal distributions              1188
+#TOC>   4.3        Continuous distributions: Kolmogorov-Smirnov test        1231
+#TOC> 
 #TOC> ==========================================================================
 
 
@@ -124,9 +137,46 @@ abline(v = qnorm(c(0.01, 0.99)), lwd = 0.5, col = "#CCAAFF")
 # if the mean probability of an event is known. Assume we know that there are
 # 256 transcription factors among the 6091 protein-coding genes of yeast, then
 # the probability of picking a transcription factor at random from all ORFs is
-# 256/6091 ~= 4.2%. How many do we expect if we look e.g. at 250 differentially
-# expressed genes? This means the mean number of transcription factors  we would
-# expect in that sample of differentially expressed genes is (250 * 256)/6091.
+# 256/6091 ~= 4.2%. How many transcription factors do we expect in a sample of
+# 250 genes - like, for example, the top 250 differentially expressed genes in
+# an assay? This is a frequently encountered type of question, converging on the
+# information contained in a "list of genes". Once an assay has yielded a list
+# of genes, what can we learn from looking at staistical features of its
+# membership. In the transcription factor model, the question is: how many
+# transcription factors do we expect as members of our list - and did we
+# actually observe more or less than that?
+#
+# It would seem that the the probability of encountering _one_ transcription
+# factor among our genes is 256/6091 and therefore the number of transcription
+# factors we expect to choose at random is (250 * 256)/6091 i.e. 10.50731 in the
+# average over many trials. Let's repeat our experiment a million times and see what we get:
+
+N <- 1000000             # One million trials
+genes <- numeric(6091)   # All genes are 0
+genes[1:256] <- 1        # TFs  are 1
+
+hAssays <- numeric(N)    # initialize vector
+set.seed(112358)
+for (i in 1:N) {
+  pBar(i, N)
+  hAssays[i] <- sum(sample(genes, 250)) # sum of TFs in our sample in this trial
+}
+set.seed(NULL)
+
+# And the average is:
+mean(hAssays)  # 10.50293
+
+# ... which is superbly close to our expectation of 10.50731
+
+# All good - but we won't get 10.5 transcription factors in our assay. We'll
+# observe five. Or thirteen. Or thirtysix. Or none at all ... and then we ask
+# ourselves: is the number of observed transcription factors significantly
+# different from what we would have expected if our experiment identified a
+# transcription factor just as likely as it identified any other gene? To answer
+# this, we need to consider the probability distribution of possible outcomes of
+# our assay. Back to the Poisson distribution. In R it is implemented as dpois()
+# and its parameters are: the number of observed events, and the probability of
+# observing an event:
 
 dpois(0,  (250 * 256) / 6091)       # Probability of seeing no TFs
 dpois(1,  (250 * 256) / 6091)       # Probability of seing one ...
@@ -134,44 +184,594 @@ dpois(2,  (250 * 256) / 6091)       # Probability of seing two ...
 dpois(3:10, (250 * 256) / 6091)     # Probability of seing from three to ten ...
 sum(dpois(0:4, (250 * 256) / 6091)) # Probability of seeing four or less ...
 
-# Lets plot this
-N <- 25
-x <- dpois(0:N, (250 * 256) / 6091)
-names(x) <- as.character(0:N)
-midPoints <- barplot(x, col = "#E6FFF6",
-             axes = TRUE,
-             ylim = c(0, 0.15),
-             xlab = "# of TF in set",
-             ylab = "p")
+sum(dpois(0:250, (250*256)/6091))   # The sum over all possibilities is (for
+                                    # any probability distribution) exactly one.
 
-# Confirm that our understanding of dpois() is correct, by simulating actual
-# trials:
+# Lets plot these probabilities ...
+nMax <- 28
 
-N <- 1000
+x <- dpois(0:nMax, (250 * 256) / 6091)
+
+barMids <- barplot(x,
+                   col = "#FCF3CF",
+                   names.arg = as.character(0:nMax),
+                   cex.names = 0.5,
+                   axes = TRUE,
+                   ylim = c(0, 0.15),
+                   xlab = "# of TF in set",
+                   ylab = "p")
+
+# ... and add our simulated assays:
+
+(th <- table(factor(hAssays, levels = 0:nMax))/N)
+
+points(barMids - 0.55, th, type = "s", col = "firebrick")
+abline(v = (((250 * 256) / 6091) * (barMids[2] - barMids[1])) + barMids[1],
+       col = "#5588FF")  # scale to the correct position in the barplot
+legend("topright",
+       legend = c("Poisson", "simulated", "expectation"),
+       pch = c(22, NA, NA),           # one box, two lines only
+       pt.cex = 1.4,                  # larger, to match bar-width better
+       pt.bg = c("#FCF3CF", NA, NA),  # bg color only for the box
+       lty = c(0, 1, 1),              # no line for the box
+       col = c("#000000", "firebrick", "#5588FF"),
+       bty = "n")                     # no frame around the legend
+
+# NOTE: The simulation shows us that our expectations about the number of
+#       transcription factors in a sample are almost, but not exactly Poisson
+#       distributed. Can you figure out where we went wrong? Maybe the
+#       Poisson distribution is not quite the correct distribution to
+#       model our expectations?
+
+
+# ==   2.2  The hypergeometric distribution  ===================================
+
+# With that suspicion in mind, we reconsider what we were trying to achieve at
+# each point of the Poisson distribution. Assume we have observed seven
+# transcription factors in our set of 250 genes. So we asked: what is the
+# probability of observing seven? And concluded:
+
+dpois(7,  (250 * 256) / 6091)       # Probability of seeing seven ...
+
+# ... which is the probability of seven events in 250 choices if the underlying
+# probability is equal to fraction of transcription factors among genes. But
+# wait: we weren't careful in our simulation. Assume that our first observed
+# gene was a transcription factor. Is the probability of the next sample the
+# same? Not quite: one transcription factor has been observed, 249 more samples
+# need to be considered, and there are now 6090 genes to choose from. I.e. the
+# mean probability changes with every observation:
+
+(250 * 256) / 6091                 # First sample, a TF: p = 10.50731
+(249 * (256 - 1)) / (6091 - 1)     # Second sample:      p = 10.42611 (-0.992 %)
+
+# This is actually noticeable: the mean probability for transcription factors
+# drops by about one percent after a transcription factor is observed. But what
+# if we would have observed the first transcription factor as the tenth gene?
+
+(239 * (256 - 1)) / (6091 - 10)    # Eleventh sample:    p = 10.0222  (-0.954 %)
+
+# This is getting complicated and we need a different way to think about this if
+# we don't want to enumerate all possibilities by hand. (There are far too
+# many!) Generally, the probability of observing a certain number of events in a
+# series is the number of ways to realize the desired outcome, divided by the
+# number of possible outcomes. So, if we code transcription factors by "1" and
+# other genes by "0", seven transcription factors could be
+
+#   01010100100100100100000000000000000000000 ..., or
+#   01110111100000000000000000000000000000000 ..., or
+#   11101001000010000000100000000000000000000 ..., or any other combination.
+
+# But crucially, our number of trials is limited and every "success" changes the
+# probability of future successes. This is sampling without replacement! And
+# sampling without replacement is modeled by the so-called "hypergeometric
+# distribution". This is the big difference: when we are sampling WITH
+# replacement, we can model the process with a Poisson distribution. When we are
+# sampling WITHOUT replacement, we use a hypergeometric distribution instead.
+
+# Let's first re-run our simulated assays. We put the previous run into the
+# vector "hAssays" which I prefixed "h" as in "hypergeometric" because I knew
+# what was coming, and that I had sampled WITHOUT replacement because that is
+# the default for the sample() function. Accordingly, we call the new samples
+# "pAssays", where "p" stands for Poisson:
+
+N <- 1000000             # One million trials
 genes <- numeric(6091)   # All genes are 0
 genes[1:256] <- 1        # TFs  are 1
 
-x <- numeric(N)          # initialize vector
+pAssays <- numeric(N)    # initialize vector
 set.seed(112358)
 for (i in 1:N) {
-  x[i] <- sum(sample(genes, 250)) # sum of TFs in our sample in this trial
+  pBar(i, N)
+  pAssays[i] <- sum(sample(genes, 250, replace = TRUE))
 }
 set.seed(NULL)
 
-(t <- table(x)/N)
+# Now the average is:
+mean(pAssays)  # 10.50312  which is essentially the same as 10.50293
 
-# Add these values to the plot
-y <- numeric(26)                     # initialize vector with 26 slots
-y[as.numeric(names(t)) + 1] <- t     # put the tabled values there (index + 1)
-points(midPoints - 0.55, y, type = "s", col = "firebrick")
+# And the plot ...
+
+nMax <- 28
+barMids <- barplot(dpois(0:nMax, (250 * 256) / 6091),
+                   names.arg = as.character(0:nMax),
+                   cex.names = 0.5,
+                   axes = TRUE,
+                   ylim = c(0, 0.15),
+                   xlab = "# of TF in set",
+                   ylab = "p",
+                   col = "#FCF3CF")
+abline(v = (((250 * 256) / 6091) * (barMids[2] - barMids[1])) + barMids[1],
+       col = "#5588FF")  # scale to the correct position in the barplot
+th <- table(factor(hAssays, levels = 0:nMax))/N
+points(barMids - 0.55, th, type = "s", col = "firebrick")
+
+# Here are the new assays:
+tp <- table(factor(pAssays, levels = 0:nMax))/N
+points(barMids - 0.55, tp, type = "s", col = "seagreen")
+
 legend("topright",
-       legend = c("theoretical", "simulated"),
-       pch = c(22, 22),
-       pt.bg = c("#E6FFF6", "firebrick"),
+       legend = c("Poisson",
+                  "no replacement",
+                  "with replacement",
+                  "expectation"),
+       pch = c(22, NA, NA, NA),
+       pt.cex = 1.4,
+       pt.bg = c("#FCF3CF", NA, NA, NA),
+       lty = c(0, 1, 1, 1),
+       col = c("#000000", "firebrick", "seagreen", "#5588FF"),
        bty = "n")
 
+# Clearly .. the "correct" simulation, the simulation that is actually
+# appropriate for the Poisson distribution, matches the theoretical values
+# better. Now let's see how well the hypergeometric distribution matches our
+# original simulated assays.
+# The function dhyper(x, m, n, k) expects the following parameters:
+#   x: the number of observed positive events for which to
+#      compute the probability
+#   m: the number of positive events in the population
+#   n: the number of negative eventsw in the population
+#   k: the number of observations (or trials)
 
-# ==   2.2  The uniform distribution  ==========================================
+    dhyper(0,    256, 6091 - 256, 250)  # Probability of seeing no TFs
+    dhyper(1,    256, 6091 - 256, 250)  # Probability of seing one ...
+    dhyper(2,    256, 6091 - 256, 250)  # Probability of seing two ...
+    dhyper(3:10, 256, 6091 - 256, 250)  # Probability of three to ten ...
+sum(dhyper(0:4,  256, 6091 - 256, 250)) # Probability of seeing four or less ...
+
+sum(dhyper(0:250, 256, 6091-256, 250)) # The sum over all possibilities is (for
+                                       # any probability distribution)
+                                       # exactly one.
+
+# Lets plot these probabilities like we did above ...
+nMax <- 28
+x <- dhyper(0:nMax,  256, 6091 - 256, 250)
+
+barMids <- barplot(x, col = "#E6FFF6",
+                   names.arg = as.character(0:nMax),
+                   cex.names = 0.5,
+                   axes = TRUE,
+                   ylim = c(0, 0.15),
+                   xlab = "# of TF in set",
+                   ylab = "p")
+abline(v = (mean(hAssays) * (barMids[2] - barMids[1])) + barMids[1],
+       col = "#5588FF")  # scale to the correct position in the barplot
+points(barMids - 0.55, th, type = "s", col = "firebrick")
+
+legend("topright",
+       legend = c("Hypergeometric",
+                  "no replacement",
+                  "expectation"),
+       pch = c(22, NA, NA),
+       pt.cex = 1.4,
+       pt.bg = c("#E6FFF6", NA, NA),
+       lty = c(0, 1, 1, 1),
+       col = c("#000000", "firebrick", "#5588FF"),
+       bty = "n")
+
+# This!
+# This is what a correctly simulated distribution looks like.
+
+
+# ===   2.2.1  Digression: qqplot() and residuals               
+
+# The indication that something was wrong with our simulation versus the
+# theoretical expectation came from the observation that the differences between
+# the barplot and theory were not quite random: the values near the mode were
+# systematically too high, the values in the tails were systematically too low.
+# This is a general principle: when you see a SYSTEMATIC deviation between
+# simulation and theory, something is wrong with your understanding. Either
+# there is a subtle error in how you set up the simulation, or a subtle
+# misunderstanding about the requirements for the particular theory to apply. R
+# has a general way to examine such differences: qqplot() plots the deviations
+# between theory and observation ordered as ranks, i.e. not affected by absolute
+# scale.
+
+oPar <- par(mfrow = c(1, 2))
+qqplot( dpois(0:nMax, (250 * 256) / 6091),
+        th,
+        xlab = "Poisson distribution",
+        ylab = "sampling with replacement",
+        pch = 22, bg = "#FCF3CF")
+abline(lm(th ~ dpois(0:nMax, (250 * 256) / 6091)), col = "seagreen")
+
+qqplot( dhyper(0:nMax,  256, 6091 - 256, 250),
+        th,
+        xlab = "hypergeometric distribution",
+        ylab = "sampling with replacement",
+        pch = 22, bg = "#E6FFF6")
+abline(lm(th ~ dhyper(0:nMax,  256, 6091 - 256, 250)), col = "seagreen")
+
+par(oPar)
+
+# Similar information can be obtained from a residual plot, plotting differences
+# between prediction and observation:
+
+oPar <- par(mfrow = c(1, 2))
+plot( dpois(0:nMax, (250 * 256) / 6091) - as.numeric(th),
+      type = "b",
+      ylim = c(-0.006, 0.006),
+      xlab = "# observations",
+      ylab = "Poisson density - obs.",
+      pch = 22,
+      bg = "#FCF3CF",
+      col = "#000000")
+abline(h = 0, col = "seagreen")
+
+plot( dhyper(0:nMax,  256, 6091 - 256, 250) - as.numeric(th),
+      type = "b",
+      ylim = c(-0.006, 0.006),
+      xlab = "# observations",
+      ylab = "Hypergeometric density - obs.",
+      pch = 22,
+      bg = "#E6FFF6",
+      col = "#000000")
+abline(h = 0, col = "seagreen")
+
+par(oPar)
+
+
+# ===   2.2.2  Fitting functions                                
+
+# Note that there is a further subtle catch: We did not actually ask about seven
+# transcription factors! We asked about the probability of seven _different_
+# transcription factors - because, implicit in the assumptions I made about the
+# assay (and reasonable for most gene lists), we count duplicates only once!
+# Does this actually make a difference? We can model the situation by giving
+# each transcription factor a name (or a number), sampling at random, and
+# counting how many unique() factors we found in our sample:
+
+N <- 1000000             # One million trials
+genes <- numeric(6091)   # All genes are initially 0
+genes[1:256] <- 1:256    # TFs get a unique "name"
+
+# example sample:
+set.seed(11235)
+x <- sample(genes, 250, replace = TRUE)  # Pick 250 random genes.
+x[x != 0]                                # Note that 189 appears twice.
+length(x[x != 0])                        # We picked 8 transcription factors ...
+unique(x)                                # but only 7 are unique (plus zero).
+length(unique(x)) - 1                    # Ignore the zero.
+
+# Do this a million times
+uAssays <- numeric(N)    # initialize vector
+set.seed(112358)
+for (i in 1:N) {
+  pBar(i, N)
+  uAssays[i] <- length(unique(sample(genes, 250, replace = TRUE))) - 1
+}
+set.seed(NULL)
+
+# plot the poisson distribution (with replacement) as our baseline
+nMax <- 28
+barMids <- barplot(dpois(0:nMax, (250 * 256) / 6091),
+                   col = "#FCF3CF",
+                   names.arg = as.character(0:nMax),
+                   cex.names = 0.5,
+                   axes = TRUE,
+                   ylim = c(0, 0.15),
+                   xlab = "# of TF in set",
+                   ylab = "p")
+
+tu <- table(factor(uAssays, levels = 0:nMax))/N
+points(barMids - 0.55, tu, type = "s", col = "#EE22FF")
+
+legend("topright",
+       legend = c("Poisson",
+                  "unique genes"),
+       pch = c(22, NA),
+       pt.cex = 1.4,
+       pt.bg = c("#FCF3CF", NA),
+       lty = c(0, 1),
+       col = c("#000000", "#EE22FF"),
+       bty = "n")
+
+# Clearly, the distribution does not match our model exactly.
+
+# So what is the "correct" distribution that we could apply in this case? There
+# may or may not be one readily available. What we can do instead is to use a
+# more general model and fit parameters. This takes us to the domain of
+# regression analysis and curve fitting. The general approach is as follows:
+#  - Decide on a statistical model;
+#  - Express it in parametrized form;
+#  - Fit the parameters;
+#  - Analyze the coefficients;
+
+#  Insight into the underlying process that generated our data can be obtained
+#  by analyzing the fitted parameters, or simply plotting the results. Let's
+#  look at examples of fits to the sampled distribution above:
+
+# ====  2.2.2.1  Fit a normal distribution (using nls() )         
+
+x <- 0:28
+plot(0:28, tu, type="s")
+fit <- nls(tu ~ ( a / (sig*sqrt(2*pi)) ) * exp( (-1/2)*((x-mu)/sig)^2 ),                    start = c(a = 1, mu = 10, sig = 3))  # starting values
+
+points(x, predict(fit, list(x = x)), col = "#CC00CC55", lwd = 2,
+       type = "s")
+
+coef(fit)
+#         a         mu        sig
+# 0.9990932 10.0717835  3.0588930
+
+sum(resid(fit)^2)
+# [1] 0.0001613488
+
+
+# ====  2.2.2.2  Fit a normal distribution (using nlrob()) )      
+
+# There's a bit of an art to chosing starting parameters correctly and if the
+# nls() fit does not converge, more robust methods are called for.
+
+pkg <- "robustbase"
+if (! requireNamespace(pkg, quietly = TRUE)) { install.packages(pkg) }
+
+x <- 0:28
+plot(0:28, tu, type="s")
+fit <- robustbase::nlrob(tu ~ ( a / (sig*sqrt(6.2831853072)) ) *
+                           exp( (-1/2)*((x-mu)/sig)^2 ),
+                         data = data.frame(tu = tu,
+                                           x = 0:28),
+                         start = c(a = 1, mu = 10, sig = 3))  # starting values
+
+points(x, predict(fit, list(x = x)), col = "#CC00CC55", lwd = 2,
+       type = "s")
+
+coef(fit)
+#        a        mu       sig
+# 1.002162 10.059189  3.071217
+
+sum(resid(fit)^2)
+# [1] 0.0001630868
+
+
+# ====  2.2.2.3  Extreme Value distributions: Gumbel              
+
+# Many processes that involve best-of choices are better modelled with so called extreme-value distributions: here is the Gumbel distribution from the evd package.
+pkg <- "evd"
+if (! requireNamespace(pkg, quietly = TRUE)) { install.packages(pkg) }
+
+x <- 0:28
+plot(0:28, tu, type="s")
+
+fit <- robustbase::nlrob(tu ~ evd::dgumbel(x, loc = L, scale = S),
+                         data = data.frame(tu = tu, x = 0:28),
+                         start = c(L = 7.3, S = 2.82))
+
+points(x, predict(fit, list(x = x)), type = "s", col = "#55DD88")
+
+coef(fit)
+#        L        S
+# 9.322110 2.818266
+
+sum(resid(fit)^2)
+# [1] 0.001027447
+
+
+# ====  2.2.2.4  Extreme Value distributions: Weibull             
+
+# Weibull distributions are common in reliabilty analysis. I found the
+# distribution particularly hard to fit as it is quite sensitive to inital
+# parameter estimates. https://en.wikipedia.org/wiki/Weibull_distribution
+
+# NOTE: the parameter TH is > X
+idx <- 4:28
+x <- idx
+y <- as.numeric(tu)[idx]
+plot(x, y, type="s")
+
+dWei <- function(x, th, l, k) {
+  a <- k/l
+  b <- ((x-th)/l)^(k-1)
+  c <- exp(-((x-th)/l)^k)
+  y <- a * b * c
+  return(y)
+}
+
+set.seed(112358)
+fit <- robustbase::nlrob(y ~ dWei(x, th = TH, l = L, k = K),
+                         data = data.frame(y = y,
+                                           x = x),
+                         lower = c(TH = 3.5,
+                                   L = 8,
+                                   K = 2.5),
+                         upper = c(TH = 3.7,
+                                   L = 9,
+                                   K = 3),
+                         method = "mtl")
+
+points(x, predict(fit, list(x = x)),
+       col = "#CC00CC55", lwd = 2, type = "s")
+
+coef(fit)
+#      TH        L        K
+#3.630807 8.573898 2.795116
+
+sum(resid(fit)^2)
+# [1] 7.807073e-05
+
+
+# ====  2.2.2.5  Logistic distribution                            
+
+# Similar to normal distribution, but with heavier tails
+# https://en.wikipedia.org/wiki/Logistic_distribution
+
+x <- 0:28
+y <- as.numeric(tu)
+plot(0:28, y, type="s")
+
+dLogi <- function(x, mu, s) {
+  y <- (exp(-(x-mu)/s)) / (s * (1+exp(-(x-mu)/s))^2)
+  return(y)
+}
+
+fit <- robustbase::nlrob(y ~ dLogi(x, mu = M, s = S),
+                         data = data.frame(y = y,
+                                           x = 0:28),
+                         start = c(M = 10, S = 3))
+
+points(x, predict(fit, list(x = x)),
+       col = "#CC00CC55", lwd = 2, type = "s")
+
+coef(fit)
+# M         S
+# 10.088968  1.891654
+
+sum(resid(fit)^2)
+# [1] 0.0004030595
+
+
+# ====  2.2.2.6  Log-Logistic distribution                        
+
+# Spercial case of logistic, often used in survival analysis
+# https://en.wikipedia.org/wiki/Log-logistic_distribution
+
+x <- 0:28
+y <- as.numeric(tu)
+plot(0:28, y, type="s")
+
+dLogLogi <- function(x, a, b) {
+  y <- ((b/a)*(x/a)^(b-1)) / (1+((x/a)^b))^2
+  return(y)
+}
+
+fit <- robustbase::nlrob(y ~ dLogLogi(x, a = A, b = B),
+                         data = data.frame(y = y,
+                                           x = 0:28),
+                         start = c(A = 9.5, B = 4.8))
+
+points(x, predict(fit, list(x = x)),
+       col = "#CC00CC55", lwd = 2, type = "s")
+
+coef(fit)
+#         A         B
+# 10.310181  5.288385
+
+sum(resid(fit)^2)
+# [1] 0.0006343927
+
+
+# ====  2.2.2.7  Fitting a negative binomial distribution         
+
+# The negative binomial distribution is related to the Poisson distribution.
+# Assume you are observing events and and counting how many successes of a
+# Bernoulli process (essentially a coin-flip) we encounter before we encounter a
+# failure. Unlike the Poisson, it models mean and variance separately and is therefore especially useful for overdispersed functions. (cf. https://en.wikipedia.org/wiki/Negative_binomial_distribution)
+#
+
+x <- 0:28
+plot(x, tu, type="s")
+
+# Negative binomial
+dNB <- function(x, r, p) {
+  # Note: r is an integer!
+  y <- choose((x + r - 1), (r - 1)) * (1-p)^x * p^r
+  return(y)
+}
+
+set.seed(112358)
+RR <- 104
+fit <- robustbase::nlrob(tu ~ dNB(x, r = RR, p = P),
+                         data = data.frame(x = x, RR = RR),
+                         lower = c(P = 0.01),
+                         upper = c(P = 0.99),
+                         method = "mtl")
+
+points(x, predict(fit, list(x = x)),
+       col = "#CC00CC55", lwd = 2, type = "s")
+coef(fit)
+#         P
+# 0.9100729
+
+sum(resid(fit)^2)
+# [1] 0.0005669086
+
+# Nb. the parameter R is not continuous: to optimize it as an integer, we try
+# reasonable choices and record the best fit.
+N <- 150
+R <- numeric(N)
+for (thisR in 1:N) {
+  set.seed(112358)
+  fit <- robustbase::nlrob(y ~ dNB(x, r = thisR, p = P),
+                           data = data.frame(x = x,
+                                             thisR = thisR),
+                           lower = c(P = 0.01),
+                           upper = c(P = 0.99),
+                           method = "mtl")
+  R[thisR] <- sum(resid(fit)^2)
+}
+plot(R)
+which(R == min(R))
+
+
+# ====  2.2.2.8  Fitting a binomial distribution                  
+# The workhorse distribution for Bernoulli proceeses
+# cf. https://en.wikipedia.org/wiki/Binomial_distribution
+
+
+x <- 0:28
+y <- as.numeric(tu)
+plot(x, y, type="s")
+
+dBinom <- function(x, s, p) {
+  y <- choose(s, x) * (p^x) * ((1-p)^(s-x))
+  return(y)
+}
+
+fit <- robustbase::nlrob(y ~ dBinom(x, s = S, p = P),
+                         data = data.frame(y = y,
+                                           x = 0:28),
+                         start = c(S = 240, P = 256/6091))
+
+points(x, predict(fit, list(x = x)),
+       col = "#CC00CC55", lwd = 2, type = "s")
+
+coef(fit)
+#            S            P
+# 122.77746436   0.08376922
+
+sum(resid(fit)^2)
+# [1] 1.114272e-06
+
+# Here we go: near perfect fit. But note the parameters! Can you identify the relationship of S and P to our model of choosing unique transcription factors in a random sampling process. Because, honestly: I can't.
+
+# What is the take-home message here?
+#  - The standard Poisson and hypergeometric distributions apply to
+#      very specific models of choice processes (with/without replacement);
+#  - It is not trivial to choose the right statistical model for any particular
+#      real-world specification of a sampling process. Our model of unique
+#      choices is neither Poisson nor hypergeometric distributed. Once we have
+#      identified the parameters of a binomial distribution that models the
+#      process perfectly, we nevertheless note that we don't seem to be
+#      able to interpret the parameters easily.
+#  - Stochastic modeling allows us to validate whether the model is correct,
+#      but in case there are discrepancies it is not obvious what might be
+#      a more appropriate model and how to parametrize it.
+#  - If building an explicit stochastic model is not possible, we'll have to
+#      to do the best we can, in this case that would mean: choose a more
+#      general distribution and parametrize it.
+
+
+# ==   2.3  The uniform distribution  ==========================================
 
 # The uniform distribution has the same probability over its entire support. R's
 # runif() function takes the desired number, the min and the max as arguments.
@@ -191,7 +791,7 @@ runif(10) < 1/3
 sum(runif(1e6) < 1/3)/1e6  # should be close to 0.33333...
 
 
-# ==   2.3  The Normal Distribution  ===========================================
+# ==   2.4  The Normal Distribution  ===========================================
 
 # The king of probability distributions. Why? That's because of the Central
 # Limit Theorem (CLT) that essentially says that a process that is subject to
@@ -462,7 +1062,7 @@ chisq.test(countsL1, countsG1.9, simulate.p.value = TRUE, B = 10000)
 # be applied to discrete distributions. But we need to talk a bit about
 # converting counts to p.m.f.'s.
 
-# ===   4.2.1  An example from tossing dice
+# ===   4.2.1  An example from tossing dice                     
 
 #  The p.m.f of an honest die is (1:1/6, 2:1/6, 3:1/6, 4:1/6, 5:1/6, 6:1/6). But
 #  there is an issue when we convert sampled counts to frequencies, and estimate
@@ -585,7 +1185,7 @@ abline(v = KLdiv(rep(1/6, 6), pmfPC(counts, 1:6)), col="firebrick")
 # somewhat but not drastically atypical.
 
 
-# ===   4.2.2  An example from lognormal distributions
+# ===   4.2.2  An example from lognormal distributions          
 
 # We had compared a set of lognormal and gamma distributions above, now we
 # can use KL-divergence to quantify their similarity:
@@ -628,7 +1228,7 @@ sum(divs < KLdiv(pmfL1, pmfL2)) # 933
 # we used above.
 
 
-# ==   4.3  Continuous distributions: Kolmogorov-Smirnov test   ==============
+# ==   4.3  Continuous distributions: Kolmogorov-Smirnov test  =================
 
 # The Kolmogorov-Smirnov (KS) test is meant for continuous distributions, i.e.
 # the probability it calculates assumes that the function values are all
