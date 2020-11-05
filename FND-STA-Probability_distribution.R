@@ -4,12 +4,13 @@
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the FND-STA-Probability_distribution unit.
 #
-# Version:  1.4
+# Version:  1.6
 #
 # Date:     2017-10  -  2020-11
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.6    Revise use of data argument to nls()/nlrob()
 #           1.5    Extensive additions on Poisson and binomial distributions
 #                    and regression fits
 #           1.4    2020 Maintenance
@@ -35,31 +36,31 @@
 #TOC> 
 #TOC>   Section  Title                                                      Line
 #TOC> --------------------------------------------------------------------------
-#TOC>   1        Introduction                                                 67
-#TOC>   2        Three fundamental distributions                             130
-#TOC>   2.1        The Poisson Distribution                                  133
-#TOC>   2.2        The hypergeometric distribution                           227
-#TOC>   2.2.1          Digression: qqplot() and residuals                    375
-#TOC>   2.2.2          Fitting functions                                     433
-#TOC>   2.2.2.1        Fit a normal distribution (using nls() )              503
-#TOC>   2.2.2.2        Fit a normal distribution (using nlrob()) )           520
-#TOC>   2.2.2.3        Extreme Value distributions: Gumbel                   547
-#TOC>   2.2.2.4        Extreme Value distributions: Weibull                  570
-#TOC>   2.2.2.5        Logistic distribution                                 613
-#TOC>   2.2.2.6        Log-Logistic distribution                             643
-#TOC>   2.2.2.7        Fitting a negative binomial distribution              673
-#TOC>   2.2.2.8        Fitting a binomial distribution                       726
-#TOC>   2.3        The uniform distribution                                  774
-#TOC>   2.4        The Normal Distribution                                   794
-#TOC>   3        quantile-quantile comparison                                835
-#TOC>   3.1        qqnorm()                                                  845
-#TOC>   3.2        qqplot()                                                  911
-#TOC>   4        Quantifying the difference                                  928
-#TOC>   4.1        Chi2 test for discrete distributions                      963
-#TOC>   4.2        Kullback-Leibler divergence                              1054
-#TOC>   4.2.1          An example from tossing dice                         1065
-#TOC>   4.2.2          An example from lognormal distributions              1188
-#TOC>   4.3        Continuous distributions: Kolmogorov-Smirnov test        1231
+#TOC>   1        Introduction                                                 68
+#TOC>   2        Three fundamental distributions                             131
+#TOC>   2.1        The Poisson Distribution                                  134
+#TOC>   2.2        The hypergeometric distribution                           228
+#TOC>   2.2.1          Digression: qqplot() and residuals                    376
+#TOC>   2.2.2          Fitting functions                                     436
+#TOC>   2.2.2.1        Fit a normal distribution (using nls() )              506
+#TOC>   2.2.2.2        Fit a normal distribution (using nlrob()) )           525
+#TOC>   2.2.2.3        Extreme Value distributions: Gumbel                   551
+#TOC>   2.2.2.4        Extreme Value distributions: Weibull                  576
+#TOC>   2.2.2.5        Logistic distribution                                 618
+#TOC>   2.2.2.6        Log-Logistic distribution                             647
+#TOC>   2.2.2.7        Fitting a negative binomial distribution              676
+#TOC>   2.2.2.8        Fitting a binomial distribution                       729
+#TOC>   2.3        The uniform distribution                                  841
+#TOC>   2.4        The Normal Distribution                                   861
+#TOC>   3        quantile-quantile comparison                                902
+#TOC>   3.1        qqnorm()                                                  912
+#TOC>   3.2        qqplot()                                                  978
+#TOC>   4        Quantifying the difference                                  995
+#TOC>   4.1        Chi2 test for discrete distributions                     1029
+#TOC>   4.2        Kullback-Leibler divergence                              1120
+#TOC>   4.2.1          An example from tossing dice                         1131
+#TOC>   4.2.2          An example from lognormal distributions              1253
+#TOC>   4.3        Continuous distributions: Kolmogorov-Smirnov test        1296
 #TOC> 
 #TOC> ==========================================================================
 
@@ -384,7 +385,9 @@ legend("topright",
 # misunderstanding about the requirements for the particular theory to apply. R
 # has a general way to examine such differences: qqplot() plots the deviations
 # between theory and observation ordered as ranks, i.e. not affected by absolute
-# scale.
+# scale. (See here for an accessible introduction to qqplot() and the
+# "quantiles" that it uses:
+# https://data.library.virginia.edu/understanding-q-q-plots/)
 
 oPar <- par(mfrow = c(1, 2))
 qqplot( dpois(0:nMax, (250 * 256) / 6091),
@@ -503,10 +506,12 @@ legend("topright",
 # ====  2.2.2.1  Fit a normal distribution (using nls() )         
 
 x <- 0:28
-plot(0:28, tu, type="s")
-fit <- nls(tu ~ ( a / (sig*sqrt(2*pi)) ) * exp( (-1/2)*((x-mu)/sig)^2 ),                    start = c(a = 1, mu = 10, sig = 3))  # starting values
+plot(x, tu, type="s")
+fit <- nls(tu ~ ( a / (sig*sqrt(2*pi)) ) * exp( (-1/2)*((x-mu)/sig)^2 ),
+           data = data.frame(x = 0:28, tu = tu),
+           start = c(a = 1, mu = 10, sig = 3))  # starting values
 
-points(x, predict(fit, list(x = x)), col = "#CC00CC55", lwd = 2,
+points(x, predict(fit), col = "#CC00CC55", lwd = 2,
        type = "s")
 
 coef(fit)
@@ -526,15 +531,14 @@ pkg <- "robustbase"
 if (! requireNamespace(pkg, quietly = TRUE)) { install.packages(pkg) }
 
 x <- 0:28
-plot(0:28, tu, type="s")
+plot(x, tu, type="s")
 fit <- robustbase::nlrob(tu ~ ( a / (sig*sqrt(6.2831853072)) ) *
                            exp( (-1/2)*((x-mu)/sig)^2 ),
-                         data = data.frame(tu = tu,
-                                           x = 0:28),
+                         data = data.frame(x = 0:28,
+                                           tu = tu),
                          start = c(a = 1, mu = 10, sig = 3))  # starting values
 
-points(x, predict(fit, list(x = x)), col = "#CC00CC55", lwd = 2,
-       type = "s")
+points(x, predict(fit), col = "#CC00CC55", lwd = 2, type = "s")
 
 coef(fit)
 #        a        mu       sig
@@ -546,18 +550,20 @@ sum(resid(fit)^2)
 
 # ====  2.2.2.3  Extreme Value distributions: Gumbel              
 
-# Many processes that involve best-of choices are better modelled with so called extreme-value distributions: here is the Gumbel distribution from the evd package.
+# Many processes that involve "best-of" choices are better modelled with
+# so-called extreme-value distributions: here is the Gumbel distribution
+# from the evd package.
 pkg <- "evd"
 if (! requireNamespace(pkg, quietly = TRUE)) { install.packages(pkg) }
 
 x <- 0:28
-plot(0:28, tu, type="s")
+plot(x, tu, type="s")
 
 fit <- robustbase::nlrob(tu ~ evd::dgumbel(x, loc = L, scale = S),
                          data = data.frame(tu = tu, x = 0:28),
                          start = c(L = 7.3, S = 2.82))
 
-points(x, predict(fit, list(x = x)), type = "s", col = "#55DD88")
+points(x, predict(fit), type = "s", col = "#55DD88")
 
 coef(fit)
 #        L        S
@@ -575,9 +581,9 @@ sum(resid(fit)^2)
 
 # NOTE: the parameter TH is > X
 idx <- 4:28
-x <- idx
-y <- as.numeric(tu)[idx]
-plot(x, y, type="s")
+myX <- idx
+myY <- as.numeric(tu)[idx]
+plot(myX, myY, type="s")
 
 dWei <- function(x, th, l, k) {
   a <- k/l
@@ -589,8 +595,8 @@ dWei <- function(x, th, l, k) {
 
 set.seed(112358)
 fit <- robustbase::nlrob(y ~ dWei(x, th = TH, l = L, k = K),
-                         data = data.frame(y = y,
-                                           x = x),
+                         data = data.frame(y = myY,
+                                           x = myX),
                          lower = c(TH = 3.5,
                                    L = 8,
                                    K = 2.5),
@@ -599,8 +605,7 @@ fit <- robustbase::nlrob(y ~ dWei(x, th = TH, l = L, k = K),
                                    K = 3),
                          method = "mtl")
 
-points(x, predict(fit, list(x = x)),
-       col = "#CC00CC55", lwd = 2, type = "s")
+points(x, predict(fit), col = "#CC00CC55", lwd = 2, type = "s")
 
 coef(fit)
 #      TH        L        K
@@ -615,9 +620,9 @@ sum(resid(fit)^2)
 # Similar to normal distribution, but with heavier tails
 # https://en.wikipedia.org/wiki/Logistic_distribution
 
-x <- 0:28
-y <- as.numeric(tu)
-plot(0:28, y, type="s")
+myX <- 0:28
+myY <- as.numeric(tu)
+plot(myX, myY, type="s")
 
 dLogi <- function(x, mu, s) {
   y <- (exp(-(x-mu)/s)) / (s * (1+exp(-(x-mu)/s))^2)
@@ -625,12 +630,11 @@ dLogi <- function(x, mu, s) {
 }
 
 fit <- robustbase::nlrob(y ~ dLogi(x, mu = M, s = S),
-                         data = data.frame(y = y,
-                                           x = 0:28),
+                         data = data.frame(y = myY,
+                                           x = myX),
                          start = c(M = 10, S = 3))
 
-points(x, predict(fit, list(x = x)),
-       col = "#CC00CC55", lwd = 2, type = "s")
+points(x, predict(fit), col = "#CC00CC55", lwd = 2, type = "s")
 
 coef(fit)
 # M         S
@@ -642,12 +646,12 @@ sum(resid(fit)^2)
 
 # ====  2.2.2.6  Log-Logistic distribution                        
 
-# Spercial case of logistic, often used in survival analysis
+# Special case of logistic, often used in survival analysis
 # https://en.wikipedia.org/wiki/Log-logistic_distribution
 
-x <- 0:28
-y <- as.numeric(tu)
-plot(0:28, y, type="s")
+myX <- 0:28
+myY <- as.numeric(tu)
+plot(myX, myY, type="s")
 
 dLogLogi <- function(x, a, b) {
   y <- ((b/a)*(x/a)^(b-1)) / (1+((x/a)^b))^2
@@ -655,12 +659,11 @@ dLogLogi <- function(x, a, b) {
 }
 
 fit <- robustbase::nlrob(y ~ dLogLogi(x, a = A, b = B),
-                         data = data.frame(y = y,
-                                           x = 0:28),
+                         data = data.frame(y = myY,
+                                           x = myX),
                          start = c(A = 9.5, B = 4.8))
 
-points(x, predict(fit, list(x = x)),
-       col = "#CC00CC55", lwd = 2, type = "s")
+points(x, predict(fit), col = "#CC00CC55", lwd = 2, type = "s")
 
 coef(fit)
 #         A         B
@@ -696,8 +699,8 @@ fit <- robustbase::nlrob(tu ~ dNB(x, r = RR, p = P),
                          upper = c(P = 0.99),
                          method = "mtl")
 
-points(x, predict(fit, list(x = x)),
-       col = "#CC00CC55", lwd = 2, type = "s")
+points(x, predict(fit), col = "#CC00CC55", lwd = 2, type = "s")
+
 coef(fit)
 #         P
 # 0.9100729
@@ -728,9 +731,9 @@ which(R == min(R))
 # cf. https://en.wikipedia.org/wiki/Binomial_distribution
 
 
-x <- 0:28
-y <- as.numeric(tu)
-plot(x, y, type="s")
+myX <- 0:28
+myY <- as.numeric(tu)
+plot(myX, myY, type="s")
 
 dBinom <- function(x, s, p) {
   y <- choose(s, x) * (p^x) * ((1-p)^(s-x))
@@ -738,12 +741,11 @@ dBinom <- function(x, s, p) {
 }
 
 fit <- robustbase::nlrob(y ~ dBinom(x, s = S, p = P),
-                         data = data.frame(y = y,
-                                           x = 0:28),
+                         data = data.frame(y = myY,
+                                           x = myX),
                          start = c(S = 240, P = 256/6091))
 
-points(x, predict(fit, list(x = x)),
-       col = "#CC00CC55", lwd = 2, type = "s")
+points(x, predict(fit), col = "#CC00CC55", lwd = 2, type = "s")
 
 coef(fit)
 #            S            P
@@ -752,7 +754,72 @@ coef(fit)
 sum(resid(fit)^2)
 # [1] 1.114272e-06
 
-# Here we go: near perfect fit. But note the parameters! Can you identify the relationship of S and P to our model of choosing unique transcription factors in a random sampling process. Because, honestly: I can't.
+# Here we go: near perfect fit. But note the parameters! Can you identify the
+# relationship of S and P to our model of choosing unique transcription factors
+# in a random sampling process?
+
+# Remember what we started out with:
+points(x, dBinom(x, 240, 256/6091),
+       col = "#00AAFF55", lwd = 2, type = "s")
+
+# The model has improved a lot from our starting-value guess. But how does an
+# effective sample size of 122.78 relate to the actual value of 250 samples? And
+# how does a probability for choosing a transcription factor of 0.0838 relate to
+# having 256 transcription factors among 6091 genes (a fraction of 0.0420)? Well
+# - if you stare at the numbers for a bit you might notice that the fitted
+# sample size is about half of what we had, while the fitted probability is
+# about twice that. Let's correct for the factor of two, and look at the fit ...
+
+points(x, dBinom(x, coef(fit)["S"] * 2 , coef(fit)["P"] / 2),
+       col = "#00FF8899", lwd = 2, type = "s")
+
+# interesting ... that's not so bad ... Essentially what this tells us is: our
+# model is very similar to one in which our effective sample size would have
+# been about 246 genes, not 250, and the number of our genes would have been
+# close to 0.04188461 * 6091 ~= 255 transcription factors, not 256. Close, to -
+# but not almost perfect.
+
+# Incidentally: would you have thought that we can
+# detect the number of transcription factors in our sample +- 1 if we just
+# sample frequently enough?
+
+# Let's examine the effect that applying various factors to size and probability
+# have on our distribution:
+
+
+z <- c(1/8:2 , 1, 2:8, 10, 20, 50)
+myCols <- colorRampPalette(c("#00000022",
+                             "#00000088",
+                             "#DD0000DD",
+                             "#0088FF88",
+                             "#0088FF55",
+                             "#0088FF22"),
+                           alpha=TRUE)(length(z))
+
+myLwd <- rep(1.25, length(z))
+myLwd[z == 1] <- 2.5 # make the actual fitted value stand out
+
+plot(x, y, type="s", ylim =c(0, 0.22), lwd = 5, col="#FF990077")
+
+for (i in seq_along(z)) {
+  points(x, dBinom(x, coef(fit)["S"] * z[i] , coef(fit)["P"] / z[i]),
+         col = myCols[i], type = "s")
+}
+
+legend("topright",
+       legend = sprintf("%3.2f", z),
+       cex = 0.5,
+       col = myCols,
+       lwd = myLwd,
+       bty = "n")
+
+# We see how factors less than 1 applied to our actual sample size and fraction
+# of transcription factors increasingly narrow the distribution; factors larger
+# than one increasingly broaden the distribution but in a much slower manner. A
+# factor of one (i.e. half size, double probability) hits the sweet spot and
+# recaptures the essence of our observation. Clearly, this is a case of
+# fortuitously cancelling errors.
+
 
 # What is the take-home message here?
 #  - The standard Poisson and hypergeometric distributions apply to
@@ -927,7 +994,6 @@ qqplot(dl, dg) # clearly not equal
 
 # =    4  Quantifying the difference  ==========================================
 
-
 # Quantile-quantile plots give us a visual estimate, but how do we quantify the
 # difference between distributions? Let's compare two types of extreme-value
 # distributions, a lognormal distribution with the same distribution that is
@@ -964,7 +1030,7 @@ legend("topright",
 
 # The chi2 test can be used to compare discrete distributions - even though
 # it is not ideal for this purpose.
-# (https://stats.stackexchange.com/questions/113692/test-identicality-of-discrete-distributions)
+# (https://stats.stackexchange.com/questions/113692)
 #
 # Let's draw 100 random variables according to our target distributions
 N <- 100
@@ -989,9 +1055,9 @@ hist(rG1.5, breaks = myBreaks, col = myCols[4])
 # package information - plotrix has _many_ useful utilities to enhance
 # plots or produce informative visualizations.
 
-if (! requireNamespace("plotrix", quietly = TRUE)) {
-  install.packages("plotrix")
-}
+pkg <- "plotrix"
+if (! requireNamespace(pkg, quietly = TRUE)) { install.packages(pkg) }
+
 # Package information:
 #  library(help = plotrix)       # basic information
 #  browseVignettes("plotrix")    # available vignettes
@@ -1137,7 +1203,6 @@ pmfPC <- function(cts, nam) {
   pmf <- pmf + 0.5    # add pseudocounts
   return(pmf/sum(pmf))
 }
-
 
 
 # The definition of the Kullback-Leibler divergence itself is quite simple
