@@ -2,12 +2,14 @@
 #
 # Purpose: Database utilities for ABC learning units.
 #
-# Version 2.2
+# Version 2.3
 #
-# Date:     2017-11  -  2020-10
+# Date:     2017-11  -  2020-11
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           2.3  Bug in treatment of single-column dataframes which returns
+#                a deparsed expression from paste()
 #           2.2  Bugfixes
 #           2.1  Add JSON export functions
 #           2.0  Test all JSON import and prevent addition of duplicates. This
@@ -34,26 +36,26 @@
 #TOC> 
 #TOC>   Section  Title                                   Line
 #TOC> -------------------------------------------------------
-#TOC>   1        INITIALISATIONS AND PARAMETERS            61
-#TOC>   2        PACKAGES                                  66
-#TOC>   3        FUNCTIONS                                 82
-#TOC>   3.01       dbSanitizeSequence()                    85
-#TOC>   3.02       dbConfirmUnique()                      120
-#TOC>   3.03       dbInit()                               138
-#TOC>   3.04       dbAutoincrement()                      178
-#TOC>   3.05       dbAddProtein()                         191
-#TOC>   3.06       dbAddFeature()                         227
-#TOC>   3.07       dbAddTaxonomy()                        258
-#TOC>   3.08       dbAddAnnotation()                      293
-#TOC>   3.09       dbFetchUniProtSeq()                    340
-#TOC>   3.10       dbFetchPrositeFeatures()               386
-#TOC>   3.11       node2text()                            436
-#TOC>   3.12       dbFetchNCBItaxData()                   448
-#TOC>   3.13       UniProtIDmap()                         487
-#TOC>   3.14       dbProt2JSON()                          526
-#TOC>   3.15       dbSeq2JSON()                           611
-#TOC>   3.16       dbRow2JSON()                           640
-#TOC>   4        TESTS                                    660
+#TOC>   1        INITIALISATIONS AND PARAMETERS            63
+#TOC>   2        PACKAGES                                  68
+#TOC>   3        FUNCTIONS                                 84
+#TOC>   3.01       dbSanitizeSequence()                    87
+#TOC>   3.02       dbConfirmUnique()                      122
+#TOC>   3.03       dbInit()                               140
+#TOC>   3.04       dbAutoincrement()                      180
+#TOC>   3.05       dbAddProtein()                         193
+#TOC>   3.06       dbAddFeature()                         229
+#TOC>   3.07       dbAddTaxonomy()                        260
+#TOC>   3.08       dbAddAnnotation()                      295
+#TOC>   3.09       dbFetchUniProtSeq()                    342
+#TOC>   3.10       dbFetchPrositeFeatures()               388
+#TOC>   3.11       node2text()                            438
+#TOC>   3.12       dbFetchNCBItaxData()                   450
+#TOC>   3.13       UniProtIDmap()                         489
+#TOC>   3.14       dbProt2JSON()                          528
+#TOC>   3.15       dbSeq2JSON()                           613
+#TOC>   3.16       dbRow2JSON()                           642
+#TOC>   4        TESTS                                    662
 #TOC> 
 #TOC> ==========================================================================
 
@@ -209,7 +211,7 @@ dbAddProtein <- function(db, jsonDF) {
 
     if (isValid) {
       if (length(jsonDF$name) == 1) { # jsonlite:: oversimplifies
-        jsonDF$sequence <- paste(jsonDF$sequence, collapse = "")
+        jsonDF$sequence <- paste0(unlist(jsonDF$sequence), collapse = "")
       }
       x <- data.frame(ID          = dbAutoincrement(db$protein),
                       name        = jsonDF$name[i],
