@@ -4,12 +4,13 @@
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the RPR-FASTA unit.
 #
-# Version:  1.1
+# Version:  1.1.1
 #
 # Date:     2017-10  -  2020-09
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.1.1  bugfix - wrong function name
 #           1.1    2020 Maintenance. Rewrite validation logic. Add data
 #                  to utilities. Define AACOLS
 #           1.0    New unit.
@@ -32,11 +33,11 @@
 #TOC> 
 #TOC>   Section  Title                                 Line
 #TOC> -----------------------------------------------------
-#TOC>   1        Reading and validating FASTA            44
-#TOC>   1.1        Validating FASTA                      80
-#TOC>   2        Parsing FASTA                          225
-#TOC>   3        Interpreting FASTA                     245
-#TOC>   4        Writing FASTA                          272
+#TOC>   1        Reading and validating FASTA            45
+#TOC>   1.1        Validating FASTA                      81
+#TOC>   2        Parsing FASTA                          227
+#TOC>   3        Interpreting FASTA                     247
+#TOC>   4        Writing FASTA                          274
 #TOC> 
 #TOC> ==========================================================================
 
@@ -215,12 +216,13 @@ FA <- c(">head1",
         ">head3",
         "mn",
         "pqrs")
-validate(FA)     # ... should not create an error
+val(FA)     # ... should not create an error
 
 
 # A somewhat more elaborate validateFA() function was loaded with the
 # ./utilities.R script. It needs a bit more bookkeeping, since NCBI multi-
-# fasta files have space-characters in their spacer lines.
+# fasta files have space-characters in their spacer lines. Try it ...
+validateFA(FA)
 
 # =    2  Parsing FASTA  =======================================================
 
