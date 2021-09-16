@@ -3,12 +3,13 @@
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the RPR-Scripting_data_downloads unit.
 #
-# Version:  1.2
+# Version:  1.2.1
 #
-# Date:     2017-10  -  2020-09
+# Date:     2017-10  -  2021-09
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.2.1  2021 Maintenance
 #           1.2    2020 Updates
 #           1.1    Change from require() to requireNamespace(),
 #                      use <package>::<function>() idiom throughout
@@ -32,9 +33,9 @@
 #TOC> 
 #TOC>   Section  Title                                       Line
 #TOC> -----------------------------------------------------------
-#TOC>   1        Working with NCBI eUtils                      42
-#TOC>   1.1        Task - fetchNCBItaxData() function         144
-#TOC>   2        Task solutions                               151
+#TOC>   1        Working with NCBI eUtils                      43
+#TOC>   1.1        Task - fetchNCBItaxData() function         145
+#TOC>   2        Task solutions                               152
 #TOC> 
 #TOC> ==========================================================================
 
@@ -155,6 +156,11 @@ URL <- paste0(eUtilsBase,
 
 # Test:
 dbFetchNCBItaxData("XP_001837394")
+
+# Expected outout:
+# ----------------
+# taxID                         organism
+# 1 240176 Coprinopsis cinerea okayama7#130
 
 
 # [END]
