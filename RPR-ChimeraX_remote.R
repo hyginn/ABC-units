@@ -3,12 +3,13 @@
 # Purpose:  A Bioinformatics Course:
 #              R code demonstrating remote scripting of ChimeraX.
 #
-# Version:  1.0
+# Version:  1.0.1
 #
 # Date:     2020-09
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.0.1  2021 Minimal updates
 #           1.0    First ABC units version
 #
 #
@@ -29,10 +30,10 @@
 #TOC> 
 #TOC>   Section  Title                                  Line
 #TOC> ------------------------------------------------------
-#TOC>   1        ChimeraX REMOTE SCRIPTING                40
-#TOC>   1.1        Defining a Port                        58
-#TOC>   1.2        Open ChimeraX                          80
-#TOC>   2        WORKED EXAMPLE: SUPERPOSITION           112
+#TOC>   1        ChimeraX REMOTE SCRIPTING                41
+#TOC>   1.1        Defining a Port                        59
+#TOC>   1.2        Open ChimeraX                          81
+#TOC>   2        WORKED EXAMPLE: SUPERPOSITION           113
 #TOC> 
 #TOC> ==========================================================================
 
@@ -79,7 +80,7 @@ capabilities("sockets")   # MUST be TRUE. If not, don't continue.
 
 # ==   1.2  Open ChimeraX  =====================================================
 
-#  - Open a fresh, new session of ChimeraX
+#  - Open a fresh, new session of recently updated version of ChimeraX
 #  - type:
 #
 #       remotecontrol rest start port 61803
