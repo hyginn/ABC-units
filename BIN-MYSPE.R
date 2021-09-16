@@ -3,6 +3,23 @@
 # Purpose: A Bioinformatics Course:
 #              R code accompanying the BIN-MYSPE unit
 #
+# ==============================================================================
+#
+#                                   S T O P :
+#                                   =========
+#
+#                                     2021
+#                                UPDATE WARNING!
+#                                ---------------
+#
+#  This file has not yet been updated for coursework.  You may inspect it, but
+#  do NOT use it for actual coursework as long as this warning is here.  Parts
+#  of the code and data will change, and if you use this outdated code it will
+#  break your setup and workflow.
+#
+# ==============================================================================
+#
+#
 # Version: 1.2
 #
 # Date:    2020-10-01
@@ -31,7 +48,7 @@
 
 
 #TOC> ==========================================================================
-#TOC> 
+#TOC>
 #TOC>   Section  Title                                             Line
 #TOC> -----------------------------------------------------------------
 #TOC>   1        PREPARATIONS                                        49
@@ -42,7 +59,7 @@
 #TOC>   4.2        Visualizing proportions: Pie chart               161
 #TOC>   4.3        Visualizing proportions: Nested squares          238
 #TOC>   4.4        Visualizing proportions: Sankey diagrams         275
-#TOC> 
+#TOC>
 #TOC> ==========================================================================
 
 

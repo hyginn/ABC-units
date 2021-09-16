@@ -3,6 +3,21 @@
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the BIN-FUNC-Domain_annotation unit.
 #
+# ==============================================================================
+#
+#                                   S T O P :
+#                                   =========
+#
+#                                     2021
+#                                UPDATE WARNING!
+#                                ---------------
+#
+#  This file has not yet been updated for coursework.  You may inspect it, but
+#  do NOT use it for actual coursework as long as this warning is here.  Parts
+#  of the code and data will change, and if you use this outdated code it will
+#  break your setup and workflow.
+#
+# ==============================================================================
 # Version:  1.4
 #
 # Date:     2017-11  -  2020-10
@@ -31,7 +46,7 @@
 
 
 #TOC> ==========================================================================
-#TOC> 
+#TOC>
 #TOC>   Section  Title                                                 Line
 #TOC> ---------------------------------------------------------------------
 #TOC>   1        Update your database script                             50
@@ -43,7 +58,7 @@
 #TOC>   3        SHARING DATA                                           286
 #TOC>   3.1        Post MBP1_MYSPE as JSON data                         302
 #TOC>   3.2        Import shared MBP1_MYSPE from the Wiki               325
-#TOC> 
+#TOC>
 #TOC> ==========================================================================
 
 
@@ -105,7 +120,7 @@
 # Then SKIP the next section.
 #
 #
-# ===   1.1.2  AFTER "BIN-ALI-Optimal_sequence_alignment"  
+# ===   1.1.2  AFTER "BIN-ALI-Optimal_sequence_alignment"
 #
 #   IF YOU HAVE ALREADY COMPLETED THE BIN-ALI-OPTIMAL_SEQUENCE_ALIGNMENT UNIT:
 #

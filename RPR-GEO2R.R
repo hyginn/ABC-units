@@ -3,6 +3,22 @@
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the RPR_GEO2R unit.
 #
+#
+# ==============================================================================
+#
+#                                   S T O P :
+#                                   =========
+#
+#                                     2021
+#                                UPDATE WARNING!
+#                                ---------------
+#
+#  This file has not yet been updated for coursework.  You may inspect it, but
+#  do NOT use it for actual coursework as long as this warning is here.  Parts
+#  of the code and data will change, and if you use this outdated code it will
+#  break your setup and workflow.
+#
+# ==============================================================================
 # Version:  1.3
 #
 # Date:     2017-09  -  2020-09
@@ -291,6 +307,9 @@ file.show("./data/SGD_features.README.txt")
 readLines("./data/SGD_features.tab", n = 5)
 
 # ==   4.1  Task - Read a table of features  ===================================
+
+#      Note: this task asks you to write code. You MUST identify your
+#      sources when you draw on other's examples.
 
 # This data file is rather typical of datasets that you will encounter "in the
 # wild". To proceed, you need to write code to read it into an R-object. Develop
