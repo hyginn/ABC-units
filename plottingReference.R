@@ -3,64 +3,66 @@
 # Purpose: Reference to graphical output in R.
 #
 #
-# Version: 2.0
+# Version: 2.1
 #
-# Date:    2017  09  -  2020 10
+# Date:    2017 09  -  2021 09
 # Author:  Boris Steipe (boris.steipe@utoronto.ca)
 #
+# V 2.1    First minor updates 2021
 # V 2.0    Comprehensive reference with basic and advanced options based on
 #          an integrated yeast gene expression dataset. Full rewrite of most
 #          sections.
 # V 1.1    Stylistic improvements, code polish, and additional examples
 # V 1.0    Digest from "plotting reference" files
 #
-# ToDo:
+# ToDo:    Demo 6.3.2 in parallel plots
 #
 #
 
 
 #TOC> ==========================================================================
-#TOC>
-#TOC>   Section  Title                                              Line
-#TOC> ------------------------------------------------------------------
-#TOC>   01       INITIALIZE                                           67
-#TOC>   02       THIS REFERENCE ...                                   72
-#TOC>   02.1       Dataset Documentation                              79
-#TOC>   03       PROPORTIONS AND DISTRIBUTIONS                       191
-#TOC>   03.1       barplot()                                         196
-#TOC>   03.2       pie()                                             220
-#TOC>   03.3       boxplot()                                         252
-#TOC>   03.4       hist()                                            310
-#TOC>   03.4.1         overlaying histograms                         355
-#TOC>   04       THE plot() FUNCTION                                 398
-#TOC>   04.1       line plots                                        402
-#TOC>   05       ENCODING INFORMATION: SYMBOL, SIZE, COLOR           501
-#TOC>   05.1       pch ("plotting character" symbols)                507
-#TOC>   05.1.1         Line types                                    682
-#TOC>   06       COLOUR                                              704
-#TOC>   06.1       Colours by number                                 712
-#TOC>   06.2       Colours by name                                   730
-#TOC>   06.3       Colours as hex-triplets                           756
-#TOC>   06.3.1         Inbuilt palettes                              811
-#TOC>   06.3.2         Custom palettes                               887
-#TOC>   06.3.3         Transparency: The Alpha Channel               937
-#TOC>   06.4       abline(), lines()  and segments()                 983
-#TOC>   07       AXES                                               1017
-#TOC>   08       LEGENDS                                            1054
-#TOC>   08.1       basic legends                                    1057
-#TOC>   08.2       Color bars                                       1061
-#TOC>   09       LAYOUT                                             1180
-#TOC>   10       TEXT                                               1215
-#TOC>   11       DRAWING ON PLOTS                                   1243
-#TOC>   12       IMAGES                                             1310
-#TOC>   13       CONTOUR LINES                                      1315
-#TOC>   14       3D PLOTS                                           1320
-#TOC>   15       GRAPHS AND NETWORKS                                1325
-#TOC>   16       OTHER GRPAHICS PACKAGES                            1330
-#TOC>   17       INTERACTIVE PLOTS                                  1354
-#TOC>   17.1       locator()                                        1358
-#TOC>   17.2       plotly::                                         1361
-#TOC>
+#TOC> 
+#TOC>   Section  Title                                               Line
+#TOC> -------------------------------------------------------------------
+#TOC>   01       INITIALIZE                                            69
+#TOC>   02       THIS REFERENCE ...                                    74
+#TOC>   02.1       Dataset Documentation                               81
+#TOC>   03       PROPORTIONS AND DISTRIBUTIONS                        193
+#TOC>   03.1       barplot()                                          198
+#TOC>   03.2       pie()                                              222
+#TOC>   03.3       boxplot()                                          254
+#TOC>   03.4       hist()                                             312
+#TOC>   03.4.1         overlaying histograms                          357
+#TOC>   04       THE plot() FUNCTION                                  400
+#TOC>   04.1       line plots                                         404
+#TOC>   05       ENCODING INFORMATION: SYMBOL, SIZE, COLOuR           503
+#TOC>   05.1       pch ("plotting character" symbols)                 509
+#TOC>   05.1.1         Line types                                     684
+#TOC>   05.2       cex ("character expansion" size)                   708
+#TOC>   06       COLOUR                                               768
+#TOC>   06.1       Colours by number                                  776
+#TOC>   06.2       Colours by name                                    794
+#TOC>   06.3       Colours as hex-triplets                            820
+#TOC>   06.3.1         Inbuilt palettes                               875
+#TOC>   06.3.2         Custom palettes                                952
+#TOC>   06.3.3         Transparency: The Alpha Channel               1002
+#TOC>   06.4       abline(), lines()  and segments()                 1047
+#TOC>   07       AXES                                                1081
+#TOC>   08       LEGENDS                                             1118
+#TOC>   08.1       basic legends                                     1121
+#TOC>   08.2       Color bars                                        1125
+#TOC>   09       LAYOUT                                              1246
+#TOC>   10       TEXT                                                1281
+#TOC>   11       DRAWING ON PLOTS                                    1309
+#TOC>   12       IMAGES                                              1376
+#TOC>   13       CONTOUR LINES                                       1381
+#TOC>   14       3D PLOTS                                            1386
+#TOC>   15       GRAPHS AND NETWORKS                                 1391
+#TOC>   16       OTHER GRPAHICS PACKAGES                             1396
+#TOC>   17       INTERACTIVE PLOTS                                   1420
+#TOC>   17.1       locator()                                         1424
+#TOC>   17.2       plotly::                                          1427
+#TOC> 
 #TOC> ==========================================================================
 
 
@@ -352,7 +354,7 @@ hist(SC$mdl$peaks,                         # gene expression first peaks
      col = myPal(81))                      # get 81 color values from myPal()
 
 
-# ===   03.4.1  overlaying histograms
+# ===   03.4.1  overlaying histograms                     
 
 # Histograms can be plotted one-over another to compare them
 # Example: when do genes with different GO term annotations first peak?
@@ -679,7 +681,7 @@ legend ("bottom",
         box.col = "#DDDDDD",
         bg = "#FFFFFF")
 
-# ===   05.1.1  Line types
+# ===   05.1.1  Line types                                
 
 # Basically all plots take arguments lty to define the line type, and lwd
 # to define line width
@@ -703,7 +705,7 @@ for (i in 1:10) {
 
 
 
-# ==   05.1  cex ("character expansion" size)  =============================
+# ==   05.2  cex ("character expansion" size)  =================================
 
 # The size of characters can be controlled with the cex parameter. cex takes a
 # vector of numbers, mapped to the vecors of plotted elements. The usual R
@@ -870,7 +872,7 @@ N <- 40
 barplot(rep(1, N), col = col2hex(myCols,pal=TRUE,N=N) )
 
 
-# ===   06.3.1  Inbuilt palettes
+# ===   06.3.1  Inbuilt palettes                          
 
 # In R, a palette is a function (!) that takes a number as its argument and
 # returns that number of colors, those colors can then be used to color points
@@ -947,7 +949,7 @@ RColorBrewer::display.brewer.all(colorblindFriendly = TRUE)
 plotPal(RColorBrewer::brewer.pal(11, "PuOr"), N = 11)
 
 
-# ===   06.3.2  Custom palettes
+# ===   06.3.2  Custom palettes                           
 #
 # Bespoke palettes are easily created with colorRampPalette(). The function
 # returns a palette, i.e. a function (not a vector of colors). You assign the
@@ -997,7 +999,7 @@ plotPal(myOutliers)
 # also an option to extract palettes from user-supplied images.
 
 
-# ===   06.3.3  Transparency: The Alpha Channel
+# ===   06.3.3  Transparency: The Alpha Channel           
 
 # R colours are actually specified as quartets: the fourth value
 # the "Alpha channel" defines the transparency. Setting this to
