@@ -33,7 +33,7 @@
 
 
 #TOC> ==========================================================================
-#TOC> 
+#TOC>
 #TOC>   Section  Title                                           Line
 #TOC> ---------------------------------------------------------------
 #TOC>   1        Setup and data                                    50
@@ -43,7 +43,7 @@
 #TOC>   2.3        Betweenness Centrality                         184
 #TOC>   3        biomaRt                                          231
 #TOC>   4        Task for submission                              302
-#TOC> 
+#TOC>
 #TOC> ==========================================================================
 
 
@@ -190,7 +190,7 @@ BC <- igraph::centr_betw(gSTR)
 # remember: BC$res contains the results
 head(BC$res)
 
-BC$res[1]   # betweeness centrality of node 1 in the graph ...
+BC$res[1]   # betweenness centrality of node 1 in the graph ...
 # ... which one is node 1?
 igraph::V(gSTR)[1]
 
@@ -202,7 +202,7 @@ names(BC$res) <- as.character(1:length(BC$res))
 sBC <- sort(BC$res, decreasing = TRUE)
 head(sBC)
 
-# This ordered vector means: node 3 has the highest betweeness centrality,
+# This ordered vector means: node 3 has the highest betweenness centrality,
 # node 721 has the second highest, etc.
 
 (BCsel <- as.numeric(names(sBC)[1:10]))
