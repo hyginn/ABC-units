@@ -4,12 +4,13 @@
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the RPR-FASTA unit.
 #
-# Version:  1.1.1
+# Version:  1.1.2
 #
-# Date:     2017-10  -  2020-09
+# Date:     2017-10  -  2021-09
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.1.2  style update
 #           1.1.1  bugfix - wrong function name
 #           1.1    2020 Maintenance. Rewrite validation logic. Add data
 #                  to utilities. Define AACOLS
@@ -30,7 +31,7 @@
 
 
 #TOC> ==========================================================================
-#TOC> 
+#TOC>
 #TOC>   Section  Title                                 Line
 #TOC> -----------------------------------------------------
 #TOC>   1        Reading and validating FASTA            45
@@ -38,7 +39,7 @@
 #TOC>   2        Parsing FASTA                          227
 #TOC>   3        Interpreting FASTA                     247
 #TOC>   4        Writing FASTA                          274
-#TOC> 
+#TOC>
 #TOC> ==========================================================================
 
 
@@ -56,7 +57,8 @@ faMBP1 <- readLines("./data/S288C_YDL056W_MBP1_coding.fsa")
 # The warning is generated because the programmer at the NCBI who implemented
 # the code to write this FASTA file neglected to place a line-break character
 # after the last sequence character. While this is not technically incorrect,
-# it is poor practice.
+# it is poor practice: the resulting file can't be distinguished from one that
+# has been truncated in transmission.
 
 head(faMBP1)
 
