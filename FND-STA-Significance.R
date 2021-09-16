@@ -302,7 +302,7 @@ set.seed(NULL)                     # reset the RNG
 
 
 chSep(w)
-# 3.273 ... that's actually less than what we had before.
+# 3.773 ... that's actually less than what we had before.
 
 # Let's do this 10000 times and record the results (takes a few seconds):
 
