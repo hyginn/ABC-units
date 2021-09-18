@@ -2,10 +2,11 @@
 #
 # Miscellaneous R code to support the project
 #
-# Version: 1.4
-# Date:    2017-09 - 2020-09
+# Version: 1.5
+# Date:    2017-09 - 2021-09
 # Author:  Boris Steipe
 #
+# V 1.5    rewrite getMYSPE()
 # V 1.4    Maintenance, and new validation utilities
 # V 1.3.1  prefix Biostrings:: to subseq()
 # V 1.3    load msa support functions
@@ -20,32 +21,32 @@
 
 
 #TOC> ==========================================================================
-#TOC>
+#TOC> 
 #TOC>   Section  Title                                       Line
 #TOC> -----------------------------------------------------------
-#TOC>   1        SCRIPTS TO SOURCE                             52
-#TOC>   2        PACKAGES                                      58
-#TOC>   3        DATA & CONSTANTS                              69
-#TOC>   4        SUPPORT FUNCTIONS                            116
-#TOC>   4.01       objectInfo()                               119
-#TOC>   4.02       biCode()                                   147
-#TOC>   4.03       sameSpecies()                              181
-#TOC>   4.04       validateFA()                               201
-#TOC>   4.05       readFASTA()                                309
-#TOC>   4.06       writeFASTA()                               344
-#TOC>   4.07       pBar()                                     377
-#TOC>   4.08       waitTimer()                                399
-#TOC>   4.09       fetchMSAmotif()                            427
-#TOC>   4.10       H() (Shannon entropy)                      471
-#TOC>   4.11       CX() (ChimeraX remote command)             484
-#TOC>   5        FUNCTIONS TO CUSTOMIZE ASSIGNMENTS           541
-#TOC>   5.01       seal()                                     543
-#TOC>   5.02       getMYSPE()                                 547
-#TOC>   5.03       selectPDBrep()                             558
-#TOC>   5.04       sealKey()                                  593
-#TOC>   5.05       selectChi2()                               623
-#TOC>   5.06       selectENSP()                               636
-#TOC>
+#TOC>   1        SCRIPTS TO SOURCE                             53
+#TOC>   2        PACKAGES                                      59
+#TOC>   3        DATA & CONSTANTS                              70
+#TOC>   4        SUPPORT FUNCTIONS                            117
+#TOC>   4.01       objectInfo()                               120
+#TOC>   4.02       biCode()                                   148
+#TOC>   4.03       sameSpecies()                              182
+#TOC>   4.04       validateFA()                               202
+#TOC>   4.05       readFASTA()                                310
+#TOC>   4.06       writeFASTA()                               345
+#TOC>   4.07       pBar()                                     378
+#TOC>   4.08       waitTimer()                                400
+#TOC>   4.09       fetchMSAmotif()                            428
+#TOC>   4.10       H() (Shannon entropy)                      472
+#TOC>   4.11       CX() (ChimeraX remote command)             485
+#TOC>   5        FUNCTIONS TO CUSTOMIZE ASSIGNMENTS           542
+#TOC>   5.01       seal()                                     544
+#TOC>   5.02       getMYSPE()                                 548
+#TOC>   5.03       selectPDBrep()                             564
+#TOC>   5.04       sealKey()                                  599
+#TOC>   5.05       selectChi2()                               629
+#TOC>   5.06       selectENSP()                               642
+#TOC> 
 #TOC> ==========================================================================
 
 
@@ -545,12 +546,17 @@ seal <- function(x.1L) { .Call(digest:::digest_impl,x.1L,3L,-1L,-0,-0,-0) }
 
 
 # ==   5.02  getMYSPE()  =======================================================
+# DEV: x <- 1003141593
+
 getMYSPE <- function(x) {
-  dat <- readRDS("./data/sDat.rds")
-  map <- readRDS("./data/MYSPEmap.rds")
-  key <- gsub(".+(....).$","\\1", x)
-  x <- dat$species[map[key,"iMYSPE"]]
-  names(x) <- dat$taxID[map[key,"iMYSPE"]]
+  dat <- readRDS("./data/MYSPEdat.rds")
+  key <- digest::digest(as.character(x), algo = "md5")
+  if (length(grep(key, rownames(dat))) != 1) {
+    stop(paste("This student number is not recognized.",
+               "If this is not a typo, please contact your instructor."))
+  }
+  x <- dat[key, "species"]
+  names(x) <- dat[key, "taxID"]
   return(x)
 }
 
