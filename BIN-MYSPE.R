@@ -3,28 +3,13 @@
 # Purpose: A Bioinformatics Course:
 #              R code accompanying the BIN-MYSPE unit
 #
-# ==============================================================================
 #
-#                                   S T O P :
-#                                   =========
+# Version: 1.3
 #
-#                                     2021
-#                                UPDATE WARNING!
-#                                ---------------
-#
-#  This file has not yet been updated for coursework.  You may inspect it, but
-#  do NOT use it for actual coursework as long as this warning is here.  Parts
-#  of the code and data will change, and if you use this outdated code it will
-#  break your setup and workflow.
-#
-# ==============================================================================
-#
-#
-# Version: 1.2
-#
-# Date:    2020-10-01
+# Date:    2017-09 - 2021-09
 # Author:  Boris Steipe (boris.steipe@utoronto.ca)
 #
+# V 1.3    2021 update of MYSPE mechanics; fix a bug no one had complained about
 # V 1.2    Reorganized proportional plot section into a "further reading"
 #          section, added nested-box, and sankey plot visualization of
 #          proportions. Introduced plotly.
@@ -33,7 +18,7 @@
 # V 1.0    Final code, after rewriting BLAST parser and updating MYSPElist
 # V 0.1    First code copied from BCH441_A03_makeMYSPElist.R
 #
-# TODO:
+# TODO:    Sample solution for sankey plot function.
 #
 #
 # == HOW TO WORK WITH LEARNING UNIT FILES ======================================
@@ -48,18 +33,18 @@
 
 
 #TOC> ==========================================================================
-#TOC>
+#TOC> 
 #TOC>   Section  Title                                             Line
 #TOC> -----------------------------------------------------------------
-#TOC>   1        PREPARATIONS                                        49
-#TOC>   2        SUITABLE MYSPE SPECIES                              61
-#TOC>   3        ADOPT "MYSPE"                                       85
-#TOC>   4        FURTHER READING: PLOTTING PROPORTIONS              124
-#TOC>   4.1        Percentages                                      142
-#TOC>   4.2        Visualizing proportions: Pie chart               161
-#TOC>   4.3        Visualizing proportions: Nested squares          238
-#TOC>   4.4        Visualizing proportions: Sankey diagrams         275
-#TOC>
+#TOC>   1        PREPARATIONS                                        51
+#TOC>   2        SUITABLE MYSPE SPECIES                              63
+#TOC>   3        ADOPT "MYSPE"                                       87
+#TOC>   4        FURTHER READING: PLOTTING PROPORTIONS              126
+#TOC>   4.1        Percentages                                      144
+#TOC>   4.2        Visualizing proportions: Pie chart               163
+#TOC>   4.3        Visualizing proportions: Nested squares          241
+#TOC>   4.4        Visualizing proportions: Sankey diagrams         278
+#TOC> 
 #TOC> ==========================================================================
 
 
@@ -112,8 +97,8 @@ if (! exists("myStudentNumber")) {
 
 # If this produced NA, your Student Number may not be correct, or you are not in
 # my class-list. Contact me. Otherwise, this should have printed a species name,
-# and the taxonomy ID of its genome-sequenced strain. This is your unique species
-# for this course. Note it in your journal ...
+# and the taxonomy ID of its genome-sequenced strain. This is your unique
+# speciesfor this course. Note it in your journal ...
 
 biCode(MYSPE) # and also note it's "BiCode" ...
 ( myTaxID <- names(MYSPE) )  # and its taxID
@@ -177,7 +162,8 @@ cat(sprintf("\n%s comprise %5.2f%% of fungi (%d of %d).",
 
 # ==   4.2  Visualizing proportions: Pie chart  ================================
 
-# Often, we will use a pie chart instead. Pie charts are rather informal types of plots, not well suited for analysis. But easy to do:
+# Often, we will use a pie chart instead. Pie charts are rather informal types
+# of plots, not well suited for analysis. But easy to do:
 
 # Define four colors to identify the four categories
 pCol <- c("#ed394e", "#ff9582", "#ffd5c4", "#f2f2f0")
@@ -189,7 +175,7 @@ oPar <- par(mar = c(0.1, 0.1, 2.5, 0.1))   # set margins to ~ 0
 pie(c(nSpecies,                            # subtract numbers since these
       nGenus - nSpecies,                   # categories are mutually contained
       nOrder - nGenus - nSpecies,          # in each other
-      nFungi - nOrder - nGenus -nSpecies),
+      nFungi - nOrder - nGenus - nSpecies),
       labels = "",
       radius = 0.9,
       main = "MYSPE in genome-sequenced fungi",
@@ -227,7 +213,7 @@ pie(myTbl)
 # ... we can improve this quickly with a bit of tweaking:
 
 N <- length(myTbl)
-sel <- myOrder == names(myTbl) # TRUE for the MYSPE order, FALSE elsewhere
+sel <- myOr == names(myTbl) # TRUE for the MYSPE order, FALSE elsewhere
 
 myCol <- rep(pCol[4], N)       # N elements of pCol[1]
 myCol[sel] <- pCol[1]          # replace this one color
@@ -305,7 +291,14 @@ if (! requireNamespace("plotly")) {
 #  browseVignettes("plotly")    # available vignettes
 #  data(package  = "plotly")    # available datasets
 
-# Here, we use the plotly package that wraps a very well developed javascript library with many options for interactive plots.
+# Here, we use the plotly package that wraps a very well developed javascript
+# library with many options for interactive plots. I am producing this plot
+# hard-coded for the sample organism "Sporothrix schenkii"; you would need
+# to change the code to adapt it to your own MYSPE - or even build a function
+# for this. Do try this if you have a bit of coding experience, sankey diagrams
+# are a good way to show hierarchical data relations - and if you get this
+# working for your own organism you can be proud that you have understood
+# how preparing the data works.
 
 
 myNodes <- list(label = c("Fungi (1014)",              # 0 <- node ID
