@@ -3,12 +3,13 @@
 # Purpose:  Create a list of genome sequenced fungi with protein annotations and
 #               Mbp1 homologues.
 #
-# Version: 1.3
+# Version: 1.4
 #
-# Date:    2016  09  -  2020  09
+# Date:    2016  09  -  2021  09
 # Author:  Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions
+#          1.4    New retrieval logic
 #          1.3    Rewrite to change datasource. NCBI has not been updated
 #                   since 2012. Use ensembl fungi as initial source.
 #          1.2    Change from require() to requireNamespace()
@@ -17,8 +18,6 @@
 #          1.0    First code 2016
 #
 # TODO:
-#
-#   type out workflow
 #
 # ==============================================================================
 #
@@ -40,15 +39,15 @@
 #TOC> 
 #TOC>   Section  Title                                    Line
 #TOC> --------------------------------------------------------
-#TOC>   1        The strategy                               56
-#TOC>   2        PACKAGES AND INITIALIZATIONS               68
-#TOC>   3        ENSEMBL FUNGI                              76
-#TOC>   3.1        Import                                   79
-#TOC>   4        BLAST SEARCH                              156
-#TOC>   4.1        find homologous proteins                162
-#TOC>   4.2        Identify species in "hits"              193
-#TOC>   5        MERGE ENSEMBL AND BLAST RESULTS           283
-#TOC>   6        STUDENT NUMBERS                           366
+#TOC>   1        The strategy                               55
+#TOC>   2        PACKAGES AND INITIALIZATIONS               67
+#TOC>   3        ENSEMBL FUNGI                              75
+#TOC>   3.1        Import                                   78
+#TOC>   4        BLAST SEARCH                              155
+#TOC>   4.1        find homologous proteins                161
+#TOC>   4.2        Identify species in "hits"              192
+#TOC>   5        MERGE ENSEMBL AND BLAST RESULTS           282
+#TOC>   6        STUDENT NUMBERS                           375
 #TOC> 
 #TOC> ==========================================================================
 
@@ -196,7 +195,7 @@ BLASThits <- readRDS(file = "data/BLASThits.rds")
 # we are only interested in the species names that it contains.
 
 # How many hits in the list?
-length(BLASThits$hits)
+length(BLASThits$hits)      # 1,134
 
 # Let's look at a hit somewhere down the list
 str(BLASThits$hit[[277]])
@@ -239,7 +238,7 @@ sum(eVals == 0)
 plot(log(eVals[eVals > 0]), col = "#CC0000")
 
 # This is very informative: I would suspect that the first ten or so are
-# virtually identical to the yeast protein, then we have about 700 hits with
+# virtually identical to the yeast protein, then we have about 800 hits with
 # decreasing similarity, and then about 200 more that may actually be false
 # positives. Also - we plotted them by index, that means the table is SORTED:
 # Lower E-values strictly come before higher E-values.
@@ -271,7 +270,7 @@ BLASTspecies <- BLASTspecies[ ! duplicated(BLASTspecies)]
 # check the number again:
 length(BLASTspecies)
 # Think a bit about this: what may be the biological reason to find that
-# on average, in 300 fungi across the entire phylogenetic tree, we have
+# on average, in 388 fungi across the entire phylogenetic tree, we have
 # three sequences that are homologous to yeast Mbp1?
 
 # Let's look at the distribution of E-values in this selection (Subsetting FTW):
@@ -342,6 +341,11 @@ length(unique(sDat$species))
 length(unique(sDat$genus))
 length(unique(sDat$order))
 
+# I need an extra species for admin purposes later on ...
+sel <- grep("Sporothrix schenckii", sDat$species)
+SPOSCdat <- sDat[sel, ]
+sDat <- sDat[-sel, ]
+
 # To get the final dataset, we remove the reference species with their
 # entire orders ...
 REForders <- unique(sDat$order[sDat$species %in% REFspecies])
@@ -355,9 +359,14 @@ sDat   <- sDat[ ! sel , ]
 # ... but all of them
 sum(REFspecies %in% REFdat$species)
 
-# ... and we have enough left in sDat to prune sDat to unique genus ...
+# ... and we have enough left in sDat to prune sDat to unique genus
 sDat <- sDat[ ! duplicated(sDat$genus) , ]
+nrow(sDat)   # 84
 
+# I add back "Sporothrix schenckii" ...
+sDat <- rbind(SPOSCdat, sDat)
+
+# ... and save for future use.
 # saveRDS(sDat, file = "data/sDat.rds")
 # saveRDS(REFdat, file = "data/REFdat.rds")
 
@@ -366,44 +375,58 @@ sDat <- sDat[ ! duplicated(sDat$genus) , ]
 # =    6  STUDENT NUMBERS  =====================================================
 #
 # An asymmetric function to retrieve a MYSPE species
+#
+sDat <- readRDS(file = "data/sDat.rds")
 
-students <- read.csv("../BCH441-2020-students.csv")
+students <- read.csv("../BCH441-2021-students.csv")
+sN <- students$Integration.ID
+sN <- sN[! is.na(sN)]
+sN <- as.character(sN)
+sN <- c("1003141593", sN)  # will map to  "Sporothrix schenckii"
 
-sN <- students$Student.Number
-range(sN)
-any(duplicated(gsub(".+(.......)$", "\\1", sN)))
-
-N <- 7
-x <- numeric(N)
-for (i in 1:N) {
-  x[i] <- H(substr(gsub(".+(.......)$", "\\1", sN), i, i))
-}
-plot(x, col = "#BB0000", type = "b")
-
-keys <- as.numeric(gsub(".+(....).$", "\\1", sN))
-any(duplicated(keys))
-
-# =====
 set.seed(112358)
-names(sN) <- sample(1:nrow(sDat), length(sN))
+theseSpecies <- sDat[sample(1:nrow(sDat)), ]
+all(sort(theseSpecies$name) == sort(sDat$name))
+nrow((theseSpecies))
+(iX <- grep("Sporothrix schenckii", theseSpecies$name))
+theseSpecies <- rbind(theseSpecies[iX, ], theseSpecies[-iX, ])
+rndMin <-  992000000
+rndMax <- 1020000000
+N <- 10000
+keys <- as.character(sample(rndMin:rndMax, N + 1000))
+keys <- keys[! (keys %in% sN)]
+keys <- keys[1:N]
+keys[1:length(sN)] <- sN
 
-MYSPEmap <- data.frame(keys = sprintf("%04d", 0:9999),
-                       iMYSPE = sample(1:nrow(sDat), 10000, replace = TRUE))
-rownames(MYSPEmap) <- MYSPEmap$keys
+nRep <- floor(N/nrow(theseSpecies))
+MYSPEdat <- theseSpecies
+for(i in 1:nRep) {
+  MYSPEdat <- rbind(MYSPEdat, theseSpecies)
+}
+MYSPEdat <- MYSPEdat[1:N, ]
+for (i in 1:N) {
+  rownames(MYSPEdat)[i] <- digest::digest(keys[i], algo = "md5")
+}
+set.seed(NULL)
+MYSPEdat <- MYSPEdat[sample(1:N), ]
 
-for (i in 1:length(sN)) {
-  rMap <- gsub(".+(....).$", "\\1", sN[i])
-  MYSPEmap[rMap, "iMYSPE"] <- as.integer(names(sN)[i])
+# saveRDS(MYSPEdat, file = "data/MYSPEdat.rds")
+
+# === validate
+x <- character()
+for (n in sN) {
+  sp <- getMYSPE(n)
+  if (length(sp) != 1) {
+    stop(print(as.character(n)))
+  } else {
+    x <- c(x, sp)
+  }
 }
 
-# saveRDS(MYSPEmap, "./data/MYSPEmap.rds")
+# === species for late-comers
+y <- unique(MYSPEdat$species)
+print(y[!(y %in% x)])
 
-getMYSPE <- function(x) {
-  dat <- readRDS("./data/sDat.rds")
-  map <- readRDS("./data/MYSPEmap.rds")
-  key <- gsub(".+(....).$", "\\1", x)
-  return(dat$species[map[key, "iMYSPE"]])
-}
 
 # === validate
 l <- length(sN)
