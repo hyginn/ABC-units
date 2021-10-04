@@ -91,4 +91,39 @@ if (default.stringsAsFactors()) {
   cat("\n")
 }
 
+errText <- list()
+errText[["noProfileFile"]] <- '
+Your PROFILE FILE does not exist. This problem must be fixed to continue.
+
+  The code expects the file "./myScripts/.myProfile.R" to exist and to
+  contain your correct eMail address and student number. Detailed
+  instructions were given when you first ran the init() command.
+
+  Try running init() again and follow the instructions. Reload youR RStudio
+  session and start over with this file.
+
+  If this does not fix the problem, ask for help.
+'
+
+errText[["noStudentNumber"]] <- '
+Your STUDENT NUMBER has not been defined. This problem must be fixed to continue.
+
+  The code expects the file "./myScripts/.myProfile.R" to exist and to
+  contain your correct eMail address and student number. This file gets
+  sourced when you start a new R-session, but since you see this error
+  message there was a problem.
+
+  Perhaps you need to restart your R-session. Try closing the RStudio
+  project and reopening it from the File > Recent Projects menu.
+
+  Perhaps there was a syntax error in your file. Then not all the
+  instructions in the file are executed. Check the file: is your
+  email perhpas not defined? Or did you type it without qwuoataion
+  marks?
+
+  Try fixing problems, and then restart R as described above.
+
+  If none of this fixes the problem, ask for help.
+'
+
 # [END]

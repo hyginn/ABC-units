@@ -4,11 +4,12 @@
 #              R code accompanying the BIN-MYSPE unit
 #
 #
-# Version: 1.3
+# Version: 1.4
 #
-# Date:    2017-09 - 2021-09
+# Date:    2017-09 - 2021-10
 # Author:  Boris Steipe (boris.steipe@utoronto.ca)
 #
+# V 1.4    Add troubleshooting hints via errText[[...]]
 # V 1.3    2021 update of MYSPE mechanics; fix a bug no one had complained about
 # V 1.2    Reorganized proportional plot section into a "further reading"
 #          section, added nested-box, and sankey plot visualization of
@@ -36,14 +37,14 @@
 #TOC> 
 #TOC>   Section  Title                                             Line
 #TOC> -----------------------------------------------------------------
-#TOC>   1        PREPARATIONS                                        51
-#TOC>   2        SUITABLE MYSPE SPECIES                              63
-#TOC>   3        ADOPT "MYSPE"                                       87
-#TOC>   4        FURTHER READING: PLOTTING PROPORTIONS              126
-#TOC>   4.1        Percentages                                      144
-#TOC>   4.2        Visualizing proportions: Pie chart               163
-#TOC>   4.3        Visualizing proportions: Nested squares          241
-#TOC>   4.4        Visualizing proportions: Sankey diagrams         278
+#TOC>   1        PREPARATIONS                                        52
+#TOC>   2        SUITABLE MYSPE SPECIES                              65
+#TOC>   3        ADOPT "MYSPE"                                       89
+#TOC>   4        FURTHER READING: PLOTTING PROPORTIONS              128
+#TOC>   4.1        Percentages                                      146
+#TOC>   4.2        Visualizing proportions: Pie chart               165
+#TOC>   4.3        Visualizing proportions: Nested squares          243
+#TOC>   4.4        Visualizing proportions: Sankey diagrams         280
 #TOC> 
 #TOC> ==========================================================================
 
@@ -53,10 +54,11 @@
 
 # Execute the two conditionals below:
 if (! file.exists("./myScripts/.myProfile.R")) {
-  stop("PANIC: profile file does not exist. Fix problem or ask for help.")
+  stop(errText[["noProfileFile"]])     # message defined in .Rprofile
 }
+
 if (! exists("myStudentNumber")) {
-  stop("PANIC: profile data wasn't loaded. Fix problem or ask for help.")
+  stop(errText[["noStudentNumber"]])   # message defined in .Rprofile
 }
 
 
