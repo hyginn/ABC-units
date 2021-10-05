@@ -50,19 +50,19 @@
 # On the unix command line, pipes were used from the very beginning, implemented
 # with the "|" pipe character.
 #
-# In R, the magrittr package provided the %>% operator, and recently the %|>%
+# In R, the magrittr package provided the %>% operator, and recently the |>
 # operator has been introduced into base R.
 #
 # However there are alternatives: intermediate assignment, and nested functions
-# that have always existed in bas R anyway.
+# that have always existed in base R anyway.
 #
 # Let us look at an example. In writing this, I found out that virtually
-# ALL non-trivial examples I cvame up with don't translate well into this idiom
+# ALL non-trivial examples I came up with don't translate well into this idiom
 # at all. It is actually quite limited to simple filtering operations on
-# data. A more intersting example might be added in the future, let me know if
+# data. A more interesting example might be added in the future, let me know if
 # you have a good idea.
 #
-# A somwhat contrived example is to soart a list of files by the
+# A somewhat contrived example is to sort a list of files by the
 # length of the file names:
 
 myFiles <- list.files(pattern = "\\.R$")
@@ -88,7 +88,7 @@ if (! requireNamespace("magrittr", quietly = TRUE)) {
 
 library(magrittr)
 
-nchar(myFiles) %>% order %>% myFiles[.]
+myFiles  %>% nchar %>% order %>% myFiles[.]
 
 # =    4  Base R Pipe  =========================================================
 
@@ -97,12 +97,12 @@ nchar(myFiles) %>% order %>% myFiles[.]
 # into the language is very rare.
 #
 # Unfortunately it won't (yet) work with the '[' function, so we need to write
-# an intermediate fucntion for this example
+# an intermediate function for this example
 extract <- function(x, v) {
   return(v[x])
 }
 
-nchar(myFiles) |> order() |> extract(myFiles)
+myFiles |> nchar() |> order() |> extract(myFiles)
 
 
 # =    5  Intermediate Assignment  =============================================
@@ -114,7 +114,7 @@ nchar(myFiles) |> order() |> extract(myFiles)
 # replacing it with the pipe makes things much better. My preferred idiom is
 # to use intermediate assignments. Only then is it convenient to examine
 # the code step by step and validate every single step. And that is the most
-# important objective at all: no code is good if it doe not compute
+# important objective at all: no code is good if it does not compute
 # correctly.
 
 
