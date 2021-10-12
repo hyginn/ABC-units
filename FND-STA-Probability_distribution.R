@@ -44,23 +44,23 @@
 #TOC>   2.2.2          Fitting functions                                     436
 #TOC>   2.2.2.1        Fit a normal distribution (using nls() )              506
 #TOC>   2.2.2.2        Fit a normal distribution (using nlrob()) )           525
-#TOC>   2.2.2.3        Extreme Value distributions: Gumbel                   551
-#TOC>   2.2.2.4        Extreme Value distributions: Weibull                  576
-#TOC>   2.2.2.5        Logistic distribution                                 618
-#TOC>   2.2.2.6        Log-Logistic distribution                             647
-#TOC>   2.2.2.7        Fitting a negative binomial distribution              676
-#TOC>   2.2.2.8        Fitting a binomial distribution                       729
-#TOC>   2.3        The uniform distribution                                  841
-#TOC>   2.4        The Normal Distribution                                   861
-#TOC>   3        quantile-quantile comparison                                902
-#TOC>   3.1        qqnorm()                                                  912
-#TOC>   3.2        qqplot()                                                  978
-#TOC>   4        Quantifying the difference                                  995
-#TOC>   4.1        Chi2 test for discrete distributions                     1029
-#TOC>   4.2        Kullback-Leibler divergence                              1120
-#TOC>   4.2.1          An example from tossing dice                         1131
-#TOC>   4.2.2          An example from lognormal distributions              1253
-#TOC>   4.3        Continuous distributions: Kolmogorov-Smirnov test        1296
+#TOC>   2.2.2.3        Extreme Value distributions: Gumbel                   552
+#TOC>   2.2.2.4        Extreme Value distributions: Weibull                  579
+#TOC>   2.2.2.5        Logistic distribution                                 621
+#TOC>   2.2.2.6        Log-Logistic distribution                             650
+#TOC>   2.2.2.7        Fitting a negative binomial distribution              679
+#TOC>   2.2.2.8        Fitting a binomial distribution                       732
+#TOC>   2.3        The uniform distribution                                  844
+#TOC>   2.4        The Normal Distribution                                   864
+#TOC>   3        quantile-quantile comparison                                905
+#TOC>   3.1        qqnorm()                                                  915
+#TOC>   3.2        qqplot()                                                  981
+#TOC>   4        Quantifying the difference                                  998
+#TOC>   4.1        Chi2 test for discrete distributions                     1032
+#TOC>   4.2        Kullback-Leibler divergence                              1124
+#TOC>   4.2.1          An example from tossing dice                         1135
+#TOC>   4.2.2          An example from lognormal distributions              1257
+#TOC>   4.3        Continuous distributions: Kolmogorov-Smirnov test        1300
 #TOC> 
 #TOC> ==========================================================================
 
@@ -527,8 +527,9 @@ sum(resid(fit)^2)
 # There's a bit of an art to chosing starting parameters correctly and if the
 # nls() fit does not converge, more robust methods are called for.
 
-pkg <- "robustbase"
-if (! requireNamespace(pkg, quietly = TRUE)) { install.packages(pkg) }
+if (! requireNamespace("robustbase", quietly = TRUE)) {
+  install.packages("robustbase")
+}
 
 x <- 0:28
 plot(x, tu, type="s")
@@ -553,8 +554,10 @@ sum(resid(fit)^2)
 # Many processes that involve "best-of" choices are better modelled with
 # so-called extreme-value distributions: here is the Gumbel distribution
 # from the evd package.
-pkg <- "evd"
-if (! requireNamespace(pkg, quietly = TRUE)) { install.packages(pkg) }
+
+if (! requireNamespace("evd", quietly = TRUE)) {
+  install.packages("evd")
+}
 
 x <- 0:28
 plot(x, tu, type="s")
@@ -1055,8 +1058,9 @@ hist(rG1.5, breaks = myBreaks, col = myCols[4])
 # package information - plotrix has _many_ useful utilities to enhance
 # plots or produce informative visualizations.
 
-pkg <- "plotrix"
-if (! requireNamespace(pkg, quietly = TRUE)) { install.packages(pkg) }
+if (! requireNamespace("plotrix", quietly = TRUE)) {
+  install.packages("plotrix")
+}
 
 # Package information:
 #  library(help = plotrix)       # basic information
