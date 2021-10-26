@@ -1,22 +1,8 @@
-# tocID <- "RPR_GEO2R.R"
+# tocID <- "RPR-GEO2R.R"
 #
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the RPR_GEO2R unit.
 #
-#
-# ==============================================================================
-#
-#                                   S T O P :
-#                                   =========
-#
-#                                     2021
-#                                UPDATE WARNING!
-#                                ---------------
-#
-#  This file has not yet been updated for coursework.  You may inspect it, but
-#  do NOT use it for actual coursework as long as this warning is here.  Parts
-#  of the code and data will change, and if you use this outdated code it will
-#  break your setup and workflow.
 #
 # ==============================================================================
 # Version:  1.3
@@ -53,22 +39,23 @@
 
 
 #TOC> ==========================================================================
-#TOC>
+#TOC> 
 #TOC>   Section  Title                                                      Line
 #TOC> --------------------------------------------------------------------------
-#TOC>   1        Preparations                                                 56
-#TOC>   2        Loading a GEO Dataset                                        82
-#TOC>   3        Column wise analysis - time points                          152
-#TOC>   3.1        Task - Comparison of experiments                          158
-#TOC>   3.2        Grouped Samples                                           205
-#TOC>   4        Row-wise Analysis: Expression Profiles                      240
-#TOC>   4.1        Task - Read a table of features                           275
-#TOC>   4.2        Selected Expression profiles                              323
-#TOC>   5        Differential Expression                                     364
-#TOC>   5.1        Final task: Gene descriptions                             504
-#TOC>   6        Improving on Discovery by Differential Expression           510
-#TOC>   7        Annotation data                                             594
-#TOC>
+#TOC>   1        Preparations                                                 62
+#TOC>   2        Loading a GEO Dataset                                        89
+#TOC>   2.1        Task - understanding the data                             155
+#TOC>   3        Column wise analysis - time points                          164
+#TOC>   3.1        Task - Comparison of experiments                          193
+#TOC>   3.2        Grouped Samples                                           226
+#TOC>   4        Row-wise Analysis: Expression Profiles                      261
+#TOC>   4.1        Task - Read a table of features                           296
+#TOC>   4.2        Selected Expression profiles                              349
+#TOC>   5        Differential Expression                                     392
+#TOC>   5.1        Final task: Gene descriptions                             532
+#TOC>   6        Improving on Discovery by Differential Expression           538
+#TOC>   7        Annotation data                                             633
+#TOC> 
 #TOC> ==========================================================================
 
 
@@ -165,7 +152,7 @@ Biobase::sampleNames(GSE3635)[1:10]    # Columns. What are these columns?
 # Access data
 Biobase::exprs(tmp)   # exprs() gives us the actual expression values.
 
-# ==   3.1  Task - understanding the data  ==================================
+# ==   2.1  Task - understanding the data  =====================================
 
 #TASK> What are the data values:
 #TASK>  ... in each cell?

@@ -3,20 +3,6 @@
 #
 # ==============================================================================
 #
-#                                   S T O P :
-#                                   =========
-#
-#                                     2021
-#                                UPDATE WARNING!
-#                                ---------------
-#
-#  This file has not yet been updated for coursework.  You may inspect it, but
-#  do NOT use it for actual coursework as long as this warning is here.  Parts
-#  of the code and data will change, and if you use this outdated code it will
-#  break your setup and workflow.
-#
-# ==============================================================================
-#
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the BIN-ALI-Dotplot unit.
 #
@@ -44,12 +30,12 @@
 
 
 #TOC> ==========================================================================
-#TOC>
+#TOC> 
 #TOC>   Section  Title                  Line
 #TOC> --------------------------------------
-#TOC>   1        ___Section___            39
-#TOC>   2        Tasks                   187
-#TOC>
+#TOC>   1        ___Section___            42
+#TOC>   2        Tasks                   190
+#TOC> 
 #TOC> ==========================================================================
 
 

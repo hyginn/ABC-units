@@ -5,20 +5,6 @@
 #
 # ==============================================================================
 #
-#                                   S T O P :
-#                                   =========
-#
-#                                     2021
-#                                UPDATE WARNING!
-#                                ---------------
-#
-#  This file has not yet been updated for coursework.  You may inspect it, but
-#  do NOT use it for actual coursework as long as this warning is here.  Parts
-#  of the code and data will change, and if you use this outdated code it will
-#  break your setup and workflow.
-#
-# ==============================================================================
-#
 # Version:  1.3
 #
 # Date:     2017-10  -  2020-09
@@ -46,13 +32,13 @@
 
 
 #TOC> ==========================================================================
-#TOC>
+#TOC> 
 #TOC>   Section  Title                               Line
 #TOC> ---------------------------------------------------
-#TOC>   1        Defining the APSES domain             43
-#TOC>   2        Executing the BLAST search            73
-#TOC>   3        Analysing results                     95
-#TOC>
+#TOC>   1        Defining the APSES domain             45
+#TOC>   2        Executing the BLAST search            75
+#TOC>   3        Analysing results                     97
+#TOC> 
 #TOC> ==========================================================================
 
 

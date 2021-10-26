@@ -2,20 +2,6 @@
 #
 # ==============================================================================
 #
-#                                   S T O P :
-#                                   =========
-#
-#                                     2021
-#                                UPDATE WARNING!
-#                                ---------------
-#
-#  This file has not yet been updated for coursework.  You may inspect it, but
-#  do NOT use it for actual coursework as long as this warning is here.  Parts
-#  of the code and data will change, and if you use this outdated code it will
-#  break your setup and workflow.
-#
-# ==============================================================================
-#
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the FND-STA-Information_theory unit.
 #
@@ -42,8 +28,16 @@
 # ==============================================================================
 
 
+#TOC> ==========================================================================
+#TOC> 
+#TOC>   Section  Title                  Line
+#TOC> --------------------------------------
+#TOC>   1        ___Section___            39
+#TOC> 
+#TOC> ==========================================================================
 
-# = 1 ___Section___
+
+# =    1  ___Section___  =======================================================
 
 # What level of information is "significant"
 

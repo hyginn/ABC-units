@@ -4,20 +4,6 @@
 #              R code accompanying the BIN-FUNC-Domain_annotation unit.
 #
 # ==============================================================================
-#
-#                                   S T O P :
-#                                   =========
-#
-#                                     2021
-#                                UPDATE WARNING!
-#                                ---------------
-#
-#  This file has not yet been updated for coursework.  You may inspect it, but
-#  do NOT use it for actual coursework as long as this warning is here.  Parts
-#  of the code and data will change, and if you use this outdated code it will
-#  break your setup and workflow.
-#
-# ==============================================================================
 # Version:  1.4
 #
 # Date:     2017-11  -  2020-10
@@ -46,19 +32,19 @@
 
 
 #TOC> ==========================================================================
-#TOC>
+#TOC> 
 #TOC>   Section  Title                                                 Line
 #TOC> ---------------------------------------------------------------------
-#TOC>   1        Update your database script                             50
-#TOC>   1.1        Preparing an annotation file ...                      57
-#TOC>   1.1.1          BEFORE  "BIN-ALI-Optimal_sequence_alignment"      60
-#TOC>   1.1.2          AFTER "BIN-ALI-Optimal_sequence_alignment"       108
-#TOC>   1.2        Execute and Validate                                 135
-#TOC>   2        Plot Annotations                                       160
-#TOC>   3        SHARING DATA                                           286
-#TOC>   3.1        Post MBP1_MYSPE as JSON data                         302
-#TOC>   3.2        Import shared MBP1_MYSPE from the Wiki               325
-#TOC>
+#TOC>   1        Update your database script                             51
+#TOC>   1.1        Preparing an annotation file ...                      58
+#TOC>   1.1.1          BEFORE  "BIN-ALI-Optimal_sequence_alignment"      61
+#TOC>   1.1.2          AFTER "BIN-ALI-Optimal_sequence_alignment"       109
+#TOC>   1.2        Execute and Validate                                 136
+#TOC>   2        Plot Annotations                                       161
+#TOC>   3        SHARING DATA                                           287
+#TOC>   3.1        Post MBP1_MYSPE as JSON data                         303
+#TOC>   3.2        Import shared MBP1_MYSPE from the Wiki               326
+#TOC> 
 #TOC> ==========================================================================
 
 
@@ -120,7 +106,7 @@
 # Then SKIP the next section.
 #
 #
-# ===   1.1.2  AFTER "BIN-ALI-Optimal_sequence_alignment"
+# ===   1.1.2  AFTER "BIN-ALI-Optimal_sequence_alignment"  
 #
 #   IF YOU HAVE ALREADY COMPLETED THE BIN-ALI-OPTIMAL_SEQUENCE_ALIGNMENT UNIT:
 #

@@ -3,21 +3,6 @@
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the BIN-ALI-MSA unit.
 #
-# ==============================================================================
-#
-#                                   S T O P :
-#                                   =========
-#
-#                                     2021
-#                                UPDATE WARNING!
-#                                ---------------
-#
-#  This file has not yet been updated for coursework.  You may inspect it, but
-#  do NOT use it for actual coursework as long as this warning is here.  Parts
-#  of the code and data will change, and if you use this outdated code it will
-#  break your setup and workflow.
-#
-# ==============================================================================
 # Version:  1.3
 #
 # Date:     2017-10  -  2020-09
@@ -45,7 +30,7 @@
 
 
 #TOC> ==========================================================================
-#TOC>
+#TOC> 
 #TOC>   Section  Title                                              Line
 #TOC> ------------------------------------------------------------------
 #TOC>   1        Preparations                                         55
@@ -63,7 +48,7 @@
 #TOC>   6        Sequence Logos                                      549
 #TOC>   6.1        Subsetting an alignment by motif                  558
 #TOC>   6.2        Plot a Sequence Logo                              607
-#TOC>
+#TOC> 
 #TOC> ==========================================================================
 
 
@@ -256,7 +241,7 @@ for (i in seq_along(highScoringRanges$lengths)) {
 #   -  adjust the sequence names
 #   -  convert to msaAAMultipleAlignment object
 
-# ===   4.1.1  importing an .aln file
+# ===   4.1.1  importing an .aln file                   
 
 # The seqinr package has a function to read CLUSTAL W formatted .aln files ...
 if (! requireNamespace("seqinr", quietly=TRUE)) {

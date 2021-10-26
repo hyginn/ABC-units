@@ -4,20 +4,6 @@
 #              R code accompanying the BIN-ALI-Optimal_sequence_alignment unit.
 #
 # ==============================================================================
-#
-#                                   S T O P :
-#                                   =========
-#
-#                                     2021
-#                                UPDATE WARNING!
-#                                ---------------
-#
-#  This file has not yet been updated for coursework.  You may inspect it, but
-#  do NOT use it for actual coursework as long as this warning is here.  Parts
-#  of the code and data will change, and if you use this outdated code it will
-#  break your setup and workflow.
-#
-# ==============================================================================
 # Version:  1.7.1
 #
 # Date:     2017-09   -   2020-10
@@ -52,20 +38,20 @@
 
 
 #TOC> ==========================================================================
-#TOC>
+#TOC> 
 #TOC>   Section  Title                                                      Line
 #TOC> --------------------------------------------------------------------------
-#TOC>   1        Prepare                                                      57
-#TOC>   2        Biostrings Pairwise Alignment                                74
-#TOC>   2.1        Optimal global alignment                                   92
-#TOC>   2.2        Optimal local alignment                                   155
-#TOC>   3        APSES Domain annotation by alignment                        179
-#TOC>   4        Update your database script                                 260
-#TOC>   4.1        Preparing an annotation file ...                          266
-#TOC>   4.1.1          If you HAVE NOT done the BIN-FUNC-Annotation unit     268
-#TOC>   4.1.2          If you HAVE done the BIN-FUNC-Annotation unit         313
-#TOC>   4.2        Execute and Validate                                      337
-#TOC>
+#TOC>   1        Prepare                                                      58
+#TOC>   2        Biostrings Pairwise Alignment                                75
+#TOC>   2.1        Optimal global alignment                                   93
+#TOC>   2.2        Optimal local alignment                                   156
+#TOC>   3        APSES Domain annotation by alignment                        180
+#TOC>   4        Update your database script                                 261
+#TOC>   4.1        Preparing an annotation file ...                          267
+#TOC>   4.1.1          If you HAVE NOT done the BIN-FUNC-Annotation unit     269
+#TOC>   4.1.2          If you HAVE done the BIN-FUNC-Annotation unit         314
+#TOC>   4.2        Execute and Validate                                      338
+#TOC> 
 #TOC> ==========================================================================
 
 
@@ -325,7 +311,7 @@ aliApses@subject@range@start + aliApses@subject@range@width - 1
 # Then SKIP the next section.
 #
 #
-# ===   4.1.2  If you HAVE done the BIN-FUNC-Annotation unit
+# ===   4.1.2  If you HAVE done the BIN-FUNC-Annotation unit    
 #
 #
 #   You DO already have a file called "<MYSPE>-Annotations.json" in the
