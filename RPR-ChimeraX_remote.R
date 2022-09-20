@@ -27,14 +27,14 @@
 
 
 #TOC> ==========================================================================
-#TOC> 
+#TOC>
 #TOC>   Section  Title                                  Line
 #TOC> ------------------------------------------------------
 #TOC>   1        ChimeraX REMOTE SCRIPTING                41
 #TOC>   1.1        Defining a Port                        59
 #TOC>   1.2        Open ChimeraX                          81
 #TOC>   2        WORKED EXAMPLE: SUPERPOSITION           113
-#TOC> 
+#TOC>
 #TOC> ==========================================================================
 
 
@@ -68,7 +68,7 @@ if (! requireNamespace("httr", quietly = TRUE)) {
 #  browseVignettes("httr")    # available vignettes
 #  data(package = "httr")     # available datasets
 
-# We need to think od a port. Any available port number between 49152-65535 is
+# We need to think of a port. Any available port number between 49152-65535 is
 # fine. We'll choose 61803 because that's the fractional part of the golden
 # ratio. But one could choose another.
 

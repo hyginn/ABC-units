@@ -32,7 +32,7 @@
 
 
 #TOC> ==========================================================================
-#TOC> 
+#TOC>
 #TOC>   Section  Title                                      Line
 #TOC> ----------------------------------------------------------
 #TOC>   1        Introduction to the bio3D package            63
@@ -47,7 +47,7 @@
 #TOC>   3.4.3          ... as a perspective plot             388
 #TOC>   4        cis-peptide bonds                           406
 #TOC>   5        H-bond lengths                              421
-#TOC> 
+#TOC>
 #TOC> ==========================================================================
 
 
@@ -104,7 +104,7 @@ str(apses)
 # bio3d's pdb objects are simple lists. Great! You know lists!
 
 # You see that there is a list element called $atom which is a data frame in
-# which the columns arevectors of the same length - namely the number of atoms
+# which the columns are vectors of the same length - namely the number of atoms
 # in the structure file. And there is a matrix of (x, y, z) triplets called xyz.
 # And there is a vector that holds sequence, and two tables called helix and
 # sheet. Let's pull out a few values to confirm how selection and subsetting
@@ -354,7 +354,7 @@ abline(h = 0, lwd = 0.5, col = "#00000044")
 abline(v = 0, lwd = 0.5, col = "#00000044")
 
 
-# ===   3.4.2  ... as filled countour           
+# ===   3.4.2  ... as filled contour
 
 filled.contour(dPhiPsi,
                xlim = c(-180, 180), ylim = c(-180, 180),
@@ -385,7 +385,7 @@ filled.contour(dPhiPsi,
                     abline(v = 0, lwd = 0.5, col = "#00000044")
                   })
 
-# ===   3.4.3  ... as a perspective plot        
+# ===   3.4.3  ... as a perspective plot
 
 persp(dPhiPsi,
       xlab = "phi",
