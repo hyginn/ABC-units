@@ -2,7 +2,10 @@
 .Ds_store
 instructor/
 dev/
+
+# personal non-project files
 myScripts/
+myScript.R
 
 # History files
 .Rhistory
