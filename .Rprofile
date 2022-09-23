@@ -17,6 +17,7 @@ init <- function() {
   cat("\"files\" pane), edit it and save it.\n")
   cat("Then click the checkbox, and use the More -> Move... dialogue\n")
   cat("to move it into the \"myScripts\" folder.\n\n")
+  cat("Then restart your session: Choose  FILE > RECENT PROJECTS > ABC-Units.\n\n")
 
   file.edit("ABC-units.R")
   return(invisible(NULL))

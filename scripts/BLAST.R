@@ -115,7 +115,9 @@ BLAST <- function(Q,
       if (quietly) {
         Sys.sleep(results$rtoe)
       } else {
-        cat(sprintf("BLAST is processing %s:\n", results$rid))
+        cat(sprintf("BLAST is processing %s (rtoe is %d seconds):\n",
+                    results$rid,
+                    results$rtoe))
         waitTimer(results$rtoe)
       }
 
@@ -145,8 +147,8 @@ BLAST <- function(Q,
 
         if (myTimeout <= 0) { # abort
           cat("BLAST search not concluded before timeout. Aborting.\n")
-          cat(sprintf("%s  BLASThits <- BLAST(rid=\"%s\")\n",
-                      "Trying checking back later with >",
+          cat(sprintf("%s  BLASThits <- BLAST(rid=\"%s\")\n\n",
+                      "Trying checking back later with >\n",
                       results$rid))
           return(results)
         }
