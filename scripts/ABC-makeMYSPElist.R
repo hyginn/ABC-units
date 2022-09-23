@@ -3,12 +3,13 @@
 # Purpose:  Create a list of genome sequenced fungi with protein annotations and
 #               Mbp1 homologues.
 #
-# Version: 1.4
+# Version: 1.5
 #
-# Date:    2016  09  -  2021  09
+# Date:    2016  09  -  2022  09
 # Author:  Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions
+#          1.5    2022 Maintenance
 #          1.4    New retrieval logic
 #          1.3    Rewrite to change datasource. NCBI has not been updated
 #                   since 2012. Use ensembl fungi as initial source.
@@ -36,7 +37,7 @@
 
 
 #TOC> ==========================================================================
-#TOC> 
+#TOC>
 #TOC>   Section  Title                                    Line
 #TOC> --------------------------------------------------------
 #TOC>   1        The strategy                               55
@@ -48,7 +49,7 @@
 #TOC>   4.2        Identify species in "hits"              192
 #TOC>   5        MERGE ENSEMBL AND BLAST RESULTS           282
 #TOC>   6        STUDENT NUMBERS                           375
-#TOC> 
+#TOC>
 #TOC> ==========================================================================
 
 
@@ -106,24 +107,29 @@ myPatt <- "\\s.*$"  # one whitespace (\\s) ...
                     # followed by any character (.) 0..n times (*) ...
                     # until the end of the string
 
-# using gsub() we substitue all matching characters with the empty string "" -
-# this deletes the matching characters
+# using gsub() we substitue all the matching characters with an empty
+# string "" - this deletes the matching characters
 # Test this:
 gsub(myPatt, "", "Genus")                      # one word: unchanged
-gsub(myPatt, "", "gEnus species")              # two words: return only first
-gsub(myPatt, "", "geNus species strain 123")   # many words: return only first
+gsub(myPatt, "", "Genus species")              # two words: return only first
+gsub(myPatt, "", "Genus species strain 123")   # many words: return only first
 
-# apply this to the "name" column and add the result as a separate column
-# called "genus"
+# apply this to the "name" column and add the result to the dataframe, as a
+# separate column called "genus"
 sDat$genus <- gsub(myPatt, "", sDat$name)
 
 # what do we get?
-c(head(unique(sDat$genus)),
-  tail(unique(sDat$genus)))  # inspect the first and last few. Note that there
-                             # is a problem that we have to keep in mind.
+c(head(unique(sDat$genus)), "...",
+  tail(unique(sDat$genus)))  # inspect the first and last few genus.
+                             # Note that there is a problem: we have an
+                             # entry for "[Candida]" - the generic genus. There
+                             # may be other special characters that will
+                             # mess with our workflow. Let's drop those rows.
                              # (Always inspect your results!)
-# Drop all rows for which the genus contains special chracters -
-# like "[Candida]"
+# what are they ?
+sDat[ grepl("[^a-zA-Z]", sDat$genus) , ]
+
+# drop them
 sDat <- sDat[ ! grepl("[^a-zA-Z]", sDat$genus) , ]
 
 length(table(sDat$genus))    # how many genus?
@@ -142,12 +148,13 @@ sort(table(sDat$genus), decreasing = TRUE)[1:10]  # Top ten...
 
 myPatt <- "^(\\S+\\s\\S+)\\s.*$"
 sDat$species <- gsub(myPatt, "\\1", sDat$name)
+head(sDat$species)
 
 # And we reorder the columns, just for aesthetics:
 sDat <- sDat[ , c("name", "species", "genus", "order", "taxID")]
 
 # Final check:
-any(grepl("[^a-zA-Z -]", sDat$species)) # FALSE means no special characters
+any(grepl("[^a-zA-Z -.]", sDat$species)) # FALSE means no special characters
 
 #
 # Now we check which of these have Mbp1 homologues ...
@@ -173,7 +180,7 @@ any(grepl("[^a-zA-Z -]", sDat$species)) # FALSE means no special characters
 # parser in currently available packages.
 #
 # DON'T use this for BLAST searches unless you have read the NCBI policy
-# for automated tasks. If you indicriminately pound on the NCBI's BLAST
+# for automated tasks. If you indiscriminately pound on the NCBI's BLAST
 # server, they will blacklist your IP-address. See:
 # https://blast.ncbi.nlm.nih.gov/Blast.cgi?CMD=Web&PAGE_TYPE=BlastDocs&DOC_TYPE=DeveloperInfo
 #
@@ -183,11 +190,12 @@ any(grepl("[^a-zA-Z -]", sDat$species)) # FALSE means no special characters
 #                    nHits = 3000,                 # 945 hits in 2020
 #                    E = 0.01,                     #
 #                    limits = "txid4751[ORGN]")    # = fungi
-# saveRDS(BLASThits, file="data/BLASThits.rds")
+# saveRDS(BLASThits, file="data/BLASThits.2022-09-22.rds")
 #
-# NO NEED TO ACTUALLY RUN THIS:you can load the results from the data directory
+# NO NEED TO ACTUALLY RUN THIS: this was last run on 2022-09-22 and you can
+#                               load the results from the data directory:
 #
-BLASThits <- readRDS(file = "data/BLASThits.rds")
+BLASThits <- readRDS(file = "data/BLASThits.2022-09-22.rds")
 
 # ==   4.2  Identify species in "hits"  ========================================
 
@@ -195,7 +203,7 @@ BLASThits <- readRDS(file = "data/BLASThits.rds")
 # we are only interested in the species names that it contains.
 
 # How many hits in the list?
-length(BLASThits$hits)      # 1,134
+length(BLASThits$hits)      # 1,262
 
 # Let's look at a hit somewhere down the list
 str(BLASThits$hit[[277]])
@@ -233,12 +241,12 @@ range(eVals)
 sum(eVals == 0)
 
 # let's plot the log of all values > 0 to see how they are distributed
-# plotting only one vectyor of numbers plots their index as x, and
+# plotting only one vecyor of numbers plots their index as x, and
 # their value as y ...
 plot(log(eVals[eVals > 0]), col = "#CC0000")
 
-# This is very informative: I would suspect that the first ten or so are
-# virtually identical to the yeast protein, then we have about 800 hits with
+# This is very informative: I would suspect that the first fifty or so are
+# virtually identical to the yeast protein, then we have about 900 hits with
 # decreasing similarity, and then about 200 more that may actually be false
 # positives. Also - we plotted them by index, that means the table is SORTED:
 # Lower E-values strictly come before higher E-values.
@@ -248,12 +256,15 @@ sum(BLASTspecies == "Saccharomyces cerevisiae")
 
 # ... corresponding to the five homologous gene sequences (paralogues) of yeast.
 
-# Therefore we remove duplicates. Removing duplicates will leave the FIRST
-# in a list alone, and only remove the SUBSEQUENT ones. Which means, from each
-# species, we will retain only the protein that has the highest similarity
-# to yeast Mbp1, not any of its more distant paralogues.
-sel <- ! duplicated(BLASTspecies)
-BLASTspecies <- BLASTspecies[sel]
+# Therefore we remove duplicates. Removing duplicates will leave the FIRST in a
+# list alone, and only remove the SUBSEQUENT ones. Remember, the list is sorted
+# by E-values, thus removing duplicates retrieves the homologe from each
+# species which is most similar to our query sequence, yeast Mbp1.
+#
+sel <- ! duplicated(BLASTspecies)  # positions of not-duplicated elements
+head(sel)                           # all TRUE - first occurence
+tail(sel)                           # all false - duplicates
+BLASTspecies <- BLASTspecies[sel]   # filter the table and remove duplicates
 
 length(BLASTspecies)
 # i.e. we got rid of about two thirds of the hits.
@@ -270,7 +281,7 @@ BLASTspecies <- BLASTspecies[ ! duplicated(BLASTspecies)]
 # check the number again:
 length(BLASTspecies)
 # Think a bit about this: what may be the biological reason to find that
-# on average, in 388 fungi across the entire phylogenetic tree, we have
+# on average, in 442 fungi across the entire phylogenetic tree, we have
 # three sequences that are homologous to yeast Mbp1?
 
 # Let's look at the distribution of E-values in this selection (Subsetting FTW):
@@ -279,9 +290,10 @@ length(BLASTspecies)
 plot(log(eVals[sel & eVals > 0]), col = "#00CC00")
 
 
+
 # =    5  MERGE ENSEMBL AND BLAST RESULTS  =====================================
 
-# Next we add the blast result to our sDat dataframe. We'll store the index,
+# Next we add the BLAST result to our sDat dataframe. We'll store the index,
 # the E-value, and the Query-bounds from which we can estimate which domains
 # of Mbp1 are actually covered by the hit. (True orthologues MUST align with
 # Mbp1's N-terminal APSES domain.)
@@ -330,7 +342,7 @@ sDat <- sDat[order(sDat$eVal, decreasing = FALSE) , ]
 sDat <- sDat[ ! duplicated(sDat$species) , ]
 
 # Lets look at the E-values ...
-plot(log(sDat$eVal[sDat$eVal > 0]), col = "#00CC00")
+plot(log(sDat$eVal[sDat$eVal > 0]), col = "#0099AA")
 
 # and alignment lengths ...
 plot(sDat$lAli, col = "#00DDAA")
@@ -353,7 +365,7 @@ sel <- sDat$order %in% REForders
 REFdat <- sDat[sel , ]
 sDat   <- sDat[ ! sel , ]
 
-# REFdat should now contain only the REFspecies ...
+# REFdat should now contain only the ten REFspecies ...
 ( REFdat <- REFdat[REFdat$species %in% REFspecies , ] )
 
 # ... but all of them
@@ -361,7 +373,7 @@ sum(REFspecies %in% REFdat$species)
 
 # ... and we have enough left in sDat to prune sDat to unique genus
 sDat <- sDat[ ! duplicated(sDat$genus) , ]
-nrow(sDat)   # 84
+nrow(sDat)   # 99
 
 # I add back "Sporothrix schenckii" ...
 sDat <- rbind(SPOSCdat, sDat)
@@ -374,15 +386,20 @@ sDat <- rbind(SPOSCdat, sDat)
 
 # =    6  STUDENT NUMBERS  =====================================================
 #
-# An asymmetric function to retrieve a MYSPE species
+# An asymmetric function to retrieve a MYSPE species from a student number.
+# Asymmetric means: the student number should retrieve one and only one
+# species, but it should not be possible to infer the student number from
+# the species.
 #
-sDat <- readRDS(file = "data/sDat.rds")
+# sDat <- readRDS(file = "data/sDat.rds")
 
-students <- read.csv("../BCH441-2021-students.csv")
-sN <- students$Integration.ID
+students <- read.csv("data/Roster-MGY441H1 F LEC5101 20229_Bioinformatics.csv")
+print(summary(students$Student.Number), digits = 12)
+sN <- students$Student.Number
 sN <- sN[! is.na(sN)]
 sN <- as.character(sN)
-sN <- c("1003141593", sN)  # will map to  "Sporothrix schenckii"
+any(sN == "1003141593")
+sN <- c("1003141593", sN)  # Artificial SN - will map to  "Sporothrix schenckii"
 
 set.seed(112358)
 theseSpecies <- sDat[sample(1:nrow(sDat)), ]
@@ -412,7 +429,7 @@ MYSPEdat <- MYSPEdat[sample(1:N), ]
 
 # saveRDS(MYSPEdat, file = "data/MYSPEdat.rds")
 
-# === validate
+# === validate ... (Recreate this if laqtecomer species are needed)
 x <- character()
 for (n in sN) {
   sp <- getMYSPE(n)
@@ -422,6 +439,11 @@ for (n in sN) {
     x <- c(x, sp)
   }
 }
+x
+length(x)
+length(unique(x))
+getMYSPE("1003141593")
+
 
 # === species for late-comers
 y <- unique(MYSPEdat$species)
