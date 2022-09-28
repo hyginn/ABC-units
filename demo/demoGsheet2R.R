@@ -9,6 +9,7 @@
 #
 #
 
+# A function to read Google sheet data via the REAST API:
 readGsheet <- function (URL,
                         sheet = "") {
 
@@ -41,7 +42,7 @@ readGsheet <- function (URL,
 }
 
 
-# === DEMO   =====
+# === DEMO   ===================================================================
 if (FALSE) {
 
   myURL <- "https://docs.google.com/spreadsheets/d/1LGW-iV9egJlf4rEDBwfRumgmnmPr9PrJnkJn67mrS6Q/edit?usp=sharing"
