@@ -27,25 +27,25 @@
 #TOC>   1        SCRIPTS TO SOURCE                             53
 #TOC>   2        PACKAGES                                      59
 #TOC>   3        DATA & CONSTANTS                              70
-#TOC>   4        SUPPORT FUNCTIONS                            117
-#TOC>   4.01       objectInfo()                               120
-#TOC>   4.02       biCode()                                   148
-#TOC>   4.03       sameSpecies()                              182
-#TOC>   4.04       validateFA()                               202
-#TOC>   4.05       readFASTA()                                310
-#TOC>   4.06       writeFASTA()                               345
-#TOC>   4.07       pBar()                                     378
-#TOC>   4.08       waitTimer()                                400
-#TOC>   4.09       fetchMSAmotif()                            428
-#TOC>   4.10       H() (Shannon entropy)                      472
-#TOC>   4.11       CX() (ChimeraX remote command)             485
-#TOC>   5        FUNCTIONS TO CUSTOMIZE ASSIGNMENTS           542
-#TOC>   5.01       seal()                                     544
-#TOC>   5.02       getMYSPE()                                 548
-#TOC>   5.03       selectPDBrep()                             564
-#TOC>   5.04       sealKey()                                  599
-#TOC>   5.05       selectChi2()                               629
-#TOC>   5.06       selectENSP()                               642
+#TOC>   4        SUPPORT FUNCTIONS                            116
+#TOC>   4.01       objectInfo()                               119
+#TOC>   4.02       biCode()                                   147
+#TOC>   4.03       sameSpecies()                              181
+#TOC>   4.04       validateFA()                               201
+#TOC>   4.05       readFASTA()                                309
+#TOC>   4.06       writeFASTA()                               344
+#TOC>   4.07       pBar()                                     377
+#TOC>   4.08       waitTimer()                                399
+#TOC>   4.09       fetchMSAmotif()                            427
+#TOC>   4.10       H() (Shannon entropy)                      471
+#TOC>   4.11       CX() (ChimeraX remote command)             484
+#TOC>   5        FUNCTIONS TO CUSTOMIZE ASSIGNMENTS           541
+#TOC>   5.01       seal()                                     543
+#TOC>   5.02       getMYSPE()                                 547
+#TOC>   5.03       selectPDBrep()                             563
+#TOC>   5.04       sealKey()                                  598
+#TOC>   5.05       selectChi2()                               628
+#TOC>   5.06       selectENSP()                               641
 #TOC> 
 #TOC> ==========================================================================
 
@@ -98,7 +98,6 @@ AACOLS["C"] <- "#fff963" # Cysteine
 AACOLS["P"] <- "#edc06d" # Proline
 AACOLS <- gsub("$", "80", AACOLS)  # Make the colors 50% transparent
 # barplot(rep(1, 20), col = AACOLS)
-# colorRampPalette(c("#fbffc9","#9cf7c7"))(8)
 
 # 10 species of fungi for reference analysis.
 # http://steipe.biochemistry.utoronto.ca/abc/index.php/Reference_species_for_fungi
