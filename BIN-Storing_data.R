@@ -3,11 +3,12 @@
 # Purpose: A Bioinformatics Course:
 #              R code accompanying the BIN-Storing_data unit
 #
-# Version: 1.3.2
+# Version: 1.4
 #
-# Date:    2017-10  -  2021-09
+# Date:    2017-10  -  2022-10
 # Author:  Boris Steipe (boris.steipe@utoronto.ca)
 #
+# V 1.4    2022 removed "submit for credit"
 # V 1.3.2  2021 minimal maintenance
 # V 1.3.1  add overlooked  jsonlite:: prefix to fromJson()
 # V 1.3    Made file locations more consistent. All student-edited files
@@ -36,26 +37,26 @@
 #TOC> 
 #TOC>   Section  Title                                                   Line
 #TOC> -----------------------------------------------------------------------
-#TOC>   1        A Relational Datamodel in R: review                       63
-#TOC>   1.1        Building a sample database structure                   103
-#TOC>   1.1.1          completing the database                            209
-#TOC>   1.2        Querying the database                                  242
-#TOC>   1.3        Task: submit for credit (part 1/2)                     273
-#TOC>   2        Implementing the protein datamodel                       297
+#TOC>   1        A Relational Datamodel in R: review                       64
+#TOC>   1.1        Building a sample database structure                   104
+#TOC>   1.1.1          completing the database                            210
+#TOC>   1.2        Querying the database                                  243
+#TOC>   1.3        Task: Exercise                                         274
+#TOC>   2        Implementing the protein datamodel                       295
 #TOC>   2.1        JSON formatted source data                             323
 #TOC>   2.2        "Sanitizing" sequence data                             364
-#TOC>   2.3        Create a protein table for our data model              386
-#TOC>   2.3.1          Initialize the database                            388
-#TOC>   2.3.2          Add data                                           400
-#TOC>   2.4        Complete the database                                  420
-#TOC>   2.4.1          Examples of navigating the database                447
-#TOC>   2.5        Updating the database                                  479
-#TOC>   3        Add your own data                                        491
-#TOC>   3.1        Find a protein                                         499
-#TOC>   3.2        Put the information into JSON files                    530
-#TOC>   3.3        Create an R script to create your own database         572
-#TOC>   3.3.1          Check and validate                                 600
-#TOC>   3.4        Task: submit for credit (part 2/2)                     645
+#TOC>   2.3        Create a protein table for our data model              388
+#TOC>   2.3.1          Initialize the database                            390
+#TOC>   2.3.2          Add data                                           402
+#TOC>   2.4        Complete the database                                  422
+#TOC>   2.4.1          Examples of navigating the database                449
+#TOC>   2.5        Updating the database                                  481
+#TOC>   3        Add your own data                                        493
+#TOC>   3.1        Find a protein                                         501
+#TOC>   3.2        Put the information into JSON files                    533
+#TOC>   3.3        Create an R script to create your own database         575
+#TOC>   3.3.1          Check and validate                                 604
+#TOC>   3.4        Record the results in your journal:                    648
 #TOC> 
 #TOC> ==========================================================================
 
@@ -270,16 +271,18 @@ for (ID in pID) {
 # Examine the intermediate results and trace the logic until this is clear.
 
 
-# ==   1.3  Task: submit for credit (part 1/2)  ================================
+# ==   1.3  Task: Exercise  ====================================================
 
-
+#    To make sure these principles are well understood, try the following
+#    exercise:
+#
 #    Write code that adds another philosopher to the datamodel:
 #       Immanuel Kant, (1724 - 1804), Enlightenment Philosophy.
 #       Works: Critique of Pure Reason (1781), Critique of Judgement (1790)
 #    Paste your code into your submission page. Enclose it in <pre> ... </pre>
 #    tags.
 #
-#    Write and submit code that lists the philosophical schools in
+#    Write code that lists the philosophical schools in
 #    alphabetical order, and the books associated with them, also
 #    alphabetically. Format your output like:
 #    Confucianism
@@ -288,16 +291,11 @@ for (ID in pID) {
 #       Daodejing - (530 BCE)
 #       ... etc.
 #
-#    Show the output of your code. Make sure the code itself is enclosed
-#    in <pre> ... </pre> tags. DO NOT POST A SCREENSHOT OF YOUR OUTPUT,
-#    BUT COPY THE EXACT, COMPLETE  OUTPUT, PASTE IT INTO YOUR SUBMISSION,
-#    AND FORMAT IT CORRECTLY.
-
 
 # =    2  Implementing the protein datamodel  ==================================
 
 
-# Working with the code above has probably illustrated a few concerns about
+# Working with the code above has probably illustrated the key concepts about
 # curating data and storing it for analysis. In particular the join tables
 # seem problematic - figuring out the correct IDs, it's easy to make
 # mistakes.
@@ -309,19 +307,20 @@ for (ID in pID) {
 #  - Elementary operations we need to support are: adding data, selecting
 #      data, modifying data and deleting data.
 
-# We will therefore construct our protein database in the following way:
-#  - For each table, we will keep the primary information in JSON files. There
-#      it is easy to read, edit if needed, and modify it.
+# We will therefore construct a protein database that we will use throughout
+# the course as follows:
+#  - For each table, we will keep the primary information in JSON files. JSON
+#      files are easy to read, to edit if needed, and to modify.
 #  - We will use simple scripts to read the JSON data and assemble it in
 #      our database for further analysis.
 #  - I have constructed initial files for yeast Mbp1 and nine other reference
 #      species.
 #  - I have written a small number of utility functions to read those files
-#      and assemble them into a database.
+#      and assemble them into a database. These are in .utilities.R which is
+#      loaded on strtup of when this project.
 
 
 # ==   2.1  JSON formatted source data  ========================================
-
 
 # Have a look at the structure of the yeast Mbp1 protein data:
 file.show("./data/MBP1_SACCE.json")
@@ -329,7 +328,7 @@ file.show("./data/MBP1_SACCE.json")
 # - The whole thing is an array: [ ... ]. This is not necessary for a single
 #     object, but we will have more objects in other files. And it's perfectly
 #     legal to have an array with a single element.
-# - The data is formatted as "key" : "value" pairs inside an object { ... }.
+# - The data is formatted as "key": "value" pairs inside an object { ... }.
 #     This keeps the association between data items and their semantics
 #     explicit.
 # - All keys are strings and they are unique in the object.
@@ -353,12 +352,13 @@ if (! requireNamespace("jsonlite", quietly = TRUE)) {
 #  browseVignettes("jsonlite")    # available vignettes
 #  data(package = "jsonlite")     # available datasets
 
-
+# try this out:
 x <- jsonlite::fromJSON("./data/MBP1_SACCE.json")
 str(x)
 
 x$name
 unlist(x$sequence)
+sum(nchar(unlist(x$sequence))) # 833 amino acids
 
 
 # ==   2.2  "Sanitizing" sequence data  ========================================
@@ -378,8 +378,10 @@ x <- "
        61 ethekvqggf gkyqgtwvpl niakqlaekf svydqlkplf dftqtdgsas pppapkhhha
       121 skvdrkkair sastsaimet krnnkkaeen qfqsskilgn ptaaprkrgr pvgstrgsrr
       ...
-     " # copy/paste from Genbank
+     " # this is copy/paste from Genbank
+       # https://www.ncbi.nlm.nih.gov/protein/NP_010227.1/
 
+x
 dbSanitizeSequence(x)
 
 
@@ -458,7 +460,7 @@ biCode(myDB$taxonomy$species)
 
 # Comparing two tables:
 # Are all of the taxonomyIDs in the protein table present in the
-# taxonomy table? We ought to check, because the way we imported the
+# taxonomy table? We ought to check, because when we imported the
 # data from JSON objects, we could have omitted or forgotten some. But we can
 # check this with one simple expression. Unravel it and study its components.
 
@@ -491,7 +493,7 @@ myDB$taxonomy$species[sel]
 # =    3  Add your own data  ===================================================
 
 
-# You have defined a genome sequence fungus as "MYSPE", and your final task
+# You have been assigned a genome sequence fungus as "MYSPE", and your final task
 # will be to find the protein in MYSPE that is most similar to yeast Mbp1, and
 # to enter its information into the database.
 
@@ -507,7 +509,7 @@ myDB$taxonomy$species[sel]
 # - Enter NP_010227 into the "Query Sequence" field.
 # - Choose "Reference proteins (refseq_protein)" as the "Database" in the
 #   "Choose Search Set" section.
-# - Paste the MYSPE species name into the "Organism" field.
+# - Paste your assigned MYSPE species name into the "Organism" field.
 #
 # - Click the "BLAST" button.
 
@@ -521,8 +523,9 @@ myDB$taxonomy$species[sel]
 # identities) with the N-terminus of the query - i.e. the Query sequence of
 # the first ~ 100 amino acids.
 
-# -  If you are submitting this unit for credit, you will need to paste the
-#    relevant section of the BLAST results into your submission page (see task). # -  Follow the link to the protein data page, linked from "Accession".
+# -  This is a crucial bit of coursework. Make sure it is well documented in
+#    your journal.
+# -  Follow the link to the protein data page, linked from "Accession".
 # -  From there, in a separate tab, open the link to the taxonomy database page
 #      for MYSPE which is linked from the "ORGANISM" record.
 
@@ -576,7 +579,7 @@ if (file.exists(sprintf("./myScripts/%staxonomy.json", biCode(MYSPE)))) {
 # - Make a new R script, call it "makeProteinDB.R"
 # - enter the following expression as the first command:
 #     source("./scripts/ABC-createRefDB.R")
-# - than add the two commands that add your protein and taxonomy data,
+# - than add the two commands that add your own protein and taxonomy data,
 #     they should look like:
 #
 # myDB <- dbAddProtein(myDB,
@@ -597,8 +600,8 @@ if (file.exists(sprintf("./myScripts/%staxonomy.json", biCode(MYSPE)))) {
 # "break" them with a code experiment. But always have a script with
 # which you can create what you need.
 
-# ===   3.3.1  Check and validate                            
 
+# ===   3.3.1  Check and validate                            
 
 # Is your protein named according to the pattern "MBP1_MYSPE"? It should be.
 # And does the taxonomy table contain the systematic name? It should be the same
@@ -642,26 +645,37 @@ myDB$protein$RefSeqID[sel]
 # Fix the problem first.
 
 
-# ==   3.4  Task: submit for credit (part 2/2)  ================================
+# ==   3.4  Record the results in your journal:  ===============================
 
 
-# - On your submission page, copy/paste the BLAST result headers from the
+# - In your journal, copy/paste the BLAST result headers from the
 #     "Alignments" tab, to demonstrate that the data justifies your choice of
 #     protein; you don't need to paste the whole alignment, just the header(s).
 #     Note the relevant values separately: eValue, coverage, %ID etc. and link
 #     to your protein's NCBI protein database page. (Note: in case there are
 #     more than one high-scoring segments included for the SAME protein, you
 #     need to show the results for all of its high-scoring segments.)
-# - Copy and paste the contents of your two JSON files on your submission
-#     page on the Student Wiki. Make sure they are enclosed in <pre> ... </pre>
-#     tags.
-# - Execute the three commands below and show the result on your submission page
+# - Copy and paste the contents of your two JSON files in your journal.
+#     Make sure to format them in a fixed-width font, like Courier or Monaco
+#     to keep them readable.
+# - Here are two additional sanity checks.
 
-biCode(myDB$taxonomy$species) %in% biCode(MYSPE)
-sel <- sameSpecies(myDB$taxonomy$species, MYSPE)
-myDB$protein$taxonomyID %in% myDB$taxonomy$ID[sel]
+# Has the MYSPE bicode been entered into the database?
+biCode(myDB$taxonomy$species) %in% biCode(MYSPE)    # must be TRUE for the last
+                                                    # element
 
-# That is all.
+sel <- sameSpecies(myDB$taxonomy$species, MYSPE)    # select where MYSPE species
+                                                    # appears in the taxonomy
+                                                    # table, and ...
+myDB$protein$taxonomyID %in% myDB$taxonomy$ID[sel]  # confirm that a protein
+                                                    # with the correct
+                                                    # taxonomy ID exists in the
+                                                    # table. Again, this must
+                                                    # be TRUE for the last
+                                                    # element.
+
+# If these tests check out, your database is in a sane state and your creation
+# script works as required.
 
 
 # [END]
