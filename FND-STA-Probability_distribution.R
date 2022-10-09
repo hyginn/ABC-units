@@ -608,7 +608,7 @@ fit <- robustbase::nlrob(y ~ dWei(x, th = TH, l = L, k = K),
                                    K = 3),
                          method = "mtl")
 
-points(x, predict(fit), col = "#CC00CC55", lwd = 2, type = "s")
+points(myX, predict(fit), col = "#CC00CC55", lwd = 2, type = "s")
 
 coef(fit)
 #      TH        L        K
