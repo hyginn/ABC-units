@@ -3,12 +3,13 @@
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the FND-MAT-Graphs_and_networks unit.
 #
-# Version:  1.2
+# Version:  1.2.1
 #
-# Date:     2017  10  -  2019  01
+# Date:     2017-10  -  2022-10
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.2.1  Editorial updates
 #           1.2    Change from require() to requireNamespace(),
 #                      use <package>::<function>() idiom throughout
 #           1.1    Update set.seed() usage
@@ -32,17 +33,17 @@
 #TOC> 
 #TOC>   Section  Title                                          Line
 #TOC> --------------------------------------------------------------
-#TOC>   1        REVIEW                                           50
-#TOC>   2        DEGREE DISTRIBUTIONS                            206
-#TOC>   2.1        Random graph                                  212
-#TOC>   2.2        scale-free graph (Barabasi-Albert)            260
-#TOC>   2.3        Random geometric graph                        326
-#TOC>   3        A CLOSER LOOK AT THE igraph:: PACKAGE           448
-#TOC>   3.1        Basics                                        451
-#TOC>   3.2        Components                                    523
-#TOC>   4        RANDOM GRAPHS AND GRAPH METRICS                 542
-#TOC>   4.1        Diameter                                      579
-#TOC>   5        GRAPH CLUSTERING                                648
+#TOC>   1        REVIEW                                           51
+#TOC>   2        DEGREE DISTRIBUTIONS                            210
+#TOC>   2.1        Random graph                                  216
+#TOC>   2.2        scale-free graph (Barabasi-Albert)            264
+#TOC>   2.3        Random geometric graph                        330
+#TOC>   3        A CLOSER LOOK AT THE igraph:: PACKAGE           452
+#TOC>   3.1        Basics                                        455
+#TOC>   3.2        Components                                    527
+#TOC>   4        RANDOM GRAPHS AND GRAPH METRICS                 546
+#TOC>   4.1        Diameter                                      583
+#TOC>   5        GRAPH CLUSTERING                                652
 #TOC> 
 #TOC> ==========================================================================
 
@@ -107,7 +108,7 @@ makeRandomAM <- function(nam, p = 0.1) {
     for (iCol in (iRow+1):N) {
       if (runif(1) < p) {     # runif() creates uniform random numbers
                               # between 0 and 1. The expression is TRUE with
-                              # probability p. if it is TRUE ...
+                              # probability p. Then, if it is TRUE ...
         AM[iRow, iCol] <- 1   # ... record an edge for the pair (iRow, iCol)
       }
     }
@@ -132,7 +133,10 @@ if (! requireNamespace("igraph", quietly = TRUE)) {
 #  browseVignettes("igraph")    # available vignettes
 #  data(package = "igraph")     # available datasets
 
-
+# igraph:: functions work on "graph objects" and there are several functions
+# to create a graph object from input data. We can create an igraph-graph
+# from the adjacency matrix we defined above - nothing really changes, we just
+# convert our nodes and edges into a computationally convnient form.
 myG <- igraph::graph_from_adjacency_matrix(myRandAM, mode = "undirected")
 
 set.seed(112358)                       # set RNG seed for repeatable randomness
@@ -143,12 +147,12 @@ set.seed(NULL)                         # reset the RNG
 
 
 # The igraph:: package adds its own function to the collection of plot()
-# functions; R makes the selection which plot function to use based on the class
+# functions; R decides which plot function to use, based on the class
 # of the object that we request to plot. This plot function has parameters
-#  layout - the x,y coordinates of the nodes;
-#  vertex.color - which I define to color by node-degree
-#  vertex size - which I define to increase with node-degree
-#  vertex.label - which I set to combine the names of the vertices of the
+#   layout - the x,y coordinates of the nodes;
+#   vertex.color - which I define to color by node-degree
+#   vertex size - which I define to increase with node-degree
+#   vertex.label - which I set to combine the names of the vertices of the
 #                 graph - names(V(iG)) - with the node degree - degree(iG).
 # See ?igraph.plotting for the complete list of parameters
 
@@ -167,7 +171,7 @@ plot(myG,
 par(oPar)  # reset plot window
 
 
-# The simplest descriptor of a graph are the number of nodes, edges, and the
+# The simplest descriptors of a graph are the number of nodes, edges, and the
 # degree-distribution. In our example, the number of nodes was given: N; the
 # number of edges can easily be calculated from the adjacency matrix. In our
 # matrix, we have entered 1 for every edge. Thus we simply sum over the matrix:
@@ -191,15 +195,15 @@ hist(degG, breaks=brk, col="#A5CCF5",
      main = "Node degrees", xlab = "Degree", ylab = "Number")  # plot histogram
 axis(side = 1, at = 0:7)
 
-# Note: I don't _have_ to define breaks, the hist() function usually does so
+# Note: I don't _have_ to define breaks, the hist() function usually does that
 # quite well, automatically. But for this purpose I want the columns of the
 # histogram to represent exactly one node-degree difference.
 
 # A degree distribution is actually a very informative descriptor of graphs,
 #  since it is very sensitive to the generating mechanism. For biological
 # networks, that is one of the key questions we are interested in: how was the
-# network formed? Asking about the mechanism, the way the interactions
-# support function and shape the fitness landscape in which the cell evolves,
+# network formed? Asking about the mechanism - the way the interactions
+# support function and shape the fitness landscape in which the cell evolves -
 # connects our mathematical abstraction with biological insight.
 
 
@@ -484,7 +488,7 @@ plot(myG)  # this is the result of default plot parameters
 
 # ... where plot() allows the usual flexibility of fine-tuning the plot. We
 # first layout the node coordinates with the Fruchtermann-Reingold algorithm - a
-# force-directed layout that applies an ettractive potential along edges (which
+# force-directed layout that applies an attractive potential along edges (which
 # pulls nodes together) and a repulsive potential to nodes (so they don't
 # overlap). Note the use of the degree() function to color and scale nodes and
 # labels by degree and the use of the V() function to retrieve the vertex names.
