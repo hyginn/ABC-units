@@ -2,10 +2,11 @@
 #
 # Miscellaneous R code to support the project
 #
-# Version: 1.5
+# Version: 1.6
 # Date:    2017-09 - 2021-09
 # Author:  Boris Steipe
 #
+# V 1.5    add fetchGoogleDocRCode()
 # V 1.5    rewrite getMYSPE()
 # V 1.4    Maintenance, and new validation utilities
 # V 1.3.1  prefix Biostrings:: to subseq()
@@ -24,28 +25,29 @@
 #TOC> 
 #TOC>   Section  Title                                       Line
 #TOC> -----------------------------------------------------------
-#TOC>   1        SCRIPTS TO SOURCE                             53
-#TOC>   2        PACKAGES                                      59
-#TOC>   3        DATA & CONSTANTS                              70
-#TOC>   4        SUPPORT FUNCTIONS                            116
-#TOC>   4.01       objectInfo()                               119
-#TOC>   4.02       biCode()                                   147
-#TOC>   4.03       sameSpecies()                              181
-#TOC>   4.04       validateFA()                               201
-#TOC>   4.05       readFASTA()                                309
-#TOC>   4.06       writeFASTA()                               344
-#TOC>   4.07       pBar()                                     377
-#TOC>   4.08       waitTimer()                                399
-#TOC>   4.09       fetchMSAmotif()                            427
-#TOC>   4.10       H() (Shannon entropy)                      471
-#TOC>   4.11       CX() (ChimeraX remote command)             484
-#TOC>   5        FUNCTIONS TO CUSTOMIZE ASSIGNMENTS           541
-#TOC>   5.01       seal()                                     543
-#TOC>   5.02       getMYSPE()                                 547
-#TOC>   5.03       selectPDBrep()                             563
-#TOC>   5.04       sealKey()                                  598
-#TOC>   5.05       selectChi2()                               628
-#TOC>   5.06       selectENSP()                               641
+#TOC>   1        SCRIPTS TO SOURCE                             55
+#TOC>   2        PACKAGES                                      61
+#TOC>   3        DATA & CONSTANTS                              72
+#TOC>   4        SUPPORT FUNCTIONS                            118
+#TOC>   4.01       objectInfo()                               121
+#TOC>   4.02       biCode()                                   149
+#TOC>   4.03       sameSpecies()                              183
+#TOC>   4.04       validateFA()                               203
+#TOC>   4.05       readFASTA()                                311
+#TOC>   4.06       writeFASTA()                               346
+#TOC>   4.07       pBar()                                     379
+#TOC>   4.08       waitTimer()                                401
+#TOC>   4.09       fetchGoogleDocRCode()                      430
+#TOC>   4.10       fetchMSAmotif()                            496
+#TOC>   4.11       H() (Shannon entropy)                      540
+#TOC>   4.12       CX() (ChimeraX remote command)             553
+#TOC>   5        FUNCTIONS TO CUSTOMIZE ASSIGNMENTS           610
+#TOC>   5.01       seal()                                     612
+#TOC>   5.02       getMYSPE()                                 616
+#TOC>   5.03       selectPDBrep()                             632
+#TOC>   5.04       sealKey()                                  667
+#TOC>   5.05       selectChi2()                               697
+#TOC>   5.06       selectENSP()                               710
 #TOC> 
 #TOC> ==========================================================================
 
@@ -424,7 +426,74 @@ waitTimer <- function(t, nIntervals = 50) {
 }
 
 
-# ==   4.09  fetchMSAmotif()  ==================================================
+
+# ==   4.09  fetchGoogleDocRCode()  ============================================
+fetchGoogleDocRCode <- function (URL,
+                                 delimB = "^# begin code",
+                                 delimE = "^# end code",
+                                 myExt = ".R") {
+
+  # Retrieve text from a Google doc, subset to a delimited range, write to
+  # a tempfile() with extension ".R", and open it in the RStudio editor.
+  # Parameters:
+  #    URL     chr   URL of a Google doc that is open to share or contained
+  #                  in a shared folder
+  #    delimB  chr   regex pattern for the begin-delimiter
+  #    delimE  chr   regex pattern for the end-delimiter
+  #    myExt  chr   extension of tempfile. Default ".R"
+  # Value:           None. Executed for its side-effect of writing
+  #                  text to tempfile() and opening it in the editor
+  #
+
+  # Parse out the ID
+  ID <- regmatches(URL, regexec("/d/([^/]+)/", URL))[[1]][2]
+
+  # make a retrieval URL
+  URL <- sprintf("https://docs.google.com/document/d/%s%s",
+                 ID,
+                 "/export?format=txt")
+
+  # GET() the data.
+  response <- httr::GET(URL)
+  if (! httr::status_code(response) == 200) {
+    stop(sprintf("Server status code was \"%s\".",
+                 as.character(httr::status_code(response))))
+  }
+
+  s <- as.character(response)
+  s <- strsplit(s, "\r\n")[[1]]   # split into lines, delimited with \r\n
+  iBegin <- grep(delimB, s)       # find the two delimiter indices
+  iEnd   <- grep(delimE, s)
+
+  # Sanity checks
+  if (length(iBegin) == 0) {
+    stop("Begin-delimiter was not found in document.")
+  } else if (length(iEnd) == 0) {
+      stop("End-delimiter was not found in document.")
+  } else if (length(iBegin) > 1) {
+      stop("More than one Begin-delimiter in document.")
+  } else if (length(iEnd) > 1) {
+      stop("More than one End-delimiter in document.")
+  } else if (iEnd - iBegin) < 2) {
+      stop("Nothing delimited or delimiter tags not correctly ordered.")
+  }
+
+  s <- s[(iBegin+1):(iEnd-1)]          # extract delimited text
+
+  myFile <- tempfile(fileext = ".R")   # get name for temporary file
+  write(s, myFile)                     # write s into temporary file
+  file.edit(myFile)                    # open in editor
+
+  return(invisible(NULL))              # return nothing
+}
+
+if (FALSE) {
+  fetchGoogleDocRCode("https://docs.google.com/document/d/15qUO3WwKZSqK84gNj8XZIrCe6Ih791oFfGTJ82nuM_w/edit?usp=sharing")
+
+}
+
+
+# ==   4.10  fetchMSAmotif()  ==================================================
 fetchMSAmotif <- function(ali, mot) {
   # Retrieve a subset from ali that spans the sequence in mot.
   # Biostrings package must be installed.
@@ -468,7 +537,7 @@ fetchMSAmotif <- function(ali, mot) {
 }
 
 
-# ==   4.10  H() (Shannon entropy)  ============================================
+# ==   4.11  H() (Shannon entropy)  ============================================
 H <- function(x, N) {
   # calculate the Shannon entropy of the vector x given N possible states
   # (in bits).
@@ -481,7 +550,7 @@ H <- function(x, N) {
 }
 
 
-# ==   4.11  CX() (ChimeraX remote command)  ===================================
+# ==   4.12  CX() (ChimeraX remote command)  ===================================
 CX <- function(cmd, port = CXPORT, quietly = FALSE) {
   # send a command to ChimeraX listening on port CXPORT via its REST
   # interface.
