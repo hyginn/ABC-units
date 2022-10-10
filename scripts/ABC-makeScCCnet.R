@@ -42,7 +42,7 @@
 
 
 #TOC> ==========================================================================
-#TOC> 
+#TOC>
 #TOC>   Section  Title                                           Line
 #TOC> ---------------------------------------------------------------
 #TOC>   1        INITIALIZE                                        58
@@ -50,7 +50,7 @@
 #TOC>   3        GOSlim FUNCTIONAL ANNOTATIONS                     96
 #TOC>   3.1        Intersect interactions and annotations         122
 #TOC>   4        DEFINE THE CELL-CYCLE NETWORK                    128
-#TOC> 
+#TOC>
 #TOC> ==========================================================================
 
 
@@ -137,8 +137,8 @@ length(unique(c(scCCnet$protein1, scCCnet$protein2)))  #283
 
 # Each edge is listed twice - now remove duplicates.
 
-# Step 1: make a vector: sort two names so the fiRst one is alphabetically
-#         smaller Than the second one. This brings the two names into a defined
+# Step 1: make a vector: sort two names so the first one is alphabetically
+#         smaller than the second one. This brings the two names into a defined
 #         order. Then concatenate them with a "." - the resulting string
 #         is always the same, for any order. E.g. c("A", "B") gives "A.B"
 #         and c("B", "A") also gives "A.B". This identifies duplicates.
