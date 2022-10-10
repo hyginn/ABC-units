@@ -3,12 +3,14 @@
 # Purpose:  Create a list of genome sequenced fungi with protein annotations and
 #               Mbp1 homologues.
 #
-# Version: 1.5
+# Version: 1.5.1
 #
-# Date:    2016  09  -  2022  09
+# Date:    2016-09  -  2022-10
 # Author:  Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions
+#          1.5.1  Clarify that course roster is not distributed and provide
+#                   synthetic data
 #          1.5    2022 Maintenance
 #          1.4    New retrieval logic
 #          1.3    Rewrite to change datasource. NCBI has not been updated
@@ -37,19 +39,19 @@
 
 
 #TOC> ==========================================================================
-#TOC>
+#TOC> 
 #TOC>   Section  Title                                    Line
 #TOC> --------------------------------------------------------
-#TOC>   1        The strategy                               55
-#TOC>   2        PACKAGES AND INITIALIZATIONS               67
-#TOC>   3        ENSEMBL FUNGI                              75
-#TOC>   3.1        Import                                   78
-#TOC>   4        BLAST SEARCH                              155
-#TOC>   4.1        find homologous proteins                161
-#TOC>   4.2        Identify species in "hits"              192
-#TOC>   5        MERGE ENSEMBL AND BLAST RESULTS           282
-#TOC>   6        STUDENT NUMBERS                           375
-#TOC>
+#TOC>   1        The strategy                               58
+#TOC>   2        PACKAGES AND INITIALIZATIONS               70
+#TOC>   3        ENSEMBL FUNGI                              78
+#TOC>   3.1        Import                                   81
+#TOC>   4        BLAST SEARCH                              164
+#TOC>   4.1        find homologous proteins                170
+#TOC>   4.2        Identify species in "hits"              202
+#TOC>   5        MERGE ENSEMBL AND BLAST RESULTS           296
+#TOC>   6        STUDENT NUMBERS                           389
+#TOC> 
 #TOC> ==========================================================================
 
 
@@ -393,9 +395,14 @@ sDat <- rbind(SPOSCdat, sDat)
 #
 # sDat <- readRDS(file = "data/sDat.rds")
 
+
 students <- read.csv("data/Roster-MGY441H1 F LEC5101 20229_Bioinformatics.csv")
 print(summary(students$Student.Number), digits = 12)
 sN <- students$Student.Number
+# Note: this course roster from quercus is not distributed to students and the three lines above will  work only for instructors.
+# If you want to experiment with the code, create the following artificial
+# entries:
+# sN <- sample(1001000000:1005000000, 20)
 sN <- sN[! is.na(sN)]
 sN <- as.character(sN)
 any(sN == "1003141593")
@@ -429,7 +436,7 @@ MYSPEdat <- MYSPEdat[sample(1:N), ]
 
 # saveRDS(MYSPEdat, file = "data/MYSPEdat.rds")
 
-# === validate ... (Recreate this if laqtecomer species are needed)
+# === validate ... (Recreate this if latecomer species are needed)
 x <- character()
 for (n in sN) {
   sp <- getMYSPE(n)
