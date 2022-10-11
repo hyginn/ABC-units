@@ -3,11 +3,12 @@
 # Purpose: A Bioinformatics Course:
 #              R code accompanying the BIN-Storing_data unit
 #
-# Version: 1.4
+# Version: 1.4.1
 #
 # Date:    2017-10  -  2022-10
 # Author:  Boris Steipe (boris.steipe@utoronto.ca)
 #
+# V 1.4.1  removed a stray, forgotten formatting instruction
 # V 1.4    2022 removed "submit for credit"
 # V 1.3.2  2021 minimal maintenance
 # V 1.3.1  add overlooked  jsonlite:: prefix to fromJson()
@@ -37,26 +38,26 @@
 #TOC> 
 #TOC>   Section  Title                                                   Line
 #TOC> -----------------------------------------------------------------------
-#TOC>   1        A Relational Datamodel in R: review                       64
-#TOC>   1.1        Building a sample database structure                   104
-#TOC>   1.1.1          completing the database                            210
-#TOC>   1.2        Querying the database                                  243
-#TOC>   1.3        Task: Exercise                                         274
-#TOC>   2        Implementing the protein datamodel                       295
-#TOC>   2.1        JSON formatted source data                             323
-#TOC>   2.2        "Sanitizing" sequence data                             364
-#TOC>   2.3        Create a protein table for our data model              388
-#TOC>   2.3.1          Initialize the database                            390
-#TOC>   2.3.2          Add data                                           402
-#TOC>   2.4        Complete the database                                  422
-#TOC>   2.4.1          Examples of navigating the database                449
-#TOC>   2.5        Updating the database                                  481
-#TOC>   3        Add your own data                                        493
-#TOC>   3.1        Find a protein                                         501
-#TOC>   3.2        Put the information into JSON files                    533
-#TOC>   3.3        Create an R script to create your own database         575
-#TOC>   3.3.1          Check and validate                                 604
-#TOC>   3.4        Record the results in your journal:                    648
+#TOC>   1        A Relational Datamodel in R: review                       65
+#TOC>   1.1        Building a sample database structure                   105
+#TOC>   1.1.1          completing the database                            211
+#TOC>   1.2        Querying the database                                  244
+#TOC>   1.3        Task: Exercise                                         275
+#TOC>   2        Implementing the protein datamodel                       294
+#TOC>   2.1        JSON formatted source data                             322
+#TOC>   2.2        "Sanitizing" sequence data                             363
+#TOC>   2.3        Create a protein table for our data model              387
+#TOC>   2.3.1          Initialize the database                            389
+#TOC>   2.3.2          Add data                                           401
+#TOC>   2.4        Complete the database                                  421
+#TOC>   2.4.1          Examples of navigating the database                448
+#TOC>   2.5        Updating the database                                  480
+#TOC>   3        Add your own data                                        492
+#TOC>   3.1        Find a protein                                         500
+#TOC>   3.2        Put the information into JSON files                    532
+#TOC>   3.3        Create an R script to create your own database         574
+#TOC>   3.3.1          Check and validate                                 603
+#TOC>   3.4        Record the results in your journal:                    647
 #TOC> 
 #TOC> ==========================================================================
 
@@ -146,7 +147,7 @@ rbind(x, y)
 # All clear? That's good - this behaviour provides us with a sanity check on the
 # operation. Incidentally: rbind(x, y) did NOT change the table ...
 x
-# rather rbind() had the chnaged table as its return value and that's why it
+# rather rbind() had the changed table as its return value and that's why it
 # was printed. To actually change the table, you need to ASSIGN the return
 # value  of rbind() ... like so:
 x <- rbind(x, y)
@@ -279,8 +280,6 @@ for (ID in pID) {
 #    Write code that adds another philosopher to the datamodel:
 #       Immanuel Kant, (1724 - 1804), Enlightenment Philosophy.
 #       Works: Critique of Pure Reason (1781), Critique of Judgement (1790)
-#    Paste your code into your submission page. Enclose it in <pre> ... </pre>
-#    tags.
 #
 #    Write code that lists the philosophical schools in
 #    alphabetical order, and the books associated with them, also
