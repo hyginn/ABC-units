@@ -4,11 +4,12 @@
 #              R code accompanying the BIN-MYSPE unit
 #
 #
-# Version: 1.4
+# Version: 1.4.1
 #
-# Date:    2017-09 - 2021-10
+# Date:    2017-09  -  2022-10
 # Author:  Boris Steipe (boris.steipe@utoronto.ca)
 #
+# V 1.4.1  Remove Wiki task - record MYSPE in the "About me" document instead
 # V 1.4    Add troubleshooting hints via errText[[...]]
 # V 1.3    2021 update of MYSPE mechanics; fix a bug no one had complained about
 # V 1.2    Reorganized proportional plot section into a "further reading"
@@ -34,18 +35,18 @@
 
 
 #TOC> ==========================================================================
-#TOC> 
+#TOC>
 #TOC>   Section  Title                                             Line
 #TOC> -----------------------------------------------------------------
 #TOC>   1        PREPARATIONS                                        52
 #TOC>   2        SUITABLE MYSPE SPECIES                              65
 #TOC>   3        ADOPT "MYSPE"                                       89
-#TOC>   4        FURTHER READING: PLOTTING PROPORTIONS              128
-#TOC>   4.1        Percentages                                      146
-#TOC>   4.2        Visualizing proportions: Pie chart               165
-#TOC>   4.3        Visualizing proportions: Nested squares          243
-#TOC>   4.4        Visualizing proportions: Sankey diagrams         280
-#TOC> 
+#TOC>   4        FURTHER READING: PLOTTING PROPORTIONS              130
+#TOC>   4.1        Percentages                                      148
+#TOC>   4.2        Visualizing proportions: Pie chart               167
+#TOC>   4.3        Visualizing proportions: Nested squares          245
+#TOC>   4.4        Visualizing proportions: Sankey diagrams         282
+#TOC>
 #TOC> ==========================================================================
 
 
@@ -108,10 +109,12 @@ biCode(MYSPE) # and also note it's "BiCode" ...
 
 # Task:
 # =====
-#   Note down the species name and its five letter BiCode on your Student
-#   Wiki user page. Use this species whenever this or future assignments refer
-#   to MYSPE. Whenever you start a session, it will automatically be loaded
-#   from  myScripts/.myProfile.R  and is available as  MYSPE .
+
+#   Note down the species name and its five letter BiCode in the "About me"
+#   document in your shared course folder. Use this species whenever this or
+#   future assignments refer to MYSPE. Whenever you start a session, it will
+#   automatically be loaded from  myScripts/.myProfile.R  and is available as
+#   MYSPE .
 
 # Here is some more information about MYSPE, taken from the table of genome-
 # sequenced fungi that is in your ./data folder.
