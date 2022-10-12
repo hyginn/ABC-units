@@ -2,11 +2,12 @@
 #
 # Miscellaneous R code to support the project
 #
-# Version: 1.6
-# Date:    2017-09 - 2021-09
-# Author:  Boris Steipe
+# Version: 1.7
+# Date:    2017-09  -  2021-09
+# Author:  boris.steipe@utoronto.ca
 #
-# V 1.5    add fetchGoogleDocRCode()
+# V 1.7    start using Roxygen docstrings and docstring:: package
+# V 1.6    add fetchGoogleDocRCode()
 # V 1.5    rewrite getMYSPE()
 # V 1.4    Maintenance, and new validation utilities
 # V 1.3.1  prefix Biostrings:: to subseq()
@@ -16,13 +17,15 @@
 # V 1.0    First code
 #
 # ToDo:
+#          Continue adding Roxygen docstrings
+#          Move ref-species page
 # Notes:
 #
 # ==============================================================================
 
 
 #TOC> ==========================================================================
-#TOC> 
+#TOC>
 #TOC>   Section  Title                                       Line
 #TOC> -----------------------------------------------------------
 #TOC>   1        SCRIPTS TO SOURCE                             55
@@ -48,7 +51,7 @@
 #TOC>   5.04       sealKey()                                  667
 #TOC>   5.05       selectChi2()                               697
 #TOC>   5.06       selectENSP()                               710
-#TOC> 
+#TOC>
 #TOC> ==========================================================================
 
 
@@ -59,6 +62,11 @@ source("./scripts/ABC-writeALN.R")
 source("./scripts/ABC-writeMFA.R")
 
 # =    2  PACKAGES  ============================================================
+
+if (! requireNamespace("docstring", quietly = TRUE)) {
+  install.packages("docstring")
+}
+library(docstring)
 
 if (! requireNamespace("digest", quietly = TRUE)) {
   install.packages("digest")
@@ -474,7 +482,7 @@ fetchGoogleDocRCode <- function (URL,
       stop("More than one Begin-delimiter in document.")
   } else if (length(iEnd) > 1) {
       stop("More than one End-delimiter in document.")
-  } else if (iEnd - iBegin) < 2) {
+  } else if ((iEnd - iBegin) < 2) {
       stop("Nothing delimited or delimiter tags not correctly ordered.")
   }
 
