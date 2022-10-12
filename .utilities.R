@@ -66,7 +66,7 @@ source("./scripts/ABC-writeMFA.R")
 if (! requireNamespace("docstring", quietly = TRUE)) {
   install.packages("docstring")
 }
-library(docstring)
+# library(docstring)
 
 if (! requireNamespace("digest", quietly = TRUE)) {
   install.packages("digest")
@@ -725,6 +725,6 @@ selectENSP <- function(x) {
   return(x)
 }
 
-
+message("\nThere is an issue with loading the docstring:: library.\nPlease type \"library(docstring)\" yourself until this is resolved (2022-10-12).")
 
 # [END]
