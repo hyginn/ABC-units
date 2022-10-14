@@ -3,6 +3,8 @@
 # This script is automatically executed on startup
 # ==============================================================================
 
+if (file.exists("../dev/initDev.R")) { source("../dev/initDev.R") }
+
 init <- function() {
 
   # Create a local copy of myScript.R if not done yet.
@@ -83,14 +85,15 @@ if (! file.exists("./myScripts/.myProfile.R")) {
   cat("... done.\n\n")
 }
 
-if (default.stringsAsFactors()) {
-  cat("WARNING.\n")
-  cat("========\n")
-  cat("Your default \"stringsAsFactors\" parameter is set to \"TRUE\".\n")
-  cat("This will break some of the code.\n")
-  cat("Please contact your instructor to troubleshoot and fix this issue.\n")
-  cat("\n")
-}
+# Unnecessary ... now FALSE by default ...
+# if (default.stringsAsFactors()) {
+#   cat("WARNING.\n")
+#   cat("========\n")
+#   cat("Your default \"stringsAsFactors\" parameter is set to \"TRUE\".\n")
+#   cat("This will break some of the code.\n")
+#   cat("Please contact your instructor to troubleshoot and fix this issue.\n")
+#   cat("\n")
+# }
 
 errText <- list()
 errText[["noProfileFile"]] <- '
