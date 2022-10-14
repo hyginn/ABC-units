@@ -2,10 +2,12 @@
 #
 # Miscellaneous R code to support the project
 #
-# Version: 1.7
-# Date:    2017-09  -  2021-09
+# Version: 1.8
+# Date:    2017-09  -  2021-10
 # Author:  boris.steipe@utoronto.ca
 #
+# V 1.8    fixed docstring problem of `?` opertor not being
+#            defined by docstring::
 # V 1.7    start using Roxygen docstrings and docstring:: package
 # V 1.6    add fetchGoogleDocRCode()
 # V 1.5    rewrite getMYSPE()
@@ -25,33 +27,35 @@
 
 
 #TOC> ==========================================================================
-#TOC>
+#TOC> 
 #TOC>   Section  Title                                       Line
 #TOC> -----------------------------------------------------------
-#TOC>   1        SCRIPTS TO SOURCE                             55
-#TOC>   2        PACKAGES                                      61
-#TOC>   3        DATA & CONSTANTS                              72
-#TOC>   4        SUPPORT FUNCTIONS                            118
-#TOC>   4.01       objectInfo()                               121
-#TOC>   4.02       biCode()                                   149
-#TOC>   4.03       sameSpecies()                              183
-#TOC>   4.04       validateFA()                               203
-#TOC>   4.05       readFASTA()                                311
-#TOC>   4.06       writeFASTA()                               346
-#TOC>   4.07       pBar()                                     379
-#TOC>   4.08       waitTimer()                                401
-#TOC>   4.09       fetchGoogleDocRCode()                      430
-#TOC>   4.10       fetchMSAmotif()                            496
-#TOC>   4.11       H() (Shannon entropy)                      540
-#TOC>   4.12       CX() (ChimeraX remote command)             553
-#TOC>   5        FUNCTIONS TO CUSTOMIZE ASSIGNMENTS           610
-#TOC>   5.01       seal()                                     612
-#TOC>   5.02       getMYSPE()                                 616
-#TOC>   5.03       selectPDBrep()                             632
-#TOC>   5.04       sealKey()                                  667
-#TOC>   5.05       selectChi2()                               697
-#TOC>   5.06       selectENSP()                               710
-#TOC>
+#TOC>   1        SCRIPTS TO SOURCE                             62
+#TOC>   2        PACKAGES                                      68
+#TOC>   3        DATA & CONSTANTS                              85
+#TOC>   4        SUPPORT FUNCTIONS                            131
+#TOC>   4.01       checkHelpOperator()                        133
+#TOC>   4.02       objectInfo()                               148
+#TOC>   4.03       biCode()                                   176
+#TOC>   4.04       sameSpecies()                              210
+#TOC>   4.05       validateFA()                               230
+#TOC>   4.06       readFASTA()                                338
+#TOC>   4.07       writeFASTA()                               373
+#TOC>   4.08       pBar()                                     406
+#TOC>   4.09       waitTimer()                                428
+#TOC>   4.10       fetchGoogleDocRCode()                      457
+#TOC>   4.11       fetchMSAmotif()                            523
+#TOC>   4.12       H() (Shannon entropy)                      567
+#TOC>   4.13       CX() (ChimeraX remote command)             580
+#TOC>   5        FUNCTIONS TO CUSTOMIZE ASSIGNMENTS           637
+#TOC>   5.01       seal()                                     639
+#TOC>   5.02       getMYSPE()                                 643
+#TOC>   5.03       selectPDBrep()                             659
+#TOC>   5.04       sealKey()                                  694
+#TOC>   5.05       selectChi2()                               724
+#TOC>   5.06       selectENSP()                               737
+#TOC>   5.07       overload `?`-operator last                 747
+#TOC> 
 #TOC> ==========================================================================
 
 
@@ -63,10 +67,6 @@ source("./scripts/ABC-writeMFA.R")
 
 # =    2  PACKAGES  ============================================================
 
-if (! requireNamespace("docstring", quietly = TRUE)) {
-  install.packages("docstring")
-}
-# library(docstring)
 
 if (! requireNamespace("digest", quietly = TRUE)) {
   install.packages("digest")
@@ -75,6 +75,11 @@ if (! requireNamespace("digest", quietly = TRUE)) {
 if (! requireNamespace("jsonlite", quietly = TRUE)) {
   install.packages("jsonlite")
 }
+
+if (! requireNamespace("docstring", quietly = TRUE)) {
+  install.packages("docstring")
+}
+
 
 
 # =    3  DATA & CONSTANTS  ====================================================
@@ -125,8 +130,22 @@ REFspecies <- c("Aspergillus nidulans",
 
 # =    4  SUPPORT FUNCTIONS  ===================================================
 
+# ==   4.01  checkHelpOperator()  ==============================================
+checkHelpOperator <- function() {
+  #' checkHelpOperator
+  #'
+  #' @param none
+  #'
+  #' @return text that states from which package the currently
+  #' active help operator `?` was loaded.
 
-# ==   4.01  objectInfo()  =====================================================
+  message(sprintf("The `?` operator was loaded from package %s::\n",
+                  environmentName(environment(`?`))))
+  return(invisible(NULL))
+}
+
+
+# ==   4.02  objectInfo()  =====================================================
 objectInfo <- function(x) {
     # Function to combine various information items about R objects
     #
@@ -154,7 +173,7 @@ objectInfo <- function(x) {
 }
 
 
-# ==   4.02  biCode()  =========================================================
+# ==   4.03  biCode()  =========================================================
 biCode <- function(s) {
   # Make a 5 character "biCode" from a binomial name by concatening
   # the uppercased first three letter of the first word and the first
@@ -188,7 +207,7 @@ biCode <- function(s) {
 }
 
 
-# ==   4.03  sameSpecies()  ====================================================
+# ==   4.04  sameSpecies()  ====================================================
 sameSpecies <- function(a, b) {
   # Parameters: a, b two vectors that contain
   # binomial species names and maybe additional strain information.
@@ -208,7 +227,7 @@ sameSpecies <- function(a, b) {
 
 
 
-# ==   4.04  validateFA()  =====================================================
+# ==   4.05  validateFA()  =====================================================
 
 validateFA <- function(txt) {
   # validates txt according to FASTA assumptions
@@ -316,7 +335,7 @@ if (FALSE) {
 }
 
 
-# ==   4.05  readFASTA()  ======================================================
+# ==   4.06  readFASTA()  ======================================================
 
 readFASTA <- function(FA) {
   # Read FASTA formatted text, validate it,
@@ -351,7 +370,7 @@ readFASTA <- function(FA) {
 }
 
 
-# ==   4.06  writeFASTA()  =====================================================
+# ==   4.07  writeFASTA()  =====================================================
 writeFASTA <- function(fa, fn = NULL, width = 60) {
   # Write the contents of dataframe "fa" as a FASTA formatted file.
   # Parameters:
@@ -384,7 +403,7 @@ writeFASTA <- function(fa, fn = NULL, width = 60) {
 }
 
 
-# ==   4.07  pBar()  ===========================================================
+# ==   4.08  pBar()  ===========================================================
   pBar <- function(i, l, nCh = 50) {
     # Draw a progress bar in the console
   # i: the current iteration
@@ -406,7 +425,7 @@ writeFASTA <- function(fa, fn = NULL, width = 60) {
 }
 
 
-# ==   4.08  waitTimer()  ======================================================
+# ==   4.09  waitTimer()  ======================================================
 waitTimer <- function(t, nIntervals = 50) {
   # pause and wait for t seconds and display a progress bar as
   # you are waiting
@@ -435,7 +454,7 @@ waitTimer <- function(t, nIntervals = 50) {
 
 
 
-# ==   4.09  fetchGoogleDocRCode()  ============================================
+# ==   4.10  fetchGoogleDocRCode()  ============================================
 fetchGoogleDocRCode <- function (URL,
                                  delimB = "^# begin code",
                                  delimE = "^# end code",
@@ -501,7 +520,7 @@ if (FALSE) {
 }
 
 
-# ==   4.10  fetchMSAmotif()  ==================================================
+# ==   4.11  fetchMSAmotif()  ==================================================
 fetchMSAmotif <- function(ali, mot) {
   # Retrieve a subset from ali that spans the sequence in mot.
   # Biostrings package must be installed.
@@ -545,7 +564,7 @@ fetchMSAmotif <- function(ali, mot) {
 }
 
 
-# ==   4.11  H() (Shannon entropy)  ============================================
+# ==   4.12  H() (Shannon entropy)  ============================================
 H <- function(x, N) {
   # calculate the Shannon entropy of the vector x given N possible states
   # (in bits).
@@ -558,7 +577,7 @@ H <- function(x, N) {
 }
 
 
-# ==   4.12  CX() (ChimeraX remote command)  ===================================
+# ==   4.13  CX() (ChimeraX remote command)  ===================================
 CX <- function(cmd, port = CXPORT, quietly = FALSE) {
   # send a command to ChimeraX listening on port CXPORT via its REST
   # interface.
@@ -725,6 +744,9 @@ selectENSP <- function(x) {
   return(x)
 }
 
-message("\nThere is an issue with loading the docstring:: library.\nPlease type \"library(docstring)\" yourself until this is resolved (2022-10-12).")
+# ==   5.07  overload `?`-operator last  =======================================
+
+`?` <- docstring::`?`
+
 
 # [END]
