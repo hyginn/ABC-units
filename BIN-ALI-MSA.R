@@ -3,12 +3,13 @@
 # Purpose:  A Bioinformatics Course:
 #              R code accompanying the BIN-ALI-MSA unit.
 #
-# Version:  1.3
+# Version:  1.3.1
 #
-# Date:     2017-10  -  2020-09
+# Date:     2017-10  -  2022-10
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.3.1  Fix broken link
 #           1.3    2020 updates
 #           1.2    Change from require() to requireNamespace(),
 #                      use <package>::<function>() idiom throughout
@@ -30,7 +31,7 @@
 
 
 #TOC> ==========================================================================
-#TOC> 
+#TOC>
 #TOC>   Section  Title                                              Line
 #TOC> ------------------------------------------------------------------
 #TOC>   1        Preparations                                         55
@@ -48,7 +49,7 @@
 #TOC>   6        Sequence Logos                                      549
 #TOC>   6.1        Subsetting an alignment by motif                  558
 #TOC>   6.2        Plot a Sequence Logo                              607
-#TOC> 
+#TOC>
 #TOC> ==========================================================================
 
 
@@ -96,7 +97,7 @@ help(package = "msa")
 
 # =    2  Aligning full length MBP1 proteins  ==================================
 
-# In the Wiki part of this unit you have
+# In the HTML part of this unit you have:
 #   - aligned full length MBP1 protein sequences at the EBI using T-Coffee
 #   - saved the resulting alignment in CLUSTAL format
 #     to the file "MBP1orthologuesTC.aln"
@@ -241,7 +242,7 @@ for (i in seq_along(highScoringRanges$lengths)) {
 #   -  adjust the sequence names
 #   -  convert to msaAAMultipleAlignment object
 
-# ===   4.1.1  importing an .aln file                   
+# ===   4.1.1  importing an .aln file
 
 # The seqinr package has a function to read CLUSTAL W formatted .aln files ...
 if (! requireNamespace("seqinr", quietly=TRUE)) {
@@ -253,7 +254,7 @@ if (! requireNamespace("seqinr", quietly=TRUE)) {
 #  data(package = "seqinr")   # available datasets
 
 # read the T-coffee aligned file that you donwloaded from the EBI MSA tools
-# (cf. http://steipe.biochemistry.utoronto.ca/abc/index.php/BIN-ALI-MSA)
+# (cf. http://steipe.biochemistry.utoronto.ca/bio/BIN-ALI-MSA.html)
 tmp <- seqinr::read.alignment("msaT.aln", format = "clustal")
 
 # read.alignment() returns a list. $seq is a list of strings, one for each
