@@ -4,12 +4,13 @@
 #              R code accompanying the BIN-FUNC-Domain_annotation unit.
 #
 # ==============================================================================
-# Version:  1.4
+# Version:  1.5
 #
-# Date:     2017-11  -  2020-10
+# Date:     2017-11  -  2022-10
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           1.5    Change shared data import from Wiki to Google docs
 #           1.4    Add code for shared data import from the Wiki
 #           1.3    Add code for database export to JSON and instructions
 #                  for uploading annotations to the Public Student Wiki page
@@ -32,19 +33,19 @@
 
 
 #TOC> ==========================================================================
-#TOC> 
+#TOC>
 #TOC>   Section  Title                                                 Line
 #TOC> ---------------------------------------------------------------------
-#TOC>   1        Update your database script                             51
-#TOC>   1.1        Preparing an annotation file ...                      58
-#TOC>   1.1.1          BEFORE  "BIN-ALI-Optimal_sequence_alignment"      61
-#TOC>   1.1.2          AFTER "BIN-ALI-Optimal_sequence_alignment"       109
-#TOC>   1.2        Execute and Validate                                 136
-#TOC>   2        Plot Annotations                                       161
-#TOC>   3        SHARING DATA                                           287
+#TOC>   1        Update your database script                             52
+#TOC>   1.1        Preparing an annotation file ...                      59
+#TOC>   1.1.1          BEFORE  "BIN-ALI-Optimal_sequence_alignment"      62
+#TOC>   1.1.2          AFTER "BIN-ALI-Optimal_sequence_alignment"       110
+#TOC>   1.2        Execute and Validate                                 137
+#TOC>   2        Plot Annotations                                       162
+#TOC>   3        SHARING DATA                                           288
 #TOC>   3.1        Post MBP1_MYSPE as JSON data                         303
-#TOC>   3.2        Import shared MBP1_MYSPE from the Wiki               326
-#TOC> 
+#TOC>   3.2        Import collaborative MBP1_MYSPE annotations          325
+#TOC>
 #TOC> ==========================================================================
 
 
@@ -106,7 +107,7 @@
 # Then SKIP the next section.
 #
 #
-# ===   1.1.2  AFTER "BIN-ALI-Optimal_sequence_alignment"  
+# ===   1.1.2  AFTER "BIN-ALI-Optimal_sequence_alignment"
 #
 #   IF YOU HAVE ALREADY COMPLETED THE BIN-ALI-OPTIMAL_SEQUENCE_ALIGNMENT UNIT:
 #
@@ -287,14 +288,13 @@ par(oPar)  # reset the plot parameters
 # =    3  SHARING DATA  ========================================================
 
 # It's particularly interesting to compare such annotations across many
-# homologous proteins. I have created a page on the Student Wiki () that you can
-# edit, and then download the data from the entire class directly to your
-# RStudio project.
-#
+# homologous proteins. I have created a page on our shared Google folder that
+# you can edit, and then download the data from the entire class directly to
+# your RStudio project.
 
 # I have provided a function that extracts all information that refers to a
 # single protein from the database, and prints it out as well-formatted JSON,
-# suitable to be pasted into our shareable Wiki-page. There is a fair amount of
+# suitable to be pasted into our shared Google doc. There is a fair amount of
 # bookkeeping involved, but the code is not otherwise very enlightening so I
 # will spare you the details - it's in "./scripts/ABC-dbUtilities.R" if you
 # would want to have a look.
@@ -306,82 +306,54 @@ par(oPar)  # reset the plot parameters
 # =====
 # 1: Run the following code:
 
-cat("{{Vspace}}",
-    "<!-- ==== BEGIN  PROTEIN ==== -->",
-    "<pre class=\"protein-data\">",
+cat("",
     dbProt2JSON(sprintf("MBP1_%s", biCode(MYSPE))),
-    "</pre>",
-    "<!-- ===== END PROTEIN ====== -->",
-    "", sep = "\n"
-)
+    "# -----",
+    "", sep = "\n")
 
-# 2: Copy the entire output from the console.
-# 3: Navigate to
-#      http://steipe.biochemistry.utoronto.ca/abc/students/index.php/Public
-#    ... edit the page, and paste your output at the top.
-# 4: Save your edits.
+# 2: Copy the entire output from the console. Make sure you include the
+#    separator token at the end.
+# 3: Navigate to https://jsonlint.com, paste your JSON output, delete the
+#    separator token, and confirm that the rest validates.
+# 4: Go to
+#      https://docs.google.com/document/d/1g9IA6lk6K2YG51V8Fx-JA3LV0NIZSIyLIqjlbYNto-Y/edit#
+#    ... edit the page, and paste your output at the top of the JSON section.
+#    Make sure the separator token is included.
 
 
 
-# ==   3.2  Import shared MBP1_MYSPE from the Wiki  ============================
+# ==   3.2  Import collaborative MBP1_MYSPE annotations  =======================
 
 # Once we have collected a number of protein annotations, we can access the
-# Wiki-page and import the data into our database. The Wiki page is  an html
-# document with lots of MediaWiki specific stuff - but the contents we are
-# interested in is enclosed in <pre class="protein-data"> ... </pre> tags. These
-# work like normal HTML <pre> tags, but we have defined a special class for them
-# to make it easy to parse out the contents we want. The rvest:: package in
-# combination with xml2:: provides us with all the tools we need for such
-# "Webscraping" of data....
-
-if (! requireNamespace("rvest", quietly=TRUE)) {
-  install.packages("rvest")
-}
-
-if (! requireNamespace("xml2", quietly=TRUE)) {
-  install.packages("xml2")
-}
+# Google doc and import the data into our database.
 
 # Here's the process:
-# The URL is an "open" page on the student Wiki. Users that are not logged in
-# can view the contents, but you can only edit if you are logged in.
-myURL <- "http://steipe.biochemistry.utoronto.ca/abc/students/index.php/Public"
+# The URL is a Google doc.
+myURL <- "https://docs.google.com/document/d/1g9IA6lk6K2YG51V8Fx-JA3LV0NIZSIyLIqjlbYNto-Y/edit#"
 
-# First thing is to retrieve the HTML from the url...
-x <- xml2::read_html(myURL)
+# Your .utilities.R script defines a function "fetchGoogleDocRCode()" which can
+# download the JSON data directly. It's really quite simple and I encourage you
+# to have a look at the code.
 
-# This retrieves the page source, but that still needs to be parsed into its
-# logical elements. HTML is a subset of XML and such documents are structured as
-# trees, that have "nodes" which are demarcated with "tags". rvest::html_nodes()
-# parses out the document structure and then uses a so-called "xpath" expression
-# to select nodes we are interested in. Now, xpath is one of those specialized
-# languages of which there are a few more to learn than one would care for. You
-# MUST know how to format sprintf() expressions, and you SHOULD be competent
-# with regular expressions. But if you want to be really competent in your work,
-# basic HTML and CSS is required ... and enough knowledge about xpath to be able
-# to search on Stackoverflow for what you need for parsing data out of Web
-# documents...
+txt <- fetchGoogleDocRCode(myURL,
+                    delimB = "^# begin JSON",
+                    delimE = "^# end JSON",
+                    returnTxt = TRUE)
 
-# The expression we use below is:
-#   - get any node anywhere in the tree ("//*") ...
-#   - that has a particular attribute("[@ ... ]").
-#   - The attribute we want is that the class of the node is "protein-data";
-#      that is the class we have defined for our <pre> tags.
-# As a result of this selection, we get a list of pointers to the document tree.
-y <- rvest::html_nodes(x, xpath ='//*[@class="protein-data"]')
+# This is a text object that contains multiple JSON objects. In order to
+# parse them correctly, we included a separator token. We use this token to
+# split the individual objects. First we collapse the text into a
+# single string ...
 
-# Next we fetch the actual payload - the text - from the tree:
-# rvest::html_text() gets the text from the list of pointers. The result is a
-# normal list of character strings.
-z <- rvest::html_text(y)
+mJ <- paste(txt, collapse = " ")
 
-# Finally we can iterate over the list, and add all proteins we don't already
-# have to our database. There may well be items that are rejected because they
-# are already present in the database - for example, unless somebody has
-# annotated new features, all of the features are already there. Don't worry -
-# that is intended; we don't want duplicate entries.
+# then we strsplit() with the separator tokens.
 
-for (thisJSON in z) {
+mJ <- strsplit(mJ, "# -----")[[1]]
+
+# Finally we iterate over all the JSON objects and add them to our database
+# if the protein does not exist there yet.
+for (thisJSON in mJ) {
   thisData <- jsonlite::fromJSON(thisJSON)
   if (! thisData$protein$name %in% myDB$protein$name) {
     myDB <- dbAddProtein(myDB, thisData$protein)
@@ -391,7 +363,8 @@ for (thisJSON in z) {
   }
 }
 
-# Finally, we can repeat our domain plot with the results - which now includes the shared proteins:
+# Finally, we can repeat our domain plot with the results - which now
+# includes the community- annotated proteins:
 
 iRows <- grep("^MBP1_", myDB$protein$name)
 yMax <- length(iRows) * 1.1
