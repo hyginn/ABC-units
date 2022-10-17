@@ -53,9 +53,9 @@
 #TOC>   3.12       dbFetchNCBItaxData()                   450
 #TOC>   3.13       UniProtIDmap()                         489
 #TOC>   3.14       dbProt2JSON()                          528
-#TOC>   3.15       dbSeq2JSON()                           613
-#TOC>   3.16       dbRow2JSON()                           642
-#TOC>   4        TESTS                                    662
+#TOC>   3.15       dbSeq2JSON()                           612
+#TOC>   3.16       dbRow2JSON()                           641
+#TOC>   4        TESTS                                    661
 #TOC> 
 #TOC> ==========================================================================
 
@@ -569,7 +569,6 @@ dbProt2JSON <- function(thisProt) {
   thisData$feature$ID           <- NULL
 
   # create JSON-formatted output
-  # ( jsonlite::prettify() is too  wordy for a compact Wikipage )
 
   out <- character()
   out <- c(out, '{')
