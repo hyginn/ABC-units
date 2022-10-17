@@ -27,7 +27,7 @@
 
 
 #TOC> ==========================================================================
-#TOC> 
+#TOC>
 #TOC>   Section  Title                                       Line
 #TOC> -----------------------------------------------------------
 #TOC>   1        SCRIPTS TO SOURCE                             62
@@ -44,18 +44,18 @@
 #TOC>   4.08       pBar()                                     406
 #TOC>   4.09       waitTimer()                                428
 #TOC>   4.10       fetchGoogleDocRCode()                      457
-#TOC>   4.11       fetchMSAmotif()                            523
-#TOC>   4.12       H() (Shannon entropy)                      567
-#TOC>   4.13       CX() (ChimeraX remote command)             580
-#TOC>   5        FUNCTIONS TO CUSTOMIZE ASSIGNMENTS           637
-#TOC>   5.01       seal()                                     639
-#TOC>   5.02       getMYSPE()                                 643
-#TOC>   5.03       selectPDBrep()                             659
-#TOC>   5.04       sealKey()                                  694
-#TOC>   5.05       selectChi2()                               724
-#TOC>   5.06       selectENSP()                               737
-#TOC>   5.07       overload `?`-operator last                 747
-#TOC> 
+#TOC>   4.11       fetchMSAmotif()                            535
+#TOC>   4.12       H() (Shannon entropy)                      579
+#TOC>   4.13       CX() (ChimeraX remote command)             592
+#TOC>   5        FUNCTIONS TO CUSTOMIZE ASSIGNMENTS           649
+#TOC>   5.01       seal()                                     651
+#TOC>   5.02       getMYSPE()                                 655
+#TOC>   5.03       selectPDBrep()                             671
+#TOC>   5.04       sealKey()                                  706
+#TOC>   5.05       selectChi2()                               736
+#TOC>   5.06       selectENSP()                               749
+#TOC>   5.07       overload `?`-operator last                 759
+#TOC>
 #TOC> ==========================================================================
 
 
@@ -453,23 +453,28 @@ waitTimer <- function(t, nIntervals = 50) {
 }
 
 
-
 # ==   4.10  fetchGoogleDocRCode()  ============================================
 fetchGoogleDocRCode <- function (URL,
                                  delimB = "^# begin code",
                                  delimE = "^# end code",
-                                 myExt = ".R") {
+                                 myExt = ".R",
+                                 returnTxt = FALSE) {
 
-  # Retrieve text from a Google doc, subset to a delimited range, write to
-  # a tempfile() with extension ".R", and open it in the RStudio editor.
+  # Retrieve text from a Google doc, subset to a delimited range, either
+  # write to a tempfile() with extension ".R", and open it in the
+  # RStudio editor, or return as a text array.
+  #
   # Parameters:
-  #    URL     chr   URL of a Google doc that is open to share or contained
+  #    URL        chr   URL of a Google doc that is open to share or contained
   #                  in a shared folder
-  #    delimB  chr   regex pattern for the begin-delimiter
-  #    delimE  chr   regex pattern for the end-delimiter
-  #    myExt  chr   extension of tempfile. Default ".R"
-  # Value:           None. Executed for its side-effect of writing
-  #                  text to tempfile() and opening it in the editor
+  #    delimB     chr   regex pattern for the begin-delimiter
+  #    delimE     chr   regex pattern for the end-delimiter
+  #    myExt      chr   extension of tempfile. Default ".R"
+  #    returnTxt  bool  If TRUE, do not create a tempfile but return a vector
+  #                     of text lines found in the document instead.
+  # Value:              Either executed for its side-effect of writing
+  #                     text to tempfile() and opening it in the editor, or
+  #                     return a character vector.
   #
 
   # Parse out the ID
@@ -505,13 +510,19 @@ fetchGoogleDocRCode <- function (URL,
       stop("Nothing delimited or delimiter tags not correctly ordered.")
   }
 
-  s <- s[(iBegin+1):(iEnd-1)]          # extract delimited text
+  s <- s[(iBegin+1):(iEnd-1)]            # extract delimited text
 
-  myFile <- tempfile(fileext = ".R")   # get name for temporary file
-  write(s, myFile)                     # write s into temporary file
-  file.edit(myFile)                    # open in editor
+  if (! returnTxt) {
+    myFile <- tempfile(fileext = myExt)  # get name for temporary file
+    write(s, myFile)                     # write s into temporary file
+    file.edit(myFile)                    # open in editor
 
-  return(invisible(NULL))              # return nothing
+    return(invisible(NULL))              # return nothing
+
+  } else {
+
+    return(s)
+  }
 }
 
 if (FALSE) {
