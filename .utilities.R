@@ -2,11 +2,12 @@
 #
 # Miscellaneous R code to support the project
 #
-# Version: 1.8
-# Date:    2017-09  -  2021-10
+# Version: 1.9
+# Date:    2017-09  -  2022-10
 # Author:  boris.steipe@utoronto.ca
 #
-# V 1.8    fixed docstring problem of `?` opertor not being
+# V 1.9    Added diagnostic messages for startup process.
+# V 1.8    fixed docstring problem of `?` operator not being
 #            defined by docstring::
 # V 1.7    start using Roxygen docstrings and docstring:: package
 # V 1.6    add fetchGoogleDocRCode()
@@ -27,62 +28,80 @@
 
 
 #TOC> ==========================================================================
-#TOC>
+#TOC> 
 #TOC>   Section  Title                                       Line
 #TOC> -----------------------------------------------------------
-#TOC>   1        SCRIPTS TO SOURCE                             62
-#TOC>   2        PACKAGES                                      68
-#TOC>   3        DATA & CONSTANTS                              85
-#TOC>   4        SUPPORT FUNCTIONS                            131
-#TOC>   4.01       checkHelpOperator()                        133
-#TOC>   4.02       objectInfo()                               148
-#TOC>   4.03       biCode()                                   176
-#TOC>   4.04       sameSpecies()                              210
-#TOC>   4.05       validateFA()                               230
-#TOC>   4.06       readFASTA()                                338
-#TOC>   4.07       writeFASTA()                               373
-#TOC>   4.08       pBar()                                     406
-#TOC>   4.09       waitTimer()                                428
-#TOC>   4.10       fetchGoogleDocRCode()                      457
-#TOC>   4.11       fetchMSAmotif()                            535
-#TOC>   4.12       H() (Shannon entropy)                      579
-#TOC>   4.13       CX() (ChimeraX remote command)             592
-#TOC>   5        FUNCTIONS TO CUSTOMIZE ASSIGNMENTS           649
-#TOC>   5.01       seal()                                     651
-#TOC>   5.02       getMYSPE()                                 655
-#TOC>   5.03       selectPDBrep()                             671
-#TOC>   5.04       sealKey()                                  706
-#TOC>   5.05       selectChi2()                               736
-#TOC>   5.06       selectENSP()                               749
-#TOC>   5.07       overload `?`-operator last                 759
-#TOC>
+#TOC>   1        SCRIPTS TO SOURCE                             65
+#TOC>   2        PACKAGES                                      79
+#TOC>   3        DATA & CONSTANTS                             101
+#TOC>   4        SUPPORT FUNCTIONS                            151
+#TOC>   4.01       checkHelpOperator()                        155
+#TOC>   4.02       objectInfo()                               170
+#TOC>   4.03       biCode()                                   198
+#TOC>   4.04       sameSpecies()                              232
+#TOC>   4.05       validateFA()                               252
+#TOC>   4.06       readFASTA()                                360
+#TOC>   4.07       writeFASTA()                               395
+#TOC>   4.08       pBar()                                     428
+#TOC>   4.09       waitTimer()                                450
+#TOC>   4.10       fetchGoogleDocRCode()                      478
+#TOC>   4.11       fetchMSAmotif()                            556
+#TOC>   4.12       H() (Shannon entropy)                      600
+#TOC>   4.13       CX() (ChimeraX remote command)             613
+#TOC>   5        FUNCTIONS TO CUSTOMIZE ASSIGNMENTS           670
+#TOC>   5.01       seal()                                     672
+#TOC>   5.02       getMYSPE()                                 676
+#TOC>   5.03       selectPDBrep()                             692
+#TOC>   5.04       sealKey()                                  727
+#TOC>   5.05       selectChi2()                               757
+#TOC>   5.06       selectENSP()                               770
+#TOC>   5.07       overload `?`-operator last                 780
+#TOC> 
 #TOC> ==========================================================================
+
+
+cat("Sourcing .utilities.R ...\n")
 
 
 # =    1  SCRIPTS TO SOURCE  ===================================================
 
+cat("  Sourcing scripts: ABC-dbUtilities.R ... ")
 source("./scripts/ABC-dbUtilities.R")
+
+cat("ABC-writeALN.R ... ")
 source("./scripts/ABC-writeALN.R")
+
+cat("ABC-writeMFA.R ... ")
 source("./scripts/ABC-writeMFA.R")
+
+cat("Done.\n")
+
 
 # =    2  PACKAGES  ============================================================
 
+cat("  Checking installed packages: digest:: ... ")
 
 if (! requireNamespace("digest", quietly = TRUE)) {
   install.packages("digest")
 }
 
+cat("jsonlite:: ... ")
 if (! requireNamespace("jsonlite", quietly = TRUE)) {
   install.packages("jsonlite")
 }
 
+cat("docstring:: ... ")
 if (! requireNamespace("docstring", quietly = TRUE)) {
   install.packages("docstring")
 }
 
+cat("Done.\n")
+
 
 
 # =    3  DATA & CONSTANTS  ====================================================
+
+cat("  Defining custom datastructures and constants ... ")
 
 # cf. https://www.bioinformatics.org/sms/iupac.html
 AAVALID  <- "acdefghiklmnpqrstvwyACDEFGHIKLMNPQRSTVWY*-"
@@ -127,8 +146,12 @@ REFspecies <- c("Aspergillus nidulans",
                 "Ustilago maydis",
                 "Wallemia mellicola")
 
+cat("Done.\n")
+
 
 # =    4  SUPPORT FUNCTIONS  ===================================================
+
+cat("  Defining functions ... ")
 
 # ==   4.01  checkHelpOperator()  ==============================================
 checkHelpOperator <- function() {
@@ -734,7 +757,7 @@ print(lines[grep("sealKey", lines)]);return(invisible(NULL))}
 
 # ==   5.05  selectChi2()  =====================================================
 selectChi2 <- function() {
-  # Select one random Amino acid from those that have a Chi2 angle
+  # Select one random amino acid from those that have a Chi2 angle
 
   oldSeed <- .Random.seed
   set.seed(myStudentNumber)
@@ -759,5 +782,6 @@ selectENSP <- function(x) {
 
 `?` <- docstring::`?`
 
+cat("Done.\n")  # utilities.R successfully sourced.
 
 # [END]
