@@ -3,11 +3,12 @@
 # Purpose: Reference to graphical output in R.
 #
 #
-# Version: 2.1
+# Version: 2.1.1
 #
-# Date:    2017 09  -  2021 09
+# Date:    2017-09  -  2022-10
 # Author:  Boris Steipe (boris.steipe@utoronto.ca)
 #
+# V 2.1.1  Maintenance, typos
 # V 2.1    First minor updates 2021
 # V 2.0    Comprehensive reference with basic and advanced options based on
 #          an integrated yeast gene expression dataset. Full rewrite of most
@@ -22,46 +23,47 @@
 
 #TOC> ==========================================================================
 #TOC> 
-#TOC>   Section  Title                                               Line
-#TOC> -------------------------------------------------------------------
-#TOC>   01       INITIALIZE                                            69
-#TOC>   02       THIS REFERENCE ...                                    74
-#TOC>   02.1       Dataset Documentation                               81
-#TOC>   03       PROPORTIONS AND DISTRIBUTIONS                        193
-#TOC>   03.1       barplot()                                          198
-#TOC>   03.2       pie()                                              222
-#TOC>   03.3       boxplot()                                          254
-#TOC>   03.4       hist()                                             312
-#TOC>   03.4.1         overlaying histograms                          357
-#TOC>   04       THE plot() FUNCTION                                  400
-#TOC>   04.1       line plots                                         404
-#TOC>   05       ENCODING INFORMATION: SYMBOL, SIZE, COLOuR           503
-#TOC>   05.1       pch ("plotting character" symbols)                 509
-#TOC>   05.1.1         Line types                                     684
-#TOC>   05.2       cex ("character expansion" size)                   708
-#TOC>   06       COLOUR                                               768
-#TOC>   06.1       Colours by number                                  776
-#TOC>   06.2       Colours by name                                    794
-#TOC>   06.3       Colours as hex-triplets                            820
-#TOC>   06.3.1         Inbuilt palettes                               875
-#TOC>   06.3.2         Custom palettes                                952
-#TOC>   06.3.3         Transparency: The Alpha Channel               1002
-#TOC>   06.4       abline(), lines()  and segments()                 1047
-#TOC>   07       AXES                                                1081
-#TOC>   08       LEGENDS                                             1118
-#TOC>   08.1       basic legends                                     1121
-#TOC>   08.2       Color bars                                        1125
-#TOC>   09       LAYOUT                                              1246
-#TOC>   10       TEXT                                                1281
-#TOC>   11       DRAWING ON PLOTS                                    1309
-#TOC>   12       IMAGES                                              1376
-#TOC>   13       CONTOUR LINES                                       1381
-#TOC>   14       3D PLOTS                                            1386
-#TOC>   15       GRAPHS AND NETWORKS                                 1391
-#TOC>   16       OTHER GRPAHICS PACKAGES                             1396
-#TOC>   17       INTERACTIVE PLOTS                                   1420
-#TOC>   17.1       locator()                                         1424
-#TOC>   17.2       plotly::                                          1427
+#TOC>   Section  Title                                                Line
+#TOC> --------------------------------------------------------------------
+#TOC>   01       INITIALIZE                                             71
+#TOC>   02       THIS REFERENCE ...                                     76
+#TOC>   02.1       Dataset Documentation                                83
+#TOC>   03       PROPORTIONS AND DISTRIBUTIONS                         195
+#TOC>   03.1       barplot()                                           200
+#TOC>   03.2       pie()                                               225
+#TOC>   03.3       boxplot()                                           257
+#TOC>   03.4       hist()                                              315
+#TOC>   03.4.1         overlaying histograms                           362
+#TOC>   04       THE plot() FUNCTION                                   405
+#TOC>   04.1       line plots                                          413
+#TOC>   05       ENCODING INFORMATION: SYMBOL, SIZE, COLOuR            512
+#TOC>   05.1       pch ("plotting character" symbols)                  520
+#TOC>   05.1.1         Using pch to emphasize different categories     611
+#TOC>   05.1.2         Line types                                      700
+#TOC>   05.2       cex ("character expansion" size)                    724
+#TOC>   06       COLOUR                                                784
+#TOC>   06.1       Colours by number                                   792
+#TOC>   06.2       Colours by name                                     810
+#TOC>   06.3       Colours as hex-triplets                             836
+#TOC>   06.3.1         Inbuilt palettes                                891
+#TOC>   06.3.2         Custom palettes                                 971
+#TOC>   06.3.3         Transparency: The Alpha Channel                1021
+#TOC>   06.4       abline(), lines()  and segments()                  1066
+#TOC>   07       AXES                                                 1100
+#TOC>   08       LEGENDS                                              1137
+#TOC>   08.1       basic legends                                      1140
+#TOC>   08.2       Color bars                                         1144
+#TOC>   09       LAYOUT                                               1272
+#TOC>   10       TEXT                                                 1303
+#TOC>   11       DRAWING ON PLOTS                                     1331
+#TOC>   12       IMAGES                                               1397
+#TOC>   13       CONTOUR LINES                                        1402
+#TOC>   14       3D PLOTS                                             1407
+#TOC>   15       GRAPHS AND NETWORKS                                  1412
+#TOC>   16       OTHER GRPAHICS PACKAGES                              1417
+#TOC>   17       INTERACTIVE PLOTS                                    1441
+#TOC>   17.1       locator()                                          1445
+#TOC>   17.2       plotly::                                           1448
 #TOC> 
 #TOC> ==========================================================================
 
@@ -200,7 +202,8 @@ SC <- readRDS("data/SC.rds")   # <<<- execute this line first
 
 barplot(mean(SC$xpr[ , "t.20"])) # barplot of the mean expression at t.20
 
-# Barplots show only a single number. They tell us nothing about the underlying distribution. They are commonly used to compare several distributions:
+# Barplots show only a single number. They tell us nothing about the underlying
+# distribution. They are commonly used to compare several distributions:
 
 barplot(colMeans(SC$xpr[ , c("t.0", "t.20", "t.40", "t.60")]))
 
@@ -238,7 +241,7 @@ b <- barplot(myT,                  # assign the plot - we need the x-coordinates
      main = "Genes annotated to GO terms in the Cellular Component Ontology",
      cex.main = 0.8,
      names.arg = "",               # blank the names - otherwise they are
-     ylab = "counts",              #   taken from the names of the object
+     ylab = "counts",              #   taken from the names() of the object
      cex.axis = 0.8,
      col = colorRampPalette(c("#CCAAFF", "#FFDDFF", "#FFFFFF"))(length(myT)),
      ylim = c(0, 1.5 * max(myT)))  # make  space at the top
@@ -310,7 +313,9 @@ boxplot(SC$xpr[ , 1:13],                   #  expression changes, first hour
 
 
 # ==   03.4  hist()  ===========================================================
-# Histograms are superbly informative and one of the workhorses of our analyses. A histogram answers the question how many observations do we have in a particular range of a (continuously varying) variable.
+# Histograms are superbly informative and one of the workhorses of our analyses.
+# A histogram answers the question how many observations do we have in a
+# particular range of a (continuously varying) variable.
 
 # Here we plot a histogram of the first expression peaks of genes, computed as
 # the first peak of the fitted model for every gene in our set. We might be
@@ -354,7 +359,7 @@ hist(SC$mdl$peaks,                         # gene expression first peaks
      col = myPal(81))                      # get 81 color values from myPal()
 
 
-# ===   03.4.1  overlaying histograms                     
+# ===   03.4.1  overlaying histograms                      
 
 # Histograms can be plotted one-over another to compare them
 # Example: when do genes with different GO term annotations first peak?
@@ -398,7 +403,11 @@ legend("topright",
 
 
 # =    04  THE plot() FUNCTION  ================================================
-# plot() is the workhorse of data visualization in R. But plot() is also a "generic" - i.e. different "classes" can define their own plot-methods and plot will "dispatch" the right method for a class.
+# plot() is the workhorse of data visualization in R. But plot() is also a
+# "generic" - i.e. different "classes" can define their own plot-methods and
+# plot will "dispatch" the right method for a class. This means: even though you
+# just type plot() to plot, you may actually be running different functions on
+# different types of data.
 
 
 # ==   04.1  line plots  =======================================================
@@ -502,12 +511,17 @@ plot(SC$xpr[169, ], SC$xpr[1124, ])  # these two profiles are anticorrelated
 
 # =    05  ENCODING INFORMATION: SYMBOL, SIZE, COLOuR  =========================
 
-# We have many options to encode information in scatter plots (and others), in order to be able to visualize and discover patterns and relationships. The most important ones are the type of symbol to use, its size, and its color.
+# We have many options to encode information in scatter plots (and others), in
+# order to be able to visualize and discover patterns and relationships. The
+# most important ones are the type of symbol to use, its size, and its color.
 
 
 
 # ==   05.1  pch ("plotting character" symbols)  ===============================
-# There are many types of symbols available to plot points and they can all be varied by type, size, and color to present additional information. Which one to use is defined in the argument  pch  . The default is pch = 1: the open circle. Characters 1:20 are regular symbols:
+# There are many types of symbols available to plot points and they can all be
+# varied by type, size, and color to present additional information. Which one
+# to use is defined in the argument "pch". The default is pch = 1: the open
+# circle. Characters 1:20 are regular symbols:
 
 # reduce margins
 oPar <- par(mar = c(1, 1, 1, 1))
@@ -550,7 +564,8 @@ points(x4, y4, pch=32:126, col="#0055AA")
 # that case, rather than having to look up which ASCII code is which character,
 # and remembering which ones are available as numbers, and which ones are
 # identified by the character itself. But the first twenty five I use a lot, and
-# I also end up looking up their codes a lot. So here is a function to plot them for reference. You can paste it into your .Rprofile to keep it at hand:
+# I also end up looking up their codes a lot. So here is a function to plot them
+# for reference. You can paste it into your .Rprofile to keep it at hand:
 
 pchRef <- function() {
   # a reference plot for the first twenty five plotting characters
@@ -593,7 +608,7 @@ plot(0.5,0.5, pch=-0x266aL, cex=5, xlab="", ylab="")
 # support. If your character can't be rendered, you'll only get an empty box.
 
 
-# 1.1.1 Using pch to emphasize different categories
+# ===   05.1.1  Using pch to emphasize different categories
 
 # In general, when we plot(), we produce a "scatterplot" of X and y values.
 # scatterplot: one against the other
@@ -681,10 +696,11 @@ legend ("bottom",
         box.col = "#DDDDDD",
         bg = "#FFFFFF")
 
-# ===   05.1.1  Line types                                
 
-# Basically all plots take arguments lty to define the line type, and lwd
-# to define line width
+# ===   05.1.2  Line types                                 
+
+# Basically all plots take arguments "lty" to define the line type, and "lwd"
+# to define the line width.
 
 # empty plot ...
 plot(c(0,10), c(0,10), type = "n", axes = FALSE, xlab = "", ylab = "")
@@ -872,19 +888,21 @@ N <- 40
 barplot(rep(1, N), col = col2hex(myCols,pal=TRUE,N=N) )
 
 
-# ===   06.3.1  Inbuilt palettes                          
+# ===   06.3.1  Inbuilt palettes                           
 
 # In R, a palette is a function (!) that takes a number as its argument and
 # returns that number of colors, those colors can then be used to color points
 # in a plot or other elements. In principle, such colors can serve three
-# distinct puposes:
+# distinct purposes:
 
 # Qualitative colors have a different color for different types of entities.
 # Here the color serves simply to distinguish the types, it represents
 # "categorical information". For example, we can assign different colors to each
 # individual amino acid.
 
-# Sequential colors distinguish order in a sequence: the colors distinguish the first from the last element in the order. For example we often color the N-terminus of a protein blue(ish) and the C-terminus red(dish).
+# Sequential colors distinguish order in a sequence: the colors distinguish the
+# first from the last element in the order. For example we often color the
+# N-terminus of a protein blue(ish) and the C-terminus red(dish).
 
 # Diverging colors encode some property and are scaled to represent particular
 # values of the property. For example we might represent temperature with a
@@ -892,7 +910,8 @@ barplot(rep(1, N), col = col2hex(myCols,pal=TRUE,N=N) )
 # "diverging on order".
 
 # R has are a number of inbuilt palettes; Here is a convenience function to view
-# palettes. Input can be either a palette, the name of a hcl.colors palette, or a vector of colors:
+# palettes. Input can be either a palette, the name of a hcl.colors palette, or
+# a vector of colors:
 plotPal <- function(pal, N = 40) {
   if (is.character(pal)) {
     if (length(pal) == 1) { # name of a hcl palette
@@ -938,8 +957,8 @@ plotPal("Berlin")
 # plotPal(hcl.pals()[( i<-i+1 )])
 
 # Worthy of special mention are the color-Brewer palettes, in particular for
-# their accessibility considerations. Do consider that not all of us view colors
-# in the same way!
+# their accessibility considerations. Do consider that not all of us view
+# colours in the same way!
 if (! requireNamespace("RColorBrewer", quietly = TRUE)) {
   install.packages("RColorBrewer")
 }
@@ -949,7 +968,7 @@ RColorBrewer::display.brewer.all(colorblindFriendly = TRUE)
 plotPal(RColorBrewer::brewer.pal(11, "PuOr"), N = 11)
 
 
-# ===   06.3.2  Custom palettes                           
+# ===   06.3.2  Custom palettes                            
 #
 # Bespoke palettes are easily created with colorRampPalette(). The function
 # returns a palette, i.e. a function (not a vector of colors). You assign the
@@ -993,13 +1012,13 @@ myOutliers <- colorRampPalette(c("#66666A",
                                  "#F30000"), bias = 0.5)
 plotPal(myOutliers)
 
-# Other many sources on the Web that help to generate matching colors upon which
-# to build palette. One such site with a very large selection of
+# There are many other sources on the Web that help to generate matching colors
+# upon which to build palette. One such site with a very large selection of
 # community-contributed palettes is:  https://color.adobe.com/  ... and there is
 # also an option to extract palettes from user-supplied images.
 
 
-# ===   06.3.3  Transparency: The Alpha Channel           
+# ===   06.3.3  Transparency: The Alpha Channel            
 
 # R colours are actually specified as quartets: the fourth value
 # the "Alpha channel" defines the transparency. Setting this to
@@ -1024,7 +1043,7 @@ points(x,y, pch = 20, cex = 0.5, col = "#EE3A8C08")
 plot (x, y, col = densCols(x, y), pch = 19, cex = 1.5)
 
 
-# ... or with the smootScatter function
+# ... or with the smoothScatter() function
 smoothScatter(x, y)
 
 smoothScatter(x, y,
@@ -1094,9 +1113,9 @@ plot(x,y, xlim=c(-4, 4)) # fixed limits
 plot(x,y, xlim=c(-4, 4), ylim=c(10, -10)) # reverse is possible
 plot(x,y, log="xy") # log axes
 
-# The axis parameters in the default plot are limited.
+# The options to change axis parameters in the default plot() are limited.
 # If you want more control, suppress the printing of an axis
-# in the plot and use the axis() function instead.
+# in your plot and use the axis() function instead.
 ?axis
 
 
@@ -1124,9 +1143,13 @@ grid()
 
 # ==   08.2  Color bars  =======================================================
 
-# Legends for a plot with a sequential or divergent spectrum are a special case, since we need to map a continuum of colors to a scale
+# Legends for a plot with a sequential or divergent spectrum are a special case,
+# since we need to map a continuum of colors to a scale
 
-# Example: plotting expression levels in two cell-cycle phases against each other, and applying a divergent color spectrum that displays the model correlations: genes with low correlations have expression profiles that can not be well approximated with a periodic function.
+# Example: plotting expression levels in two cell-cycle phases against each
+# other, and applying a divergent color spectrum that displays the model
+# correlations: genes with low correlations have expression profiles that can
+# not be well approximated with a periodic function.
 
 
 tRep <- c("t.15", "t.20", "t.25")   # Replication-phase time points
@@ -1138,7 +1161,8 @@ plot(x, y)
 myCors <- SC$mdl$cor
 hist(myCors, breaks = 40)
 
-# The values are of course continuous, but we need to map them to a discrete set of colors. The strategy is as follows:
+# The values are of course continuous, but we need to map them to a discrete
+# set of colors. The strategy is as follows:
 #  - scale the values we wish to map into the interval [0, 1]
 #  - multiply with the desired number of intervals minus one, round, and add one
 #  - these integers can  be used as indices into a vector of colors, ...
@@ -1155,7 +1179,6 @@ hist(myCors,
 N <- 10  # We'll map into N  intervals
 
 
-#$$$
 # The usual way to scale a vector x to the [0,1] interval
 # is:  x-min / max-min
 idx <- (myCors - min(myCors)) / (max(myCors) - min(myCors))
@@ -1171,9 +1194,9 @@ myCols <- corCols[idx]
 # then we plot ...
 plot(x, y, pch = 16, col = myCols, cex = 1.2)
 
-# there is a lot of overlap - let's re-plot in order of decreasing correlations
-# so the low correlations (reds) get plotted last. Ordering this way will give a
-# "cleaner" appearance for divergent plots.
+# This plot has a lot of overlap - let's re-plot in order of decreasing
+# correlations so the low correlations (reds) get plotted last. Ordering this
+# way will give a "cleaner" appearance for divergent plots.
 ord <- order(myCors, decreasing = TRUE)
 plot(x[ord], y[ord], pch = 16, col = myCols[ord], cex = 1.2)
 
@@ -1215,13 +1238,16 @@ oPar <- par(mar=c(5,4,4,7))  # more space on the margin
 par("xpd" = FALSE)
 basePlot()
 
-# we need to figure out where to put the legend. par("usr") gives us the coordinates of the last plot window. We'll space the legend between 1.05 and 1.1 times the plot width, and centred along the y-axis with a height of 0.8 times the plot height.
+# We need to figure out where to put the legend. par("usr") gives us the
+# coordinates of the last plot window. We'll space the legend between 1.05 and
+# 1.1 times the plot width, and centred along the y-axis with a height of 0.8
+# times the plot height.
 dx <- par("usr")[2] - par("usr")[1]
 dy <- par("usr")[4] - par("usr")[3]
-xl <- par("usr")[2] + (dx * 0.05)    # left
+xl <- par("usr")[2] + (dx * 0.05)    # left - 1.05 times plot-width
 xr <- xl + (0.05 * dx)               # right
 yb <- par("usr")[4] - (0.9 * dy)     # bottom
-yt <- yb + (0.8 * dy)                # top
+yt <- yb + (0.8 * dy)                # top - 0.8 times plot height
 
 
 plotrix::color.legend(xl, yb, xr, yt,
@@ -1248,20 +1274,16 @@ par(oPar)
 # par, lattice, constant aspect ratio
 
 
-# Most parameters of the plot window can be set via
-# the functions plot(), hist() etc., but some need to
-# be set via the par() function. Calling par() without
-# arguments lists the current state of the plotting
-# parameters. Calling it with arguments, returns the
-# old parameters and sets new parameters. Thus setting
-# new parameters and saving the old ones can be done
-# in one step. The parameters that have to be set via
-# par include:
-
-# -  multiple plots in one window (mfrow, mfcol, mfg)
-# - margin layout (mai, mar mex, oma, omd, omi)
-# - controlling position and size of a plot in the figure (fig, plt, ps, pty)
-# - see ?par for details.
+# Most parameters of the plot window can be set via the functions plot(), hist()
+# etc., but some need to be set via the par() function. Calling par() without
+# arguments lists the current state of the plotting parameters. Calling it with
+# arguments, returns the old parameters and sets new parameters. Thus setting
+# new parameters and saving the old ones can be done in one step. The parameters
+# that have to be set via par include:
+#   -  multiple plots in one window (mfrow, mfcol, mfg)
+#   - margin layout (mai, mar mex, oma, omd, omi)
+#   - controlling position and size of a plot in the figure (fig, plt, ps, pty)
+#   - see ?par for details.
 
 n <- 1000
 x <- rnorm(n)
@@ -1311,19 +1333,18 @@ text(x3-0.4, y3, extra, col="slateblue", cex=0.75, vfont=c("serif", "plain"))
 
 # To plot lines on top of plots there are several options:
 
-# segments()  # for lines with known endpoints
-# lines()     # joining x,y coordinate lists with lines
-# arrows()    # ... but to get a filled arrow use polygon()
-# curve()     # drawing a curve based on a given expression
-# abline()    # drawing horizontal or vertical lines or lines with
-#             #   given slope and intercept ()
+#   segments()  # for lines with known endpoints
+#   lines()     # joining x,y coordinate lists with lines
+#   arrows()    # ... but to get a filled arrow use polygon()
+#   curve()     # drawing a curve based on a given expression
+#   abline()    # drawing horizontal or vertical lines or lines with
+#               #   given slope and intercept ()
 
 
-# Example: dividing a plot into 60° regions, centred on a point.
-# A general approach to "lines" on a plot is provided by segments().
-# However in this special case one can use abline().
-# We have to take care though that the aspect ratio for the
-# plot is exactly 1 - otherwise our angles are not right.
+# Example: dividing a plot into 60° regions, centred on a point. A general
+# approach to "lines" on a plot is provided by segments(). However in this
+# special case one can use abline(). We have to take care though that the aspect
+# ratio for the plot is exactly 1 - otherwise our angles are not right.
 # Therefore we need to set the asp parameter for plots.
 
 # For a general sketch
@@ -1349,8 +1370,8 @@ arrows(0, 0, 0, 10, length=0.1)
 # rect()
 # polygon()
 
-# example: plot the area under the normal distribution as a polygon, and overlay
-# a histogram
+# Example: plot the area under the normal distribution as a polygon, and overlay
+# a histogram.
 set.seed(12357)
 x <- rnorm(50)
 sig <- 1.0
