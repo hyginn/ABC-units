@@ -37,7 +37,7 @@ if (! file.exists("./myScripts/.myProfile.R")) {
   cat("\n\n")
 
 } else {  # local profile exists ... validate state:
-  cat("\n\nLoading local functions ...")
+  cat("\n\nLoading local functions ...\n")
 
   source(".utilities.R")  # local profile appears sane, source utilities
   source("./myScripts/.myProfile.R")
@@ -82,7 +82,7 @@ if (! file.exists("./myScripts/.myProfile.R")) {
        MYSPE <- getMYSPE(myStudentNumber)  # ... define it for immediate use
        rm(prf, iEmail, out)                # cleanup
   }
-  cat("... done.\n\n")
+  cat("... local functions loaded.\n\n")
 }
 
 # Unnecessary ... now FALSE by default ...
