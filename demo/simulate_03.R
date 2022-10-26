@@ -1,5 +1,6 @@
 # simulate_03.R
 #
+#   Add randomization control (2022-10-26)
 #   Next Phase - analysis - on 2022-10-18
 #   (adding to Code, finished from class session 05, 2022-10-11)
 #   (adding to Code from class session 04 - simulate_01)
@@ -504,6 +505,7 @@ tsneCells <- tsne::tsne(smallDat,
                        max_iter = 300)          # total number of
                                                 #   iterations
 
+
 # This is a stochastic process and every run will turn out somewhat differently,
 # but you will probably find that while some apparent structure appears - as
 # density maxima in the point clouds - in early iterations, after some one-
@@ -515,6 +517,64 @@ tsneCells <- tsne::tsne(smallDat,
 
 # Note that the points are not uniformly coloured! Given the discrete nature of
 # the dataset, many of them overlap and appear darker.
+
+# Are these "clusters"? Are they meaningful?
+
+# What we would like to know is if the clusters that appear support the idea
+# that there is a non-random process going on. Perhaps (and that would be
+# exciting!) this simulation can show that transcriptional filtering can cause
+# random fluctuations in early progenitors to get amplified to produce
+# subpopulations of descendant cells? How could we pursue this question?
+
+# One thing we could do is to trace back the lineages of cells in these clusters
+# and see if they all derive from a common ancestor. Of course, they all derive
+# from the single cell with which we started. But perhaps they share a common
+# ancestor later on? Perhaps coloring the cells with 8 distinct colors
+# corresponding to the fourth generation would show us such generational
+# clustering. You can try that.
+
+# But another way is to examine the properties of a random dataset.
+
+# == A random control ...
+
+# In order to examine this question, we could compare our simulated dataset to a random dataset. But if you think about this for a bit, you will realize that in our case, a random dataset is really hard to produce without fundamentally changing the nature of the experiment. We may get a result, but it may not be relevent. There is one thing we can do however - and this is a generic procedure that we can apply to very many different situations: shuffling our data.
+
+    # =================================================================== #
+    #                                                                     #
+    #     Shuffling keeps all measures _on_ data points intact, and       #
+    #     randomizes all associations _between_ data points.              #
+    #                                                                     #
+    # =================================================================== #
+
+# Remember that forever. It is very useful.
+
+# What association between data points would we want to remove? Well, we are
+# thinking about lineages - and transcriptomes within lineages are partially
+# inherited. A "transcriptome" here is the ten values within a single row. If we
+# shuffle each column separately, there is no longer any association between a
+# cell and its progenitor regarding how many transcripts were inherited. The
+# transcriptomes are now completely random, althoug globally not a single
+# transcript number has changed. They are just distributed differently. This is
+# supe easy to code in R:
+
+
+rndDat <- smallDat                          # copy the dataset
+
+for (i in seq_len(ncol(rndDat))) {          # for each column
+  rndDat[ , i] <- sample(rndDat[ , i])      # shuffle the values
+}
+
+# Done.
+# Now we can run tsne with our shuffled data.
+
+randCells <- tsne::tsne(rndDat,
+                        epoch_callback = myPlot,
+                        epoch = 10,
+                        perplexity = 20,
+                        max_iter = 300)
+
+# Hm. What do you think?
+
 
 
 # ==  Seurat complexity analysis ===============================================
