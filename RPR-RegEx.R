@@ -3,13 +3,15 @@
 # Purpose: A Bioinformatics Course:
 #              R code accompanying the RPR-RegEx unit
 #
-# Version: 1.0
+# Version:  1.1
 #
-# Date:    2017-08  -  2020-09
-# Author:  Boris Steipe (boris.steipe@utoronto.ca)
+# Date:     2017 - 08  -  2022-11
+# Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
-# V 0.1    Maintenance 2020
-# V 0.1    First code
+# Versions:
+#           1.1    Maintenance 2022
+#           1.1    Maintenance 2020
+#           0.1    First code
 #
 # TODO:
 #
@@ -70,7 +72,7 @@ nchar(s)
 patt <- "^>(.{5})"    # the right functions
 regmatches(s, regexec(patt, s, perl = TRUE))[[1]][2]
 
-patt <- "^>(.*)|"    # everything to the pipe character
+patt <- "^>(.*)|"    # everything up to the pipe character
 regmatches(s, regexec(patt, s, perl = TRUE))[[1]][2]
 
 # Ooops - "|" is a metacharacter - we must escape it
