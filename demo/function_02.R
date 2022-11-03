@@ -26,16 +26,16 @@
 #TOC>   1        Context:                                         47
 #TOC>   2        Supplementary data from paper                    65
 #TOC>   3        Ensembl data:                                   173
-#TOC>   3.1        Subsetting to remove irrelevant data          233
-#TOC>   3.2        Subsetting to remove redundant data           251
-#TOC>   3.3        Subsetting to remove unneeded columns         268
-#TOC>   4        Milestone: storing the data                     295
-#TOC>   5        Simple analysis                                 306
-#TOC>   6        Distribution of annotations                     329
-#TOC>   7        Distribution of gene lengths                    375
-#TOC>   8        Finally: annotation of function                 511
-#TOC>   8.1        From GOid to theme                            599
-#TOC>   8.2        Wordclouds                                    644
+#TOC>   3.1        Subsetting to remove irrelevant data          235
+#TOC>   3.2        Subsetting to remove redundant data           253
+#TOC>   3.3        Subsetting to remove unneeded columns         271
+#TOC>   4        Milestone: storing the data                     298
+#TOC>   5        Simple analysis                                 309
+#TOC>   6        Distribution of annotations                     332
+#TOC>   7        Distribution of gene lengths                    378
+#TOC>   8        Finally: annotation of function                 514
+#TOC>   8.1        From GOid to theme                            601
+#TOC>   8.2        Wordclouds                                    645
 #TOC> 
 #TOC> ==========================================================================
 
@@ -116,12 +116,12 @@ names(dat2) <- c("GOid", "GOdefinition", "Theme")
 length(unique(dat2$GOid))                       # 12,485
 length(unique(dat2$GOid)) == length(dat2$GOid)  # TRUE
 
-# ... and that dat2 maps the 85 themes defined in dat1 to actual go_ids.
+# ... and that dat2 maps the 85 themes defined in dat1 to actual GOids.
 
 length(unique(dat2$Theme))
 
 # Let's have a brief look at those themes, to see if there are any problems with
-# mapping one to the other. For brevity, we'll assign the relevant data itmes to
+# mapping one to the other. For brevity, we'll assign the relevant data items to
 # two vectors: d1 and d2
 
 d1 <- dat1$Theme            # all themes in dat1
@@ -157,16 +157,16 @@ dat1$Theme[which(dat1$Theme == "growth-regualtion")] <- "growth-regulation"
 
 # After correcting the typo, that term is no longer different between the two
 # files. While it is certainly unexpected that the "themes" present in those two
-# files are not identical, we''l just remember that fact, in case we need it
-# later for later.
+# files are not identical, we'll just remember that fact, in case we need it
+# later.
 
 
 
 # Now we have a better idea what to do next:
 #   -  Navigate to biomart
-#   - Download a dataset of human genes, their transcript lengths and their GO IDs
+#   -  Download a dataset of human genes, their gene lengths, their GO IDs ...
 #   -  Add themes to their corresponding GO IDs
-#   - Check whether these are different for short and for long genes.
+#   -  Check whether themes are different for short and for long genes.
 
 
 
@@ -187,13 +187,15 @@ dat1$Theme[which(dat1$Theme == "growth-regualtion")] <- "growth-regulation"
 # I am not uploading this file to GitHub, but I will remove irrelevant data,
 # redundant data and unneeded columns first. If you want to recreate the next
 # three steps, you'll have to download the file from Ensebl. After the next
-# three steps, you can read in resulting (much smaller!) file from the course
-# project.
+# three steps, you can read in the resulting (much smaller!) file from the
+# course project.
 
 # (In class, we originally worked with Transcript lengths - I now think that
 # this is a mistake since transcripts are already spliced, and it is the
 # pre-spliced version of the gene that is subject to transcriptional filtering.
-# So I am re-doing this with gene-start and end.)
+# So I am re-doing this with gene-start and end. That's what the authors of
+# the paper appear to have done, although the exact semantics of their data was
+# not documented in the paper.)
 
 
 inFile <- "~/Downloads/mart_export.txt"
@@ -255,7 +257,8 @@ nrow(hsGenes)  # 538,219 ... was: 1,594,546
 # == Key data handling technique #7:  =================
 #     - use ! duplicated() to find unique items across more than one row ...
 
-# B: remove duplicated combinations of gene name and GO id - these are redundant.
+# B: remove duplicated combinations of gene name and GO id - these are
+# redundant.
 sel <- ! duplicated(hsGenes[ , c("name", "GOid") ])
 hsGenes <- hsGenes[sel, ]
 
@@ -497,8 +500,8 @@ hist(log10(hsGenes$length[selRNAUnique]),
      add = TRUE,
      col = "#d04c947f")  # the #......7f makes the color 50% transparent
 
-# Well - ther you have it. Figure eight is reproduced ... but not exactly. The
-# authors have silently omitted RNA genes. Does this cvhange their conclusions?
+# Well - there you have it. Figure eight is reproduced ... but not exactly. The
+# authors have silently omitted RNA genes. Does this change their conclusions?
 # Maybe. But unless you are capable of looking at the data yourself and making
 # these observations, you can't even ask that question.
 
@@ -531,7 +534,7 @@ nrow(hsUnique)   # 17,550  as it should be
 
 
 # == Key data handling technique #16:  =================
-#     -    ordert()    on a value to get a table sorted
+#     -    order()    on a value to get a table sorted
 
 # order() is one of those functions that's often neglected because you need a
 # bit of mental effort to understand what it does. Don't be that way. order() is
@@ -548,7 +551,6 @@ head(ord)
 # [1]  1303   580   475 14933 12276   579
 
 # This means: the shortest gene is in row 1303, the second shortest in 580 etc.
-
 
 tail(ord)
 
@@ -615,10 +617,9 @@ sum( ! hsGenes$GOid %in% dat2$GOid) # 2,239 are not there! We'll have to be
 #     match() returns a vector of the positions of (first) matches of its
 #     first argument in its second argument.
 
-# we want to find where the GOids of hsGene appear in dat2. then we want to
+# We want to find where the GOids of hsGene appear in dat2. Then we want to
 # fetch the theme for that GOid, and put this into a separate column of
 # hsGenes. Sound complicated? It isn't! match() does all the work.
-#
 
 hsGenes$themes <- dat2$Theme[ match(hsGenes$GOid, dat2$GOid) ]
 
