@@ -2,12 +2,13 @@
 #
 # Purpose: Database utilities for ABC learning units.
 #
-# Version 2.3
+# Version 3
 #
-# Date:     2017-11  -  2020-11
+# Date:     2017 - 11  -  2022 - 11
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
+#           3.0  Rewrote UniProtIDmap() - server semantics changed
 #           2.3  Bug in treatment of single-column dataframes which returns
 #                a deparsed expression from paste()
 #           2.2  Bugfixes
@@ -36,26 +37,26 @@
 #TOC> 
 #TOC>   Section  Title                                   Line
 #TOC> -------------------------------------------------------
-#TOC>   1        INITIALISATIONS AND PARAMETERS            63
-#TOC>   2        PACKAGES                                  68
-#TOC>   3        FUNCTIONS                                 84
-#TOC>   3.01       dbSanitizeSequence()                    87
-#TOC>   3.02       dbConfirmUnique()                      122
-#TOC>   3.03       dbInit()                               140
-#TOC>   3.04       dbAutoincrement()                      180
-#TOC>   3.05       dbAddProtein()                         193
-#TOC>   3.06       dbAddFeature()                         229
-#TOC>   3.07       dbAddTaxonomy()                        260
-#TOC>   3.08       dbAddAnnotation()                      295
-#TOC>   3.09       dbFetchUniProtSeq()                    342
-#TOC>   3.10       dbFetchPrositeFeatures()               388
-#TOC>   3.11       node2text()                            438
-#TOC>   3.12       dbFetchNCBItaxData()                   450
-#TOC>   3.13       UniProtIDmap()                         489
-#TOC>   3.14       dbProt2JSON()                          528
-#TOC>   3.15       dbSeq2JSON()                           612
-#TOC>   3.16       dbRow2JSON()                           641
-#TOC>   4        TESTS                                    661
+#TOC>   1        INITIALISATIONS AND PARAMETERS            64
+#TOC>   2        PACKAGES                                  69
+#TOC>   3        FUNCTIONS                                 85
+#TOC>   3.01       dbSanitizeSequence()                    88
+#TOC>   3.02       dbConfirmUnique()                      123
+#TOC>   3.03       dbInit()                               141
+#TOC>   3.04       dbAutoincrement()                      181
+#TOC>   3.05       dbAddProtein()                         194
+#TOC>   3.06       dbAddFeature()                         230
+#TOC>   3.07       dbAddTaxonomy()                        261
+#TOC>   3.08       dbAddAnnotation()                      296
+#TOC>   3.09       dbFetchUniProtSeq()                    343
+#TOC>   3.10       dbFetchPrositeFeatures()               389
+#TOC>   3.11       node2text()                            439
+#TOC>   3.12       dbFetchNCBItaxData()                   451
+#TOC>   3.13       UniProtIDmap()                         490
+#TOC>   3.14       dbProt2JSON()                          598
+#TOC>   3.15       dbSeq2JSON()                           682
+#TOC>   3.16       dbRow2JSON()                           711
+#TOC>   4        TESTS                                    731
 #TOC> 
 #TOC> ==========================================================================
 
@@ -487,42 +488,111 @@ dbFetchNCBItaxData <- function(ID) {
 
 
 # ==   3.13  UniProtIDmap()  ===================================================
-UniProtIDmap <- function (s, mapFrom = "P_REFSEQ_AC", mapTo = "ACC") {
-  # Use UniProt ID mapping service to map one or more IDs
-  # Parameters:
-  #    s        char  A string of white-space separated IDs
-  #    mapFrom  char  the database in which the IDs in s are valid.
-  #                     Default is RefSeq protein
-  #    mapTo    char  the database in which the target IDs are valid.
-  #                     Default is UniProtKB
-  # Value
-  #    A data frame of mapped IDs, with column names From and To, or an
-  #    empty data frame if the mapping was unsuccessful. No rows are returned
-  #    for IDs that are not mapped.
+UniProtIDmap <- function (ids,
+                          mapFrom = "RefSeq_Protein",
+                          mapTo   = "UniProtKB",
+                          timeOut = 15,
+                          job) {
+  #' @title UniProtIDmap()
+  #' @description Use UniProt ID mapping service to map one or more IDs
+  #' @param ids char - A character vector of valid IDs in the mapFrom database.
+  #' @param mapFrom char - The database in which the IDs in s are valid.
+  #                     Default is "RefSeq_Protein".
+  #' @param mapTo char - The database to which the target IDs should be mapped.
+  #                     Default is "UniProtKB"
+  #' @param timeOut  num - Time in seconds after which to abort. Default 15.
+  #' @param job char -  UniProt job ID. If job is present as an argument,
+  #'                    do not send off  a new query but try to retrieve
+  #'                    from this jobID instead.
+  #'
+  #' @return A data frame of mapped IDs, with column names "From",
+  #'         "Entry", and "Entry.Name", or an empty data frame if the mapping
+  #'         was unsuccessful. No rows are returned for IDs that
+  #'         could not be mapped.
+  #'
+  #' @examples UniProtIDmap(c("NP_010227", "NP_011036", "NP_012881"))
 
-  # Initialize curl
-  httr::set_config(httr::config(http_version = 0))
+  if (missing(job)) {                                    # Set up a new query
+    myTask <- list(ids = paste(ids, collapse =","),      # Task specifics
+                   from = mapFrom,
+                   to = mapTo)
 
-  URL <- "https://www.uniprot.org/uploadlists/"
-  response <- httr::POST(URL,
-                         body = list(from = mapFrom,
-                                     to = mapTo,
-                                     format = "tab",
-                                     query = s))
+    r <- httr::POST(url = "https://rest.uniprot.org/idmapping/run/",
+                    body = myTask,
+                    encode = "multipart",
+                    httr::accept_json())
 
-  if (httr::status_code(response) == 200) { # 200: oK
-    myMap <- read.delim(file = textConnection(httr::content(response)),
-                        sep = "\t")
-    colnames(myMap) <- c("From", "To")
-  } else {
-    myMap <- data.frame()
-    warning(paste("No uniProt ID mapping returned:",
-                  "server sent status",
-                  httr::status_code(response)))
+    serverResponse <- httr::content(r, as = "parsed")
+
+    if (is.null(serverResponse$jobId)) {
+      stop("No jobID received from server.")
+    }
+    job <- serverResponse$jobId
+
+    then <- Sys.time()                          # Wait, continue, or time out
+    now  <- Sys.time()
+    while (! UniProtIDmapIsReady(job) &&
+           difftime(now, then, units = "secs") < timeOut) {
+      Sys.sleep(3)  # Wait three seconds ...
+      now <- Sys.time()
+      cat(sprintf("Waiting ... %d sec. of %d.       \r",
+                  round(as.numeric(difftime(now, then, units = "secs"))),
+                  timeOut))
+    }
+    if (! UniProtIDmapIsReady(job)) {
+      cat("\n")                                # Not done: time out
+      cat("Time out. No result available so far. Try again later with:")
+      cat(sprintf("UniProtIDmap(job = \"%s\")\n", job))
+      cat("\n")
+      return(data.frame())
+    }
+
   }
 
-  return(myMap)
+  # Retrieve the completed job details
+  URL <- sprintf("https://rest.uniprot.org/idmapping/details/%s", job)
+  r <- httr::GET(url = URL, httr::accept_json())
+  jobDetails <- httr::content(r, as = "parsed")
+
+  URL <- jobDetails$redirectURL
+
+  if (grepl("/idmapping/results/", URL)) {
+    URL <- gsub("/idmapping/results/", "/idmapping/stream/", URL)
+  } else {
+    URL <- gsub("/results/", "/results/stream/", URL)
+  }
+
+  # Request results in a TSV format and read them into a table.
+  URL <- paste(URL, "?format=tsv", sep = "")
+  r <- httr::GET(url = URL, httr::accept_json())
+  resultsTable <- read.delim(text = httr::content(r))
+
+
+  return(resultsTable)
 }
+
+# Helper function
+UniProtIDmapIsReady <- function(jobId) {
+  # Check whether a given jobID has completed, and if so, whether there
+  # were errors or a result.
+
+  URL <- sprintf("https://rest.uniprot.org/idmapping/status/%s", jobId)
+  r <- httr::GET(url = URL, httr::accept_json())
+  status <- httr::content(r, as = "parsed")
+
+  if (!is.null(status[["messages"]])) {  # Input errors or similar
+    stop(status[["messages"]])
+  }
+
+  if (!is.null(status[["results"]]) || !is.null(status[["failedIds"]])) {
+    ready <- TRUE
+  } else {
+    ready <- FALSE
+  }
+
+  return(ready)
+}
+
 
 
 # ==   3.14  dbProt2JSON()  ====================================================
