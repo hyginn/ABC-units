@@ -31,10 +31,18 @@
 #
 #           cf. https://evolution.genetics.washington.edu/phylip.html
 #
+#           PhyML is described here:
+#
+#           Guindon, Stéphane et al.. (2010). “New algorithms and methods
+#           to estimate maximum-likelihood phylogenies: assessing the
+#           performance of PhyML 3.0”. Systematic Biology 59(3):307–21 .
+#           [PMID: 20525638] [DOI: 10.1093/sysbio/syq010]
 #
 # TODO:
 #           Add MrBayes
-# https://cran.r-project.org/web/packages/phangorn/vignettes/IntertwiningTreesAndNetworks.html
+#           add:  https://cran.r-project.org/web/packages/phangorn/
+#                   vignettes/IntertwiningTreesAndNetworks.html
+#
 #
 # == DO NOT SIMPLY  source()  THIS FILE! =======================================
 #
@@ -46,15 +54,15 @@
 
 
 #TOC> ==========================================================================
-#TOC>
+#TOC> 
 #TOC>   Section  Title                                 Line
 #TOC> -----------------------------------------------------
-#TOC>   1        Packages                                60
-#TOC>   2        PhyML online server workflow            78
-#TOC>   2.1        .mfa to .phy                          83
-#TOC>   2.2        Computing the tree                   100
-#TOC>   2.3        Reading the tree back into R         114
-#TOC>
+#TOC>   1        Packages                                69
+#TOC>   2        PhyML online server workflow            87
+#TOC>   2.1        .mfa to .phy                          92
+#TOC>   2.2        Computing the tree                   109
+#TOC>   2.3        Reading the tree back into R         123
+#TOC> 
 #TOC> ==========================================================================
 
 
