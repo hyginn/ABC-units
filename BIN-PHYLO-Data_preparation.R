@@ -5,7 +5,7 @@
 #
 # Version:  1.2
 #
-# Date:     2017-10  -  2020-09
+# Date:     2017-10  -  2022-09
 # Author:   Boris Steipe (boris.steipe@utoronto.ca)
 #
 # Versions:
@@ -34,10 +34,10 @@
 #TOC>   Section  Title                                     Line
 #TOC> ---------------------------------------------------------
 #TOC>   1        Preparations                                45
-#TOC>   2        Fetching sequences                          77
-#TOC>   3        Multiple Sequence Alignment                118
-#TOC>   4        Reviewing and Editing Alignments           137
-#TOC>   4.1        Masking workflow                         153
+#TOC>   2        Fetching sequences                          79
+#TOC>   3        Multiple Sequence Alignment                120
+#TOC>   4        Reviewing and Editing Alignments           139
+#TOC>   4.1        Masking workflow                         155
 #TOC> 
 #TOC> ==========================================================================
 
@@ -51,7 +51,9 @@
 # myDB object with a protein and feature database. Ask for advice if not.
 source("myScripts/makeProteinDB.R")
 
-# Load packages we need
+# Load packages we need. As usual: if you are asked whether you also want to
+# install dependencies, answer "yes". If you are asked whether you want to
+# compile from source, answer "no".
 
 if (! requireNamespace("BiocManager", quietly = TRUE)) {
   install.packages("BiocManager")
